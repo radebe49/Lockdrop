@@ -451,6 +451,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
 
   // Reconnect method for manual retry
   const reconnect = useCallback(async () => {
+    disconnect();
     console.log("Manual wallet reconnection triggered");
     const previousAddress = state.address;
     disconnect();

@@ -15,14 +15,18 @@ import { withTimeout, TIMEOUTS } from "@/utils/timeout";
 import * as MessageCache from "./MessageCache";
 
 // Pre-load web3FromAddress to avoid dynamic imports during transactions
-let web3FromAddressCache: typeof import("@polkadot/extension-dapp").web3FromAddress | null = null;
+let web3FromAddressCache:
+  | typeof import("@polkadot/extension-dapp").web3FromAddress
+  | null = null;
 
-if (typeof window !== 'undefined') {
-  import("@polkadot/extension-dapp").then((module) => {
-    web3FromAddressCache = module.web3FromAddress;
-  }).catch(err => {
-    console.warn('Failed to preload web3FromAddress:', err);
-  });
+if (typeof window !== "undefined") {
+  import("@polkadot/extension-dapp")
+    .then((module) => {
+      web3FromAddressCache = module.web3FromAddress;
+    })
+    .catch((err) => {
+      console.warn("Failed to preload web3FromAddress:", err);
+    });
 }
 
 /**
@@ -66,7 +70,8 @@ export class ContractService {
   private static api: ApiPromise | null = null;
   private static isConnecting = false;
   private static connectionPromise: Promise<ApiPromise> | null = null;
-  private static connectionListeners: Set<(connected: boolean) => void> = new Set();
+  private static connectionListeners: Set<(connected: boolean) => void> =
+    new Set();
   private static reconnectAttempts = 0;
   private static maxReconnectAttempts = 5;
 
@@ -107,10 +112,7 @@ export class ContractService {
         "wss://rpc.polkadot.io/westend",
         "wss://westend.api.onfinality.io/public-ws",
       ],
-      rococo: [
-        "wss://rococo-rpc.polkadot.io",
-        "wss://rpc.polkadot.io/rococo",
-      ],
+      rococo: ["wss://rococo-rpc.polkadot.io", "wss://rpc.polkadot.io/rococo"],
     };
 
     return fallbacks[network] || [];
@@ -160,10 +162,10 @@ export class ContractService {
   private static async establishConnection(): Promise<ApiPromise> {
     const config = this.getConfig();
     const fallbackEndpoints = this.getFallbackEndpoints(config.network);
-    
+
     // Build list of endpoints to try: primary first, then fallbacks
     const endpointsToTry = [config.rpcEndpoint];
-    fallbackEndpoints.forEach(endpoint => {
+    fallbackEndpoints.forEach((endpoint) => {
       if (endpoint !== config.rpcEndpoint) {
         endpointsToTry.push(endpoint);
       }
@@ -174,7 +176,7 @@ export class ContractService {
     // Try each endpoint
     for (const endpoint of endpointsToTry) {
       const MAX_ATTEMPTS = 3;
-      
+
       for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
         try {
           // Add delay for retries (exponential backoff with jitter)
@@ -205,23 +207,24 @@ export class ContractService {
           );
 
           console.log(`Connected to ${config.network} at ${endpoint}`);
-          
+
           if (endpoint !== config.rpcEndpoint) {
             console.warn(`Using fallback RPC endpoint: ${endpoint}`);
           }
 
           // Set up disconnection handler
           this.setupDisconnectionHandler(api, config);
-          
+
           // Reset reconnect attempts on successful connection
           this.reconnectAttempts = 0;
-          
+
           // Notify listeners of successful connection
           this.notifyConnectionListeners(true);
 
           return api;
         } catch (error) {
-          lastError = error instanceof Error ? error : new Error("Unknown error");
+          lastError =
+            error instanceof Error ? error : new Error("Unknown error");
 
           if (attempt < MAX_ATTEMPTS) {
             console.warn(
@@ -230,7 +233,7 @@ export class ContractService {
             );
           } else {
             console.error(
-              `All ${MAX_ATTEMPTS} attempts to ${endpoint} failed. ${endpointsToTry.indexOf(endpoint) < endpointsToTry.length - 1 ? 'Trying next endpoint...' : ''}`
+              `All ${MAX_ATTEMPTS} attempts to ${endpoint} failed. ${endpointsToTry.indexOf(endpoint) < endpointsToTry.length - 1 ? "Trying next endpoint..." : ""}`
             );
           }
         }
@@ -318,13 +321,13 @@ export class ContractService {
 
       // Use cached module or dynamic import as fallback
       let web3FromAddress = web3FromAddressCache;
-      
+
       if (!web3FromAddress) {
         const extensionDapp = await import("@polkadot/extension-dapp");
         web3FromAddress = extensionDapp.web3FromAddress;
         web3FromAddressCache = web3FromAddress;
       }
-      
+
       const injector = await withTimeout(
         web3FromAddress(account.address),
         TIMEOUTS.WALLET_ENABLE,
@@ -509,22 +512,24 @@ export class ContractService {
         senderAddress,
         "sender"
       );
-      
+
       // Also check cache for any messages not yet on blockchain
       const cachedMessages = MessageCache.getSentMessages(senderAddress);
-      
+
       // Merge and deduplicate messages
       const allMessages = [...blockchainMessages];
-      const existingIds = new Set(blockchainMessages.map(m => m.id));
-      
+      const existingIds = new Set(blockchainMessages.map((m) => m.id));
+
       for (const cached of cachedMessages) {
         if (!existingIds.has(cached.id)) {
           allMessages.push(cached);
         }
       }
-      
-      console.log(`Loaded ${allMessages.length} sent messages (${blockchainMessages.length} from blockchain, ${cachedMessages.length} from cache)`);
-      
+
+      console.log(
+        `Loaded ${allMessages.length} sent messages (${blockchainMessages.length} from blockchain, ${cachedMessages.length} from cache)`
+      );
+
       return allMessages;
 
       // Note: When smart contract is deployed with proper indexing, update to:
@@ -535,7 +540,7 @@ export class ContractService {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
       console.error("Error loading sent messages:", errorMessage);
-      
+
       // Return empty array instead of throwing to prevent UI blocking
       return [];
     }
@@ -581,22 +586,24 @@ export class ContractService {
         recipientAddress,
         "recipient"
       );
-      
+
       // Also check cache for any messages not yet on blockchain
       const cachedMessages = MessageCache.getReceivedMessages(recipientAddress);
-      
+
       // Merge and deduplicate messages
       const allMessages = [...blockchainMessages];
-      const existingIds = new Set(blockchainMessages.map(m => m.id));
-      
+      const existingIds = new Set(blockchainMessages.map((m) => m.id));
+
       for (const cached of cachedMessages) {
         if (!existingIds.has(cached.id)) {
           allMessages.push(cached);
         }
       }
-      
-      console.log(`Loaded ${allMessages.length} received messages (${blockchainMessages.length} from blockchain, ${cachedMessages.length} from cache)`);
-      
+
+      console.log(
+        `Loaded ${allMessages.length} received messages (${blockchainMessages.length} from blockchain, ${cachedMessages.length} from cache)`
+      );
+
       return allMessages;
 
       // Note: When smart contract is deployed with proper indexing, update to:
@@ -607,7 +614,7 @@ export class ContractService {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
       console.error("Error loading received messages:", errorMessage);
-      
+
       // Return empty array instead of throwing to prevent UI blocking
       return [];
     }
@@ -807,59 +814,71 @@ export class ContractService {
    * Set up handler for WebSocket disconnections
    * Automatically attempts to reconnect when connection is lost
    */
-  private static setupDisconnectionHandler(api: ApiPromise, config: ContractConfig): void {
-    api.on('disconnected', async () => {
-      console.warn('WebSocket disconnected from RPC endpoint');
+  private static setupDisconnectionHandler(
+    api: ApiPromise,
+    _config: ContractConfig
+  ): void {
+    api.on("disconnected", async () => {
+      console.warn("WebSocket disconnected from RPC endpoint");
       this.notifyConnectionListeners(false);
-      
+
       // Attempt automatic reconnection
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
         this.reconnectAttempts++;
-        const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts - 1), 30000); // Max 30s
-        console.log(`Attempting reconnection ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms...`);
-        
+        const delay = Math.min(
+          1000 * Math.pow(2, this.reconnectAttempts - 1),
+          30000
+        ); // Max 30s
+        console.log(
+          `Attempting reconnection ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms...`
+        );
+
         await this.delay(delay);
-        
+
         try {
           // Clear the old API instance
           this.api = null;
-          
+
           // Attempt to reconnect
           await this.connect();
-          console.log('Successfully reconnected to RPC endpoint');
+          console.log("Successfully reconnected to RPC endpoint");
         } catch (error) {
-          console.error('Reconnection attempt failed:', error);
-          
+          console.error("Reconnection attempt failed:", error);
+
           if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-            console.error('Max reconnection attempts reached. Manual reconnection required.');
+            console.error(
+              "Max reconnection attempts reached. Manual reconnection required."
+            );
           }
         }
       }
     });
 
-    api.on('connected', () => {
-      console.log('WebSocket connected to RPC endpoint');
+    api.on("connected", () => {
+      console.log("WebSocket connected to RPC endpoint");
       this.reconnectAttempts = 0;
       this.notifyConnectionListeners(true);
     });
 
-    api.on('error', (error) => {
-      console.error('WebSocket error:', error);
+    api.on("error", (error) => {
+      console.error("WebSocket error:", error);
     });
   }
 
   /**
    * Subscribe to connection state changes
-   * 
+   *
    * @param listener Callback function that receives connection status
    * @returns Unsubscribe function
    */
-  static onConnectionChange(listener: (connected: boolean) => void): () => void {
+  static onConnectionChange(
+    listener: (connected: boolean) => void
+  ): () => void {
     this.connectionListeners.add(listener);
-    
+
     // Immediately notify of current state
     listener(this.isConnected());
-    
+
     // Return unsubscribe function
     return () => {
       this.connectionListeners.delete(listener);
@@ -870,11 +889,11 @@ export class ContractService {
    * Notify all listeners of connection state change
    */
   private static notifyConnectionListeners(connected: boolean): void {
-    this.connectionListeners.forEach(listener => {
+    this.connectionListeners.forEach((listener) => {
       try {
         listener(connected);
       } catch (error) {
-        console.error('Error in connection listener:', error);
+        console.error("Error in connection listener:", error);
       }
     });
   }
@@ -882,18 +901,18 @@ export class ContractService {
   /**
    * Manually trigger reconnection attempt
    * Useful for UI "Retry" buttons
-   * 
+   *
    * @returns Promise resolving when reconnection completes
    */
   static async reconnect(): Promise<void> {
-    console.log('Manual reconnection triggered');
-    
+    console.log("Manual reconnection triggered");
+
     // Disconnect existing connection
     await this.disconnect();
-    
+
     // Reset reconnect attempts
     this.reconnectAttempts = 0;
-    
+
     // Attempt new connection
     await this.connect();
   }
@@ -901,7 +920,7 @@ export class ContractService {
   /**
    * Verify the current connection matches the configured network
    * Useful for detecting when user switches networks in their wallet
-   * 
+   *
    * @returns true if connected to correct network, false otherwise
    */
   static async verifyNetwork(): Promise<boolean> {
@@ -911,8 +930,10 @@ export class ContractService {
       }
 
       const config = this.getConfig();
-      const chainName = (await this.api.rpc.system.chain()).toString().toLowerCase();
-      
+      const chainName = (await this.api.rpc.system.chain())
+        .toString()
+        .toLowerCase();
+
       // Check if chain name matches expected network
       const expectedNetwork = config.network.toLowerCase();
       const isCorrectNetwork = chainName.includes(expectedNetwork);
@@ -925,14 +946,14 @@ export class ContractService {
 
       return isCorrectNetwork;
     } catch (error) {
-      console.error('Failed to verify network:', error);
+      console.error("Failed to verify network:", error);
       return false;
     }
   }
 
   /**
    * Get information about the currently connected chain
-   * 
+   *
    * @returns Chain information or null if not connected
    */
   static async getChainInfo(): Promise<{
@@ -956,7 +977,7 @@ export class ContractService {
         network: this.getConfig().network,
       };
     } catch (error) {
-      console.error('Failed to get chain info:', error);
+      console.error("Failed to get chain info:", error);
       return null;
     }
   }

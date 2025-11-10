@@ -17,8 +17,8 @@ import {
 let decodeAddressCache: typeof import("@polkadot/util-crypto").decodeAddress | null = null;
 
 if (typeof window !== 'undefined') {
-  import("@polkadot/util-crypto").then((module) => {
-    decodeAddressCache = module.decodeAddress;
+  import("@polkadot/util-crypto").then((utilCrypto) => {
+    decodeAddressCache = utilCrypto.decodeAddress;
   }).catch(err => {
     console.warn('Failed to preload decodeAddress:', err);
   });
@@ -152,7 +152,7 @@ export class AsymmetricCrypto {
    */
   static async decryptAESKeyWithTalisman(
     encryptedKey: EncryptedKey,
-    recipientSecret?: Uint8Array
+    _recipientSecret?: Uint8Array
   ): Promise<ArrayBuffer> {
     try {
       await this.initialize();

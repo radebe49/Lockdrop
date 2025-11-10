@@ -13,7 +13,7 @@ export class MockIPFSService {
    */
   async uploadEncryptedBlob(
     blob: Blob,
-    filename: string = "encrypted-media",
+    _filename: string = "encrypted-media",
     options: UploadOptions = {}
   ): Promise<IPFSUploadResult> {
     const { onProgress } = options;
@@ -43,7 +43,7 @@ export class MockIPFSService {
   /**
    * Simulate downloading from IPFS
    */
-  async downloadEncryptedBlob(cid: string): Promise<Blob> {
+  async downloadEncryptedBlob(_cid: string): Promise<Blob> {
     // Simulate download delay
     await this.sleep(1000);
     

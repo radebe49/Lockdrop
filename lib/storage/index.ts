@@ -17,7 +17,7 @@ export type { IPFSUploadResult, UploadOptions } from "./IPFSService";
 const USE_MOCK = true; // Set to false once w3up authentication is configured
 
 export const ipfsService = USE_MOCK
-  ? (mockIPFSService as any)
+  ? (mockIPFSService as unknown as typeof realIPFSService)
   : realIPFSService;
 
 /**

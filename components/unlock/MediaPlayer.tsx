@@ -19,7 +19,7 @@ interface MediaPlayerProps {
 export function MediaPlayer({
   unlockResult,
   onClose,
-  messageId,
+  messageId: _messageId,
   sender,
 }: MediaPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
