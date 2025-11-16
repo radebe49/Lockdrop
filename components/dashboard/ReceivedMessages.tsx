@@ -35,14 +35,17 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
    *
    * Requirements: 8.3 - Calculate status (Locked/Unlockable/Unlocked)
    * 
-   * Note: Status is determined purely by comparing current time with unlock timestamp.
-   * No localStorage tracking needed - the blockchain timestamp is the source of truth.
+   * Note: Status is "Locked" before unlock time, "Unlockable" after unlock time,
+   * and only becomes "Unlocked" after the user actually views it.
    */
   const convertToMessage = useCallback(
     (metadata: MessageMetadata): Message => {
-      // Message is unlockable if current time >= unlock timestamp
-      const isUnlockable = Date.now() >= metadata.unlockTimestamp;
-      const status = calculateMessageStatus(metadata.unlockTimestamp, isUnlockable);
+      // Check if user has viewed this message (stored in localStorage)
+      const viewedKey = `message_viewed_${metadata.id}`;
+      const hasBeenViewed = localStorage.getItem(viewedKey) === 'true';
+      
+      // Calculate status: only mark as "Unlocked" if actually viewed
+      const status = calculateMessageStatus(metadata.unlockTimestamp, hasBeenViewed);
 
       return {
         id: metadata.id,
@@ -91,10 +94,13 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
   const updateStatuses = useCallback(() => {
     setMessages((prevMessages) =>
       prevMessages.map((message) => {
-        const isUnlockable = Date.now() >= message.unlockTimestamp;
+        // Check if user has viewed this message
+        const viewedKey = `message_viewed_${message.id}`;
+        const hasBeenViewed = localStorage.getItem(viewedKey) === 'true';
+        
         return {
           ...message,
-          status: calculateMessageStatus(message.unlockTimestamp, isUnlockable),
+          status: calculateMessageStatus(message.unlockTimestamp, hasBeenViewed),
         };
       })
     );

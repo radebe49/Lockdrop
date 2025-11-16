@@ -51,8 +51,8 @@ export default function CreateMessagePage() {
   } | null>(null);
 
   /**
-   * Validates Polkadot address format
-   * Basic validation - checks for valid SS58 format
+   * Validates Ethereum address format
+   * Checks for valid Ethereum address (0x... format)
    */
   const validateRecipientAddress = (addr: string): boolean => {
     if (!addr || addr.trim().length === 0) {
@@ -60,16 +60,15 @@ export default function CreateMessagePage() {
       return false;
     }
 
-    // Basic Polkadot address validation (SS58 format)
-    // Addresses typically start with specific prefixes and are 47-48 chars
-    const polkadotAddressRegex = /^[1-9A-HJ-NP-Za-km-z]{47,48}$/;
+    // Ethereum address validation (0x followed by 40 hex characters)
+    const ethereumAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 
-    if (!polkadotAddressRegex.test(addr.trim())) {
-      setRecipientError("Invalid Polkadot address format");
+    if (!ethereumAddressRegex.test(addr.trim())) {
+      setRecipientError("Invalid Ethereum address format. Must start with 0x followed by 40 hex characters");
       return false;
     }
 
-    if (addr.trim() === address) {
+    if (addr.trim().toLowerCase() === address?.toLowerCase()) {
       setRecipientError("Cannot send message to yourself");
       return false;
     }
@@ -209,7 +208,7 @@ export default function CreateMessagePage() {
             Wallet Connection Required
           </h2>
           <p className="mb-6 text-gray-600">
-            Please connect your Talisman wallet to create time-locked messages.
+            Please connect your wallet (Talisman recommended, MetaMask supported) with an Ethereum account to create time-locked messages.
           </p>
           <a
             href="/"
@@ -319,7 +318,7 @@ export default function CreateMessagePage() {
                 if (recipientError) validateRecipientAddress(e.target.value);
               }}
               onBlur={() => validateRecipientAddress(recipientAddress)}
-              placeholder="Enter Polkadot address (e.g., 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY)"
+              placeholder="Enter Ethereum address (e.g., 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb2)"
               className={`w-full rounded-lg border px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-purple-500 ${
                 recipientError ? "border-red-500" : "border-gray-300"
               }`}
@@ -328,7 +327,7 @@ export default function CreateMessagePage() {
               <p className="mt-2 text-sm text-red-600">{recipientError}</p>
             )}
             <p className="mt-2 text-sm text-gray-500">
-              The Polkadot address of the person who will receive this message
+              The Ethereum address (0x...) of the person who will receive this message
             </p>
           </div>
 

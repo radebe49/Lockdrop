@@ -1,14 +1,24 @@
-import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
+/**
+ * Wallet account interface compatible with both Ethereum and Polkadot wallets
+ */
+export interface WalletAccount {
+  address: string;
+  meta: {
+    name?: string;
+    source: string;
+  };
+  type: 'ethereum' | 'polkadot';
+}
 
 export interface WalletState {
   isConnected: boolean;
   address: string | null;
-  accounts: InjectedAccountWithMeta[];
-  selectedAccount: InjectedAccountWithMeta | null;
+  accounts: WalletAccount[];
+  selectedAccount: WalletAccount | null;
 }
 
 export interface WalletContextValue extends WalletState {
-  connect: () => Promise<void>;
+  connect: (preferredAddress?: string) => Promise<void>;
   disconnect: () => void;
   selectAccount: (address: string) => void;
   signMessage: (message: string) => Promise<string>;

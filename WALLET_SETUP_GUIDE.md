@@ -9,9 +9,38 @@
 
 ---
 
-## Option 1: MetaMask (Recommended)
+## Option 1: Talisman (Recommended)
 
-MetaMask is the easiest option as all accounts are Ethereum by default.
+Talisman is the recommended wallet for Polkadot ecosystem projects. It supports both Polkadot and Ethereum accounts. **You must use an Ethereum account.**
+
+### Installation
+
+1. Visit https://www.talisman.xyz/download
+2. Install browser extension
+3. Create a new wallet or import existing
+4. Save your seed phrase securely
+
+### Create Ethereum Account
+
+1. Open Talisman extension
+2. Click "Add Account" or "+"
+3. **Select "Ethereum" account type** (not Polkadot!)
+4. Name your account (e.g., "FutureProof ETH")
+5. Verify address starts with **0x**
+
+### Get Tokens
+
+1. Copy your Ethereum address (starts with 0x)
+2. Visit https://faucet.polkadot.io/paseo
+3. Paste your address
+4. Request tokens
+5. Wait ~1 minute
+
+---
+
+## Option 2: MetaMask (Alternative)
+
+MetaMask is a popular alternative as all accounts are Ethereum by default.
 
 ### Installation
 
@@ -42,12 +71,6 @@ MetaMask is the easiest option as all accounts are Ethereum by default.
 5. Wait ~1 minute
 
 ---
-
-## Option 2: Talisman (Ethereum Account)
-
-Talisman supports both Polkadot and Ethereum accounts. **You must use an Ethereum account.**
-
-### Installation
 
 1. Visit https://talisman.xyz/
 2. Install browser extension
@@ -105,7 +128,7 @@ Talisman supports both Polkadot and Ethereum accounts. **You must use an Ethereu
 
 1. Open FutureProof app
 2. Click "Connect Wallet"
-3. Select your wallet (MetaMask or Talisman)
+3. Select your wallet (Talisman recommended, MetaMask supported)
 4. Approve connection
 5. You should see:
    - ✅ Wallet connected

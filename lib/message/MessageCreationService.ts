@@ -19,13 +19,13 @@ import { AsymmetricCrypto } from "@/lib/crypto/AsymmetricCrypto";
 import { ipfsService } from "@/lib/storage";
 import { ContractService } from "@/lib/contract/ContractService";
 import type { MediaFile } from "@/types/media";
-import type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
+import type { WalletAccount } from "@/types/wallet";
 
 export interface MessageCreationParams {
   mediaFile: MediaFile;
   recipientAddress: string;
   unlockTimestamp: number;
-  senderAccount: InjectedAccountWithMeta;
+  senderAccount: WalletAccount;
 }
 
 export interface MessageCreationProgress {
@@ -118,7 +118,17 @@ export class MessageCreationService {
       );
 
       // Convert encrypted key to blob for IPFS upload
-      const encryptedKeyBlob = new Blob([JSON.stringify(encryptedKey)], {
+      // Include metadata (mime type, file name, size) with the encrypted key
+      const keyWithMetadata = {
+        encryptedKey,
+        metadata: {
+          mimeType: params.mediaFile.type,
+          fileName: params.mediaFile.name,
+          fileSize: params.mediaFile.size,
+        },
+      };
+
+      const encryptedKeyBlob = new Blob([JSON.stringify(keyWithMetadata)], {
         type: "application/json",
       });
 
@@ -175,7 +185,7 @@ export class MessageCreationService {
           unlockTimestamp: params.unlockTimestamp,
           recipient: params.recipientAddress,
         },
-        params.senderAccount
+        params.senderAccount.address
       );
 
       // Stage 8: Complete

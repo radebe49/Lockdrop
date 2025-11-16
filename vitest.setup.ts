@@ -1,4 +1,9 @@
 import '@testing-library/jest-dom';
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// Load environment variables from .env.local
+config({ path: resolve(__dirname, '.env.local') });
 
 // Mock Web Crypto API for Node.js environment
 if (typeof global.crypto === 'undefined') {

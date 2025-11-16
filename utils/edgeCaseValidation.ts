@@ -19,16 +19,28 @@ if (typeof window !== 'undefined') {
 }
 
 /**
- * Validate Polkadot address format
+ * Validate Ethereum address format
+ * 
+ * Note: Previously validated Polkadot addresses, but the project now uses
+ * Ethereum addresses (0x...) for compatibility with ethers.js and pallet-revive
  */
-export function isValidPolkadotAddress(address: string): boolean {
+export function isValidEthereumAddress(address: string): boolean {
   if (!address || typeof address !== 'string') {
     return false;
   }
 
-  // Polkadot addresses are base58 encoded and typically 47-48 characters
-  const polkadotAddressRegex = /^[1-9A-HJ-NP-Za-km-z]{47,48}$/;
-  return polkadotAddressRegex.test(address.trim());
+  // Ethereum addresses: 0x followed by 40 hexadecimal characters
+  const ethereumAddressRegex = /^0x[a-fA-F0-9]{40}$/;
+  return ethereumAddressRegex.test(address.trim());
+}
+
+/**
+ * @deprecated Use isValidEthereumAddress instead
+ * Kept for backward compatibility
+ */
+export function isValidPolkadotAddress(address: string): boolean {
+  console.warn('isValidPolkadotAddress is deprecated. Use isValidEthereumAddress instead.');
+  return isValidEthereumAddress(address);
 }
 
 /**
@@ -249,12 +261,12 @@ export function validateMessageMetadata(metadata: {
     errors.push('Invalid unlock timestamp');
   }
 
-  if (!metadata.sender || !isValidPolkadotAddress(metadata.sender)) {
-    errors.push('Invalid sender address');
+  if (!metadata.sender || !isValidEthereumAddress(metadata.sender)) {
+    errors.push('Invalid sender address (must be Ethereum format: 0x...)');
   }
 
-  if (!metadata.recipient || !isValidPolkadotAddress(metadata.recipient)) {
-    errors.push('Invalid recipient address');
+  if (!metadata.recipient || !isValidEthereumAddress(metadata.recipient)) {
+    errors.push('Invalid recipient address (must be Ethereum format: 0x...)');
   }
 
   return {

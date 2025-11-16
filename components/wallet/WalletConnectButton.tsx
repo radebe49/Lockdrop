@@ -68,12 +68,12 @@ export function WalletConnectButton() {
 
   return (
     <div className="relative">
-      <Tooltip content="Connect your Talisman wallet to get started" position="bottom">
+      <Tooltip content="Connect your wallet (Talisman recommended, MetaMask supported)" position="bottom">
         <button
           onClick={handleConnect}
           disabled={isConnecting}
           className="px-3 md:px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors text-xs md:text-sm touch-target"
-          aria-label="Connect Talisman wallet"
+          aria-label="Connect wallet"
         >
           <span className="hidden md:inline">{isConnecting ? 'Connecting...' : 'Connect Wallet'}</span>
           <span className="md:hidden">{isConnecting ? '...' : 'Connect'}</span>
@@ -92,19 +92,32 @@ export function WalletConnectButton() {
           {showInstallInstructions && (
             <div className="p-4 bg-blue-50 border border-blue-300 rounded-lg shadow-lg">
               <h3 className="font-semibold text-blue-900 mb-2">
-                Install Talisman Wallet
+                Install a Wallet
               </h3>
               <p className="text-sm text-blue-800 mb-3">
-                Talisman is required to use FutureProof. Install the browser extension to continue.
+                FutureProof works best with Talisman wallet. MetaMask is also supported as an alternative.
               </p>
-              <a
-                href="https://www.talisman.xyz/download"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors"
-              >
-                Download Talisman →
-              </a>
+              <div className="space-y-2">
+                <a
+                  href="https://www.talisman.xyz/download"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors text-center font-medium"
+                >
+                  Download Talisman (Recommended) →
+                </a>
+                <a
+                  href="https://metamask.io/download/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm transition-colors text-center"
+                >
+                  Download MetaMask (Alternative) →
+                </a>
+              </div>
+              <p className="text-xs text-blue-700 mt-3">
+                ⚠️ Important: Use an Ethereum account (0x...), not a Polkadot account (5...)
+              </p>
             </div>
           )}
         </div>

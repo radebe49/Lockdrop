@@ -91,8 +91,11 @@ export default function UnlockPage() {
         },
       });
 
+      // Mark message as viewed in localStorage
+      const viewedKey = `message_viewed_${msg.id}`;
+      localStorage.setItem(viewedKey, 'true');
+
       // Update message status to Unlocked
-      // Note: No localStorage tracking needed - status is determined by timestamp
       setMessage((prev) =>
         prev ? { ...prev, status: "Unlocked" } : null
       );

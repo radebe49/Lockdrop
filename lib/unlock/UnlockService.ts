@@ -91,9 +91,15 @@ export class UnlockService {
         message.encryptedKeyCID
       );
 
-      // Parse the encrypted key data
+      // Parse the encrypted key data (may include metadata)
       const encryptedKeyText = await encryptedKeyBlob.text();
-      const encryptedKey: EncryptedKey = JSON.parse(encryptedKeyText);
+      const keyData = JSON.parse(encryptedKeyText);
+      
+      // Check if this is the new format with metadata or old format
+      const encryptedKey: EncryptedKey = keyData.encryptedKey || keyData;
+      const metadata = keyData.metadata || null;
+      
+      console.log("[UnlockService] Metadata from IPFS:", metadata);
 
       // Stage 3: Decrypt AES key using Talisman wallet
       onProgress?.("Decrypting encryption key", 40);
@@ -133,8 +139,73 @@ export class UnlockService {
         aesKey
       );
 
-      // Determine MIME type
-      const mimeType = message.metadata?.mimeType || "application/octet-stream";
+      // Determine MIME type - prefer metadata from IPFS, fallback to detection
+      let mimeType = metadata?.mimeType || message.metadata?.mimeType || "application/octet-stream";
+
+      console.log("[UnlockService] MIME type from metadata:", mimeType);
+
+      // If no metadata, detect from file magic numbers
+      if (mimeType === "application/octet-stream") {
+        const uint8Array = new Uint8Array(decryptedArrayBuffer);
+
+        // Check for common video/audio formats
+        if (uint8Array.length >= 12) {
+          // MP4 video: starts with ftyp
+          if (
+            uint8Array[4] === 0x66 &&
+            uint8Array[5] === 0x74 &&
+            uint8Array[6] === 0x79 &&
+            uint8Array[7] === 0x70
+          ) {
+            mimeType = "video/mp4";
+          }
+          // WebM: starts with 0x1A 0x45 0xDF 0xA3
+          else if (
+            uint8Array[0] === 0x1a &&
+            uint8Array[1] === 0x45 &&
+            uint8Array[2] === 0xdf &&
+            uint8Array[3] === 0xa3
+          ) {
+            mimeType = "video/webm";
+          }
+          // MP3: starts with ID3 or 0xFF 0xFB
+          else if (
+            (uint8Array[0] === 0x49 &&
+              uint8Array[1] === 0x44 &&
+              uint8Array[2] === 0x33) ||
+            (uint8Array[0] === 0xff && uint8Array[1] === 0xfb)
+          ) {
+            mimeType = "audio/mpeg";
+          }
+          // WAV: starts with RIFF....WAVE
+          else if (
+            uint8Array[0] === 0x52 &&
+            uint8Array[1] === 0x49 &&
+            uint8Array[2] === 0x46 &&
+            uint8Array[3] === 0x46 &&
+            uint8Array[8] === 0x57 &&
+            uint8Array[9] === 0x41 &&
+            uint8Array[10] === 0x56 &&
+            uint8Array[11] === 0x45
+          ) {
+            mimeType = "audio/wav";
+          }
+          // OGG: starts with OggS
+          else if (
+            uint8Array[0] === 0x4f &&
+            uint8Array[1] === 0x67 &&
+            uint8Array[2] === 0x67 &&
+            uint8Array[3] === 0x53
+          ) {
+            // Could be audio or video, default to audio
+            mimeType = "audio/ogg";
+          }
+        }
+        
+        console.log("[UnlockService] Detected MIME type from magic numbers:", mimeType);
+      }
+
+      console.log("[UnlockService] Final MIME type:", mimeType);
 
       // Create blob from decrypted data
       const mediaBlob = new Blob([decryptedArrayBuffer], { type: mimeType });

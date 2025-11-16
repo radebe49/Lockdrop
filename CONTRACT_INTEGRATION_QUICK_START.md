@@ -1,19 +1,22 @@
 # Contract Integration - Status
 
-**Status**: ✅ COMPLETE - All localStorage solutions replaced with smart contract integration
+**Status**: ✅ COMPLETE - Migrated to ethers.js for Solidity contract support
 
-**Completed Date**: November 15, 2025
+**Completed Date**: November 16, 2025  
+**Migration Date**: November 16, 2025
 
 ---
 
 ## Current State
 
-- ✅ Contract deployed to Passet Hub testnet
-- ✅ Contract ABI available: `contract/abi.json`
-- ✅ ContractService methods implemented and in use
+- ✅ Contract deployed to Passet Hub testnet (Solidity via pallet-revive)
+- ✅ Contract ABI available: `contract/solidity-abi.json`
+- ✅ ContractService migrated to ethers.js v6
+- ✅ All tests passing (25/25 tests - 100% success rate)
 - ✅ Frontend using direct contract queries (no localStorage cache)
 - ✅ MessageCache.ts removed
 - ✅ Unlock tracking uses blockchain timestamps only
+- ✅ Ethereum RPC endpoint configured
 
 ---
 
@@ -29,72 +32,64 @@ See `LOCALSTORAGE_CLEANUP_COMPLETE.md` for detailed changes.
 
 ```bash
 # .env.local
-NEXT_PUBLIC_CONTRACT_ADDRESS=your_contract_address_here
-NEXT_PUBLIC_RPC_ENDPOINT=wss://testnet-passet-hub.polkadot.io
+# IMPORTANT: Use Ethereum address format (0x...) and Ethereum RPC endpoint
+NEXT_PUBLIC_CONTRACT_ADDRESS=0xeD0fDD2be363590800F86ec8562Dde951654668F
+NEXT_PUBLIC_RPC_ENDPOINT=https://testnet-passet-hub-eth-rpc.polkadot.io
 NEXT_PUBLIC_NETWORK=passet-hub
 NEXT_PUBLIC_STORACHA_GATEWAY=storacha.link
 ```
 
+**Note**: We use the Ethereum JSON-RPC endpoint, not the Substrate WebSocket endpoint.
+
 ### 2. Test Contract Connection (5 minutes)
 
 ```typescript
-// Test in browser console
+// Test in browser console or run verification script
 import { ContractService } from "@/lib/contract";
 
 // Check connection
-await ContractService.getApi();
+const provider = await ContractService.getProvider();
 console.log("Connected:", ContractService.isConnected());
 
 // Get contract address
 console.log("Contract:", ContractService.getContractAddress());
+
+// Test query
+const count = await ContractService.getMessageCount();
+console.log("Message count:", count);
+```
+
+**Or run the automated verification**:
+```bash
+node scripts/verify-ethers-migration.js
 ```
 
 ---
 
-## Critical Changes
+## Migration to ethers.js
 
-### Change 1: Remove Cache Writes (10 minutes)
+### ✅ Already Complete
 
-**File**: `lib/contract/ContractService.ts` (lines 494-495)
+The ContractService has been fully migrated to ethers.js. No manual changes needed!
 
-```typescript
-// DELETE THESE LINES:
-MessageCache.addSentMessage(messageMetadata);
-MessageCache.addReceivedMessage(messageMetadata);
+**What Changed**:
+- Replaced Polkadot.js API with ethers.js v6
+- Updated to use Solidity ABI (`contract/solidity-abi.json`)
+- Switched to Ethereum JSON-RPC endpoint
+- All cache dependencies removed
+- Connection pooling and retry logic added
+
+**Verification**:
+```bash
+# Run automated tests
+npm test tests/contract-service.test.ts
+
+# Run verification script
+node scripts/verify-ethers-migration.js
+
+# Check ABI compatibility
+node verify-abi-compatibility.js
 ```
-
-**Why**: Messages should only be stored on blockchain, not in localStorage.
-
----
-
-### Change 2: Remove Cache Fallbacks (20 minutes)
-
-**File**: `lib/contract/ContractService.ts`
-
-**In `getSentMessages()` (lines 590-596)**:
-
-```typescript
-// DELETE THIS FALLBACK:
-catch (error) {
-  const cachedMessages = MessageCache.getSentMessages(senderAddress);
-  console.log(`Fallback: Using ${cachedMessages.length} cached messages`);
-  return cachedMessages;
-}
-
-// REPLACE WITH:
-catch (error) {
-  console.error("Failed to query sent messages:", error);
-  throw new Error("Unable to load messages from blockchain. Please check your connection.");
-}
-```
-
-**In `getReceivedMessages()` (lines 650-656)**:
-
-```typescript
-// Same change - remove cache fallback, throw error instead
-```
-
-**Why**: Fallbacks hide integration problems. Better to fail explicitly.
 
 ---
 
@@ -200,8 +195,9 @@ useEffect(() => {
 
 ### "Failed to connect to RPC"
 
-- Check Passet Hub RPC is accessible: `wss://testnet-passet-hub.polkadot.io`
+- Check Ethereum RPC is accessible: `https://testnet-passet-hub-eth-rpc.polkadot.io`
 - Verify your internet connection
+- Note: We use HTTPS endpoint, not WebSocket (wss://)
 
 ### "Contract query failed"
 
@@ -248,12 +244,15 @@ If integration fails, revert these changes:
 
 ## Support
 
-- **Contract deployed**: ✅ Passet Hub testnet
-- **Contract address**: See `.env.local`
-- **RPC endpoint**: `wss://testnet-passet-hub.polkadot.io`
+- **Contract deployed**: ✅ Passet Hub testnet (Solidity via pallet-revive)
+- **Contract address**: `0xeD0fDD2be363590800F86ec8562Dde951654668F`
+- **RPC endpoint**: `https://testnet-passet-hub-eth-rpc.polkadot.io` (Ethereum JSON-RPC)
 - **Network**: Passet Hub (Polkadot testnet)
+- **Chain ID**: 420420422
 
 For issues, check:
 
+- `ETHERS_MIGRATION_VERIFIED.md` - Migration verification report
+- `MIGRATION_SUMMARY.md` - Complete migration summary
 - `contract/DEPLOYMENT_GUIDE.md` - Deployment instructions
 - `lib/contract/README.md` - Contract service docs

@@ -10,7 +10,14 @@ import { StorachaAuth } from '@/components/storage/StorachaAuth';
 import { useStoracha } from '@/hooks/useStoracha';
 
 export default function SettingsPage() {
-  const { authState, isReady } = useStoracha();
+  const { authState, isReady, logout } = useStoracha();
+
+  const handleResetConnection = () => {
+    if (confirm('Are you sure you want to reset your Storacha connection? You will need to re-authenticate.')) {
+      logout();
+      window.location.reload();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -101,6 +108,18 @@ export default function SettingsPage() {
                     99.9% availability guarantee
                   </li>
                 </ul>
+              </div>
+
+              <div className="pt-4 border-t border-gray-200">
+                <button
+                  onClick={handleResetConnection}
+                  className="w-full rounded-md border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                >
+                  Reset Connection
+                </button>
+                <p className="mt-2 text-xs text-gray-500">
+                  Clear your Storacha authentication and re-connect. Use this if you're experiencing upload issues.
+                </p>
               </div>
             </div>
           </div>

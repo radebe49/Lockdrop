@@ -39,38 +39,63 @@ export class AsymmetricCrypto {
   }
 
   /**
-   * Retrieve public key from Talisman wallet for a given address
+   * Retrieve public key for encryption from an Ethereum address
    * Requirements: 6.1
    *
-   * Note: This method can retrieve public keys for ANY valid Polkadot address,
-   * not just accounts in the connected wallet. The address is decoded to extract
-   * the public key directly.
+   * Note: For Ethereum addresses (0x...), we derive a deterministic public key
+   * from the address itself for encryption purposes. This is a simplified approach
+   * for the MVP that allows encryption without wallet interaction.
+   * 
+   * In production, you might want to:
+   * 1. Store public keys on-chain or in a registry
+   * 2. Use a key exchange protocol
+   * 3. Have users share public keys out-of-band
    */
   static async getPublicKeyFromTalisman(address: string): Promise<Uint8Array> {
     try {
-      // For Polkadot addresses, we can decode the address to get the public key
-      // This works for any valid SS58 address, not just accounts in the wallet
-      let decodeAddress = decodeAddressCache;
-      
-      if (!decodeAddress) {
-        const utilCrypto = await import("@polkadot/util-crypto");
-        decodeAddress = utilCrypto.decodeAddress;
-        decodeAddressCache = decodeAddress;
-      }
-
-      try {
-        const publicKey = decodeAddress(address);
-
-        // Validate the decoded public key
-        if (publicKey.length !== 32) {
-          throw new Error("Invalid public key length after decoding");
+      // Check if it's an Ethereum address (0x...)
+      if (address.startsWith('0x')) {
+        // For Ethereum addresses, derive a deterministic 32-byte key from the address
+        // This allows encryption without needing the actual public key from the wallet
+        
+        // Remove 0x prefix and convert to bytes
+        const addressBytes = hexToU8a(address);
+        
+        // Pad or hash to get exactly 32 bytes for NaCl encryption
+        if (addressBytes.length === 20) {
+          // Ethereum addresses are 20 bytes, we need 32 bytes for NaCl
+          // Use SHA-256 to derive a 32-byte key deterministically
+          // Convert to standard Uint8Array to avoid type issues
+          const addressArray = new Uint8Array(addressBytes);
+          const hashBuffer = await crypto.subtle.digest('SHA-256', addressArray);
+          return new Uint8Array(hashBuffer);
+        } else {
+          throw new Error(`Invalid Ethereum address length: expected 20 bytes, got ${addressBytes.length}`);
+        }
+      } else {
+        // Legacy support for Polkadot addresses (if any old data exists)
+        let decodeAddress = decodeAddressCache;
+        
+        if (!decodeAddress) {
+          const utilCrypto = await import("@polkadot/util-crypto");
+          decodeAddress = utilCrypto.decodeAddress;
+          decodeAddressCache = decodeAddress;
         }
 
-        return publicKey;
-      } catch (decodeError) {
-        throw new Error(
-          `Invalid Polkadot address format: ${decodeError instanceof Error ? decodeError.message : "Unknown error"}`
-        );
+        try {
+          const publicKey = decodeAddress(address);
+
+          // Validate the decoded public key
+          if (publicKey.length !== 32) {
+            throw new Error("Invalid public key length after decoding");
+          }
+
+          return publicKey;
+        } catch (decodeError) {
+          throw new Error(
+            `Invalid address format: ${decodeError instanceof Error ? decodeError.message : "Unknown error"}`
+          );
+        }
       }
     } catch (error) {
       throw new Error(

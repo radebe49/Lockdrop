@@ -1,0 +1,283 @@
+[
+  {
+    "type": "function",
+    "name": "getMessage",
+    "inputs": [
+      {
+        "name": "messageId",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct FutureProof.MessageMetadata",
+        "components": [
+          {
+            "name": "encryptedKeyCid",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "encryptedMessageCid",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "messageHash",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "unlockTimestamp",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "sender",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "recipient",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "createdAt",
+            "type": "uint64",
+            "internalType": "uint64"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getMessageCount",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getReceivedMessages",
+    "inputs": [
+      {
+        "name": "recipient",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple[]",
+        "internalType": "struct FutureProof.MessageMetadata[]",
+        "components": [
+          {
+            "name": "encryptedKeyCid",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "encryptedMessageCid",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "messageHash",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "unlockTimestamp",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "sender",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "recipient",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "createdAt",
+            "type": "uint64",
+            "internalType": "uint64"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getSentMessages",
+    "inputs": [
+      {
+        "name": "sender",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple[]",
+        "internalType": "struct FutureProof.MessageMetadata[]",
+        "components": [
+          {
+            "name": "encryptedKeyCid",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "encryptedMessageCid",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "messageHash",
+            "type": "string",
+            "internalType": "string"
+          },
+          {
+            "name": "unlockTimestamp",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "sender",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "recipient",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "createdAt",
+            "type": "uint64",
+            "internalType": "uint64"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "storeMessage",
+    "inputs": [
+      {
+        "name": "encryptedKeyCid",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "encryptedMessageCid",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "messageHash",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "unlockTimestamp",
+        "type": "uint64",
+        "internalType": "uint64"
+      },
+      {
+        "name": "recipient",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "messageId",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "MessageStored",
+    "inputs": [
+      {
+        "name": "messageId",
+        "type": "uint64",
+        "indexed": true,
+        "internalType": "uint64"
+      },
+      {
+        "name": "sender",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "recipient",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "unlockTimestamp",
+        "type": "uint64",
+        "indexed": false,
+        "internalType": "uint64"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "InvalidKeyCID",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidMessageCID",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidMessageHash",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidTimestamp",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "MessageNotFound",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SenderIsRecipient",
+    "inputs": []
+  }
+]

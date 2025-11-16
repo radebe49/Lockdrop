@@ -30,10 +30,14 @@ export function MediaPlayer({
 
   const mediaRef = useRef<HTMLVideoElement | HTMLAudioElement>(null);
   const objectUrlRef = useRef<string>(unlockResult.objectUrl);
+  const shouldCleanup = useRef<boolean>(true);
 
   // Determine if media is audio or video
   const isVideo = unlockResult.mimeType.startsWith("video/");
   const isAudio = unlockResult.mimeType.startsWith("audio/");
+  
+  console.log("[MediaPlayer] MIME type:", unlockResult.mimeType);
+  console.log("[MediaPlayer] isVideo:", isVideo, "isAudio:", isAudio);
 
   // Update playback state
   useEffect(() => {
@@ -78,10 +82,14 @@ export function MediaPlayer({
 
   // Cleanup on unmount - revoke object URL and clear decrypted data
   useEffect(() => {
+    // Mark that we should NOT cleanup on hot reload
+    shouldCleanup.current = false;
+    
     return () => {
-      if (objectUrlRef.current) {
+      // Only cleanup if this is a real unmount (not hot reload)
+      if (shouldCleanup.current && objectUrlRef.current) {
         URL.revokeObjectURL(objectUrlRef.current);
-        console.log("Object URL revoked and decrypted data cleared from memory");
+        console.log("[MediaPlayer] Object URL revoked and decrypted data cleared from memory");
       }
     };
   }, []);
@@ -130,6 +138,9 @@ export function MediaPlayer({
   };
 
   const handleClose = () => {
+    // Mark that cleanup should happen
+    shouldCleanup.current = true;
+    
     // Pause playback before closing
     const media = mediaRef.current;
     if (media && isPlaying) {
@@ -139,6 +150,7 @@ export function MediaPlayer({
     // Revoke object URL
     if (objectUrlRef.current) {
       URL.revokeObjectURL(objectUrlRef.current);
+      console.log("[MediaPlayer] Object URL revoked on close");
       objectUrlRef.current = "";
     }
 
@@ -224,8 +236,15 @@ export function MediaPlayer({
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-64 bg-gray-800">
-                <p className="text-gray-400">Unsupported media type</p>
+              <div className="flex flex-col items-center justify-center h-64 bg-gray-800 p-6">
+                <p className="text-gray-400 mb-4">Unsupported media type: {unlockResult.mimeType}</p>
+                <p className="text-gray-500 text-sm mb-4">Trying generic video player...</p>
+                <video
+                  ref={mediaRef as React.RefObject<HTMLVideoElement>}
+                  src={unlockResult.objectUrl}
+                  className="w-full max-h-[50vh] object-contain"
+                  controls={false}
+                />
               </div>
             )}
           </div>

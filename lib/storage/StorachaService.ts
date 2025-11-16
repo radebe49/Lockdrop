@@ -86,6 +86,21 @@ export class StorachaService {
 
     try {
       this.client = await create();
+
+      // If we have a saved space DID, try to restore it as current space
+      if (this.authState.spaceDid) {
+        try {
+          await this.client.setCurrentSpace(
+            this.authState.spaceDid as `did:${string}:${string}`
+          );
+        } catch (error) {
+          console.warn("Failed to restore space from saved state:", error);
+          // Clear invalid space DID
+          this.authState.spaceDid = undefined;
+          this.saveAuthState();
+        }
+      }
+
       return this.client;
     } catch (error) {
       throw new Error(
@@ -101,11 +116,14 @@ export class StorachaService {
       // Type assertion for email format - Storacha expects email format
       const emailAddress = email as `${string}@${string}`;
 
+      console.log("Storacha: Sending login email to", emailAddress);
       await withTimeout(
         client.login(emailAddress),
         TIMEOUTS.IPFS_UPLOAD_SMALL,
         "Email verification"
       );
+
+      console.log("Storacha: Login successful");
 
       // Note: waitForPaymentPlan may not be available in all versions
       // Check if method exists before calling
@@ -113,6 +131,7 @@ export class StorachaService {
         "waitForPaymentPlan" in client &&
         typeof client.waitForPaymentPlan === "function"
       ) {
+        console.log("Storacha: Waiting for payment plan...");
         await (client as any).waitForPaymentPlan();
       }
 
@@ -121,7 +140,9 @@ export class StorachaService {
         email,
       };
       this.saveAuthState();
+      console.log("Storacha: Authentication state saved");
     } catch (error) {
+      console.error("Storacha login error:", error);
       throw new Error(
         `Authentication failed: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -136,20 +157,35 @@ export class StorachaService {
     }
 
     try {
-      // Create space with optional name and account for recovery
-      const spaceOptions = name
-        ? { name, account: client.agent.did() }
-        : { account: client.agent.did() };
+      const spaceName = name || "futureproof-space";
+      console.log("Storacha: Creating space:", spaceName);
 
-      const space = await client.createSpace(spaceOptions as any);
+      // Get the accounts to use for space creation
+      const accounts = client.accounts();
+      const accountDIDs = Object.keys(accounts);
 
+      if (accountDIDs.length === 0) {
+        throw new Error("No accounts found. Please login first.");
+      }
+
+      // Use the first account
+      const account = accounts[accountDIDs[0]];
+      console.log("Storacha: Using account:", accountDIDs[0]);
+
+      // Create space with name and account for recovery
+      const space = await client.createSpace(spaceName, { account });
+      console.log("Storacha: Space created with DID:", space.did());
+
+      // Set as current space
       await client.setCurrentSpace(space.did());
+      console.log("Storacha: Space set as current and ready for uploads");
 
       this.authState.spaceDid = space.did();
       this.saveAuthState();
 
       return space.did();
     } catch (error) {
+      console.error("Storacha createSpace error:", error);
       throw new Error(
         `Failed to create space: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -277,8 +313,22 @@ export class StorachaService {
     const client = await this.getClient();
     const { onProgress } = options;
 
+    // Verify we have a current space set
+    const currentSpace = client.currentSpace();
+    console.log("Storacha: Current space:", currentSpace?.did());
+
+    if (!currentSpace) {
+      throw new Error(
+        "No space is currently set. Please create and set a space first."
+      );
+    }
+
     const file = new File([blob], filename, { type: blob.type });
     const totalBytes = blob.size;
+
+    console.log(
+      `Storacha: Starting upload of ${filename} (${(blob.size / 1024 / 1024).toFixed(2)} MB)`
+    );
 
     const timeout =
       blob.size > 10_000_000
@@ -299,6 +349,8 @@ export class StorachaService {
       timeout,
       `Storacha upload (${(blob.size / 1024 / 1024).toFixed(2)} MB)`
     );
+
+    console.log("Storacha: Upload complete, CID:", cid.toString());
 
     if (onProgress) {
       onProgress(100);

@@ -131,10 +131,13 @@ export default function Home() {
         ) : (
           <div className="rounded-xl bg-white p-8 text-center shadow-lg dark:bg-gray-800">
             <p className="mb-4 text-gray-600 dark:text-gray-400">
-              Connect your Talisman wallet to get started
+              Connect your wallet to get started
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mb-2">
               Use the &quot;Connect Wallet&quot; button in the navigation above
+            </p>
+            <p className="text-xs text-gray-400">
+              ⚠️ Requires Talisman (recommended) or MetaMask with an Ethereum account (0x...)
             </p>
           </div>
         )}

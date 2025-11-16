@@ -101,6 +101,7 @@ export function MediaPreview({ mediaFile, onClose }: MediaPreviewProps) {
         </div>
         {onClose && (
           <button
+            type="button"
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
             aria-label="Close preview"
@@ -178,6 +179,7 @@ export function MediaPreview({ mediaFile, onClose }: MediaPreviewProps) {
           <div className="flex items-center space-x-4">
             {/* Play/Pause Button */}
             <button
+              type="button"
               onClick={handlePlayPause}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700"
               aria-label={isPlaying ? 'Pause' : 'Play'}

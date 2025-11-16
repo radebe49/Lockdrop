@@ -62,10 +62,11 @@ FutureProof is a privacy-first application that allows you to send messages to t
 - **Framework**: Next.js 14+ with App Router
 - **Language**: TypeScript (strict mode)
 - **Styling**: Tailwind CSS
-- **Blockchain**: Polkadot.js API for Passet Hub testnet (Polkadot ecosystem)
+- **Blockchain**: ethers.js v6 for Ethereum-compatible RPC on Passet Hub testnet
 - **Smart Contracts**: Solidity 0.8.20 compiled to PolkaVM via pallet-revive
+- **RPC Endpoint**: Ethereum JSON-RPC (https://testnet-passet-hub-eth-rpc.polkadot.io)
 - **Storage**: Storacha Network (formerly Web3.Storage) for decentralized IPFS storage
-- **Wallet**: Talisman or MetaMask browser extension
+- **Wallet**: Talisman or MetaMask browser extension (Ethereum-compatible)
 - **Cryptography**: Web Crypto API (AES-256-GCM, RSA-OAEP)
 - **Media**: MediaRecorder API for recording
 
@@ -76,7 +77,7 @@ FutureProof is a privacy-first application that allows you to send messages to t
 Before you begin, ensure you have the following installed and configured:
 
 - **Node.js 18+** and npm
-- **MetaMask or Talisman wallet** with **Ethereum account** ([Setup Guide](WALLET_SETUP_GUIDE.md))
+- **Talisman wallet (recommended)** or **MetaMask** with **Ethereum account** ([Setup Guide](WALLET_SETUP_GUIDE.md))
   - ⚠️ **Important:** Must use Ethereum address (0x...), not Substrate address (5...)
 - **Storacha Network account** (email-based authentication - [Learn more](https://storacha.network/))
 - **Passet Hub testnet tokens (PAS)** from faucet: https://faucet.polkadot.io/paseo
@@ -154,8 +155,9 @@ To interact with Passet Hub testnet, you'll need PAS tokens:
 
 **Steps:**
 
-1. Install and open MetaMask or Talisman wallet
+1. Install and open Talisman (recommended) or MetaMask wallet
 2. **Important:** Create an **Ethereum account** (0x... format)
+   - Talisman: Create a new Ethereum account (not Polkadot)
    - MetaMask: All accounts are Ethereum by default
    - Talisman: Select "Ethereum" when creating account (NOT "Polkadot")
 3. Copy your Ethereum address (starts with 0x)

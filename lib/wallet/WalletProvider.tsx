@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * WalletProvider - Ethereum wallet connection using EIP-1193 (window.ethereum)
+ *
+ * Supports MetaMask and Talisman Ethereum accounts
+ * Returns Ethereum addresses (0x...) compatible with ethers.js and Passet Hub
+ */
+
 import React, {
   createContext,
   useContext,
@@ -20,43 +27,22 @@ interface WalletProviderProps {
   children: React.ReactNode;
 }
 
-// Pre-load extension modules to avoid dynamic imports during connection
-type ExtensionModules = {
-  web3Enable?: typeof import("@polkadot/extension-dapp").web3Enable;
-  web3Accounts?: typeof import("@polkadot/extension-dapp").web3Accounts;
-  web3FromAddress?: typeof import("@polkadot/extension-dapp").web3FromAddress;
-  stringToHex?: typeof import("@polkadot/util").stringToHex;
-};
-
-// Use window object to survive Fast Refresh module reloads
-declare global {
-  interface Window {
-    __futureproof_extension_cache?: ExtensionModules;
-  }
+// EIP-1193 Provider interface
+interface EthereumProvider {
+  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
+  on?: (event: string, handler: (...args: unknown[]) => void) => void;
+  removeListener?: (
+    event: string,
+    handler: (...args: unknown[]) => void
+  ) => void;
+  isMetaMask?: boolean;
+  isTalisman?: boolean;
 }
 
-function getExtensionCache(): ExtensionModules {
-  if (typeof window === 'undefined') return {};
-  
-  if (!window.__futureproof_extension_cache) {
-    window.__futureproof_extension_cache = {};
-    
-    // Preload modules asynchronously
-    Promise.all([import("@polkadot/extension-dapp"), import("@polkadot/util")])
-      .then(([dapp, util]) => {
-        if (window.__futureproof_extension_cache) {
-          window.__futureproof_extension_cache.web3Enable = dapp.web3Enable;
-          window.__futureproof_extension_cache.web3Accounts = dapp.web3Accounts;
-          window.__futureproof_extension_cache.web3FromAddress = dapp.web3FromAddress;
-          window.__futureproof_extension_cache.stringToHex = util.stringToHex;
-        }
-      })
-      .catch((err) => {
-        console.warn("Failed to preload extension modules:", err);
-      });
+declare global {
+  interface Window {
+    ethereum?: EthereumProvider;
   }
-  
-  return window.__futureproof_extension_cache;
 }
 
 export function WalletProvider({ children }: WalletProviderProps) {
@@ -73,251 +59,178 @@ export function WalletProvider({ children }: WalletProviderProps) {
   );
 
   // Clear any persisted connection data on mount for security
-  // Users must connect wallet each session
   useEffect(() => {
-    // Only run on initial mount to prevent Fast Refresh issues
     if (!isInitialMount.current) return;
     isInitialMount.current = false;
-
-    // Always clear persisted connection for security
-    // Wallet must be reconnected each session to ensure it's unlocked
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  // Validate wallet is still accessible when window gains focus
+  // Listen for account changes
   useEffect(() => {
-    if (!state.isConnected || !state.selectedAccount) return;
+    if (typeof window === "undefined" || !window.ethereum) return;
 
-    const handleFocus = async () => {
-      try {
-        // Use cached module or dynamic import
-        let web3Accounts = getExtensionCache().web3Accounts;
-        if (!web3Accounts) {
-          const dapp = await import("@polkadot/extension-dapp");
-          web3Accounts = dapp.web3Accounts;
-        }
+    const handleAccountsChanged = (accounts: unknown) => {
+      const accountsArray = accounts as string[];
+      console.log("[WalletProvider] Accounts changed:", accountsArray);
 
-        const accounts = await web3Accounts();
+      if (accountsArray.length === 0) {
+        // User disconnected wallet
+        disconnect();
+      } else if (state.isConnected && accountsArray[0] !== state.address) {
+        // Account switched
+        const newAddress = accountsArray[0];
+        setState((prev) => ({
+          ...prev,
+          address: newAddress,
+          selectedAccount: {
+            address: newAddress,
+            meta: {
+              name: "Ethereum Account",
+              source: window.ethereum?.isMetaMask ? "MetaMask" : "Talisman",
+            },
+            type: "ethereum",
+          },
+        }));
+      }
+    };
 
-        // Check if wallet is locked (no accounts returned)
-        if (accounts.length === 0) {
-          console.warn("Wallet appears to be locked - disconnecting");
-          setState({
-            isConnected: false,
-            address: null,
-            accounts: [],
-            selectedAccount: null,
-          });
-          localStorage.removeItem(STORAGE_KEY);
-          return;
-        }
+    const handleChainChanged = () => {
+      console.log("[WalletProvider] Chain changed, reloading...");
+      window.location.reload();
+    };
 
-        // Check if our account still exists
-        const accountExists = accounts.some(
-          (acc) => acc.address === state.selectedAccount!.address
+    if (window.ethereum.on) {
+      window.ethereum.on("accountsChanged", handleAccountsChanged);
+      window.ethereum.on("chainChanged", handleChainChanged);
+    }
+
+    return () => {
+      if (window.ethereum?.removeListener) {
+        window.ethereum.removeListener(
+          "accountsChanged",
+          handleAccountsChanged
         );
-        if (!accountExists) {
-          console.warn("Connected account no longer available - disconnecting");
-          setState({
-            isConnected: false,
-            address: null,
-            accounts: [],
-            selectedAccount: null,
-          });
-          localStorage.removeItem(STORAGE_KEY);
-        }
-      } catch (error) {
-        console.warn("Wallet validation failed - disconnecting:", error);
-        setState({
-          isConnected: false,
-          address: null,
-          accounts: [],
-          selectedAccount: null,
-        });
-        localStorage.removeItem(STORAGE_KEY);
+        window.ethereum.removeListener("chainChanged", handleChainChanged);
       }
     };
-
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [state.isConnected, state.selectedAccount]);
-
-  // Periodic health check to detect locked wallet
-  useEffect(() => {
-    if (!state.isConnected || !state.selectedAccount) return;
-
-    const checkWalletHealth = async () => {
-      try {
-        let web3Accounts = getExtensionCache().web3Accounts;
-        if (!web3Accounts) {
-          const dapp = await import("@polkadot/extension-dapp");
-          web3Accounts = dapp.web3Accounts;
-        }
-
-        const accounts = await web3Accounts();
-
-        if (accounts.length === 0) {
-          console.warn("Wallet health check failed - wallet appears locked");
-          setIsHealthy(false);
-          setState({
-            isConnected: false,
-            address: null,
-            accounts: [],
-            selectedAccount: null,
-          });
-          localStorage.removeItem(STORAGE_KEY);
-        } else {
-          setIsHealthy(true);
-        }
-      } catch (error) {
-        console.warn("Wallet health check error:", error);
-        setIsHealthy(false);
-      }
-    };
-
-    // Check immediately
-    checkWalletHealth();
-
-    // Then check every 30 seconds
-    const interval = setInterval(checkWalletHealth, 30000);
-    return () => clearInterval(interval);
-  }, [state.isConnected, state.selectedAccount]);
+  }, [state.isConnected, state.address]);
 
   const connect = useCallback(async (preferredAddress?: string) => {
-    const MAX_RETRIES = 2; // 2 retries = 3 total attempts
-    let lastError: Error | null = null;
-
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-      try {
-        // Add exponential backoff delay for retries
-        if (attempt > 0) {
-          const delay = 1000 * Math.pow(2, attempt - 1); // 1s, 2s
-          console.log(
-            `Retrying wallet connection (attempt ${attempt + 1}/${MAX_RETRIES + 1}) after ${delay}ms...`
-          );
-          await new Promise((resolve) => setTimeout(resolve, delay));
-        }
-
-        // Use cached modules or dynamic import as fallback
-        let web3Enable = getExtensionCache().web3Enable;
-        let web3Accounts = getExtensionCache().web3Accounts;
-
-        if (!web3Enable || !web3Accounts) {
-          const dapp = await import("@polkadot/extension-dapp");
-          web3Enable = dapp.web3Enable;
-          web3Accounts = dapp.web3Accounts;
-          getExtensionCache().web3Enable = web3Enable;
-          getExtensionCache().web3Accounts = web3Accounts;
-        }
-
-        // Check if extension is available first (without timeout for detection)
-        if (typeof window !== "undefined" && !(window as Window & { injectedWeb3?: unknown }).injectedWeb3) {
-          // Wait a bit for extension to inject
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        }
-
-        // Enable the extension with timeout
-        console.log("Attempting to enable Polkadot extensions...");
-        const extensions = await withTimeout(
-          web3Enable(APP_NAME),
-          TIMEOUTS.WALLET_ENABLE,
-          "Enable Talisman extension"
+    try {
+      // Check if ethereum provider exists
+      if (typeof window === "undefined" || !window.ethereum) {
+        throw new Error(
+          "No Ethereum wallet detected. Please install Talisman wallet extension (recommended) or MetaMask as an alternative."
         );
-
-        console.log(
-          `Found ${extensions.length} extension(s):`,
-          extensions.map((e) => e.name)
-        );
-
-        if (extensions.length === 0) {
-          // Check if injectedWeb3 exists to give better error message
-          const hasInjected =
-            typeof window !== "undefined" && (window as Window & { injectedWeb3?: unknown }).injectedWeb3;
-          const errorMsg = hasInjected
-            ? "Polkadot extension found but not authorized. Please authorize FutureProof in your Talisman settings."
-            : "No Polkadot extension detected. Please install Talisman wallet extension and refresh the page.";
-          throw new Error(errorMsg);
-        }
-
-        // Get all accounts with timeout
-        console.log("Fetching accounts from wallet...");
-        const allAccounts = await withTimeout(
-          web3Accounts(),
-          TIMEOUTS.WALLET_ACCOUNTS,
-          "Fetch wallet accounts"
-        );
-
-        console.log(`Found ${allAccounts.length} account(s)`);
-
-        if (allAccounts.length === 0) {
-          throw new Error(
-            "No accounts found in Talisman wallet. Please create an account first."
-          );
-        }
-
-        // Select account (preferred or first)
-        let selectedAccount = allAccounts[0];
-        if (preferredAddress) {
-          const found = allAccounts.find(
-            (acc) => acc.address === preferredAddress
-          );
-          if (found) {
-            selectedAccount = found;
-          }
-        }
-
-        // Update state
-        console.log(
-          "Successfully connected to wallet:",
-          selectedAccount.address
-        );
-        setState({
-          isConnected: true,
-          address: selectedAccount.address,
-          accounts: allAccounts,
-          selectedAccount,
-        });
-
-        // Note: We no longer persist connection to localStorage for security
-        // Users must reconnect each session to ensure wallet is unlocked
-
-        // Success - exit retry loop
-        return;
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error("Unknown error");
-
-        // Don't retry on user-facing errors (extension not found, no accounts)
-        const errorMsg = lastError.message.toLowerCase();
-        if (
-          errorMsg.includes("not found") ||
-          errorMsg.includes("not authorized") ||
-          errorMsg.includes("no accounts")
-        ) {
-          throw lastError; // Fail fast on non-retryable errors
-        }
-
-        // Log retry-worthy errors
-        if (attempt < MAX_RETRIES) {
-          console.warn(
-            `Wallet connection attempt ${attempt + 1} failed:`,
-            lastError.message
-          );
-        }
       }
-    }
 
-    // All retries exhausted
-    if (lastError instanceof TimeoutError) {
-      throw new Error(
-        "Wallet connection timed out after multiple attempts. Please ensure Talisman extension is unlocked and responsive."
+      // Detect wallet type - prioritize Talisman
+      const isTalisman = window.ethereum.isTalisman;
+      const isMetaMask = window.ethereum.isMetaMask && !isTalisman;
+
+      let walletName = "Ethereum Wallet";
+      if (isTalisman) {
+        walletName = "Talisman";
+        console.log("[WalletProvider] Talisman wallet detected (recommended)");
+      } else if (isMetaMask) {
+        walletName = "MetaMask";
+        console.log("[WalletProvider] MetaMask wallet detected (alternative)");
+      } else {
+        console.log("[WalletProvider] Generic Ethereum wallet detected");
+      }
+
+      console.log("[WalletProvider] Requesting Ethereum accounts...");
+
+      // Request accounts (triggers wallet popup)
+      const accounts = await withTimeout(
+        window.ethereum.request({ method: "eth_requestAccounts" }) as Promise<
+          string[]
+        >,
+        TIMEOUTS.WALLET_ENABLE,
+        "Request Ethereum accounts"
       );
+
+      console.log(
+        `[WalletProvider] Found ${accounts.length} Ethereum account(s)`
+      );
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error(
+          "No Ethereum accounts found. Please create an Ethereum account in your wallet."
+        );
+      }
+
+      // Select account
+      const selectedAddress =
+        preferredAddress && accounts.includes(preferredAddress)
+          ? preferredAddress
+          : accounts[0];
+
+      const selectedAccount = {
+        address: selectedAddress,
+        meta: {
+          name: `${walletName} Account`,
+          source: walletName,
+        },
+        type: "ethereum" as const,
+      };
+
+      // Convert all accounts to the format expected by the app
+      const allAccounts = accounts.map((addr, index) => ({
+        address: addr,
+        meta: {
+          name: `${walletName} Account ${index + 1}`,
+          source: walletName,
+        },
+        type: "ethereum" as const,
+      }));
+
+      console.log("[WalletProvider] Successfully connected:", selectedAddress);
+
+      setState({
+        isConnected: true,
+        address: selectedAddress,
+        accounts: allAccounts,
+        selectedAccount,
+      });
+
+      setIsHealthy(true);
+    } catch (error) {
+      console.error("[WalletProvider] Connection error:", error);
+
+      if (error instanceof TimeoutError) {
+        throw new Error(
+          "Wallet connection timed out. Please ensure your wallet extension is unlocked and responsive."
+        );
+      }
+
+      if (error instanceof Error) {
+        // User rejected the request
+        if (
+          error.message.includes("User rejected") ||
+          error.message.includes("User denied")
+        ) {
+          throw new Error(
+            "Connection rejected. Please approve the connection request in your wallet."
+          );
+        }
+        throw error;
+      }
+
+      // Handle RPC error codes
+      const rpcError = error as any;
+      if (rpcError?.code === -32002) {
+        throw new Error(
+          "A wallet connection request is already pending. Please check for a hidden popup window, or refresh the page and try again."
+        );
+      }
+
+      throw new Error("Failed to connect wallet. Please try again.");
     }
-    throw new Error(
-      `Wallet connection failed after ${MAX_RETRIES + 1} attempts: ${lastError?.message}`
-    );
   }, []);
 
   const disconnect = useCallback(() => {
+    console.log("[WalletProvider] Disconnecting wallet");
     setState({
       isConnected: false,
       address: null,
@@ -336,8 +249,6 @@ export function WalletProvider({ children }: WalletProviderProps) {
           address: account.address,
           selectedAccount: account,
         }));
-
-        // Note: We no longer persist connection to localStorage for security
       }
     },
     [state.accounts]
@@ -349,121 +260,70 @@ export function WalletProvider({ children }: WalletProviderProps) {
         throw new Error("No account selected");
       }
 
-      // Validate wallet is accessible before signing
-      try {
-        let web3Accounts = getExtensionCache().web3Accounts;
-        if (!web3Accounts) {
-          const dapp = await import("@polkadot/extension-dapp");
-          web3Accounts = dapp.web3Accounts;
-        }
-
-        const accounts = await web3Accounts();
-        if (accounts.length === 0) {
-          disconnect();
-          throw new Error(
-            "Wallet is locked. Please unlock Talisman and reconnect."
-          );
-        }
-
-        const accountExists = accounts.some(
-          (acc) => acc.address === state.selectedAccount?.address
-        );
-        if (!accountExists) {
-          disconnect();
-          throw new Error(
-            "Account no longer available. Please reconnect your wallet."
-          );
-        }
-      } catch (error) {
-        if (
-          error instanceof Error &&
-          (error.message.includes("Wallet is locked") ||
-            error.message.includes("Account no longer"))
-        ) {
-          throw error;
-        }
-        disconnect();
-        throw new Error("Unable to access wallet. Please reconnect.");
+      if (typeof window === "undefined" || !window.ethereum) {
+        throw new Error("Ethereum wallet not available");
       }
 
       try {
-        // Use cached modules or dynamic import as fallback
-        let web3FromAddress = getExtensionCache().web3FromAddress;
-        let stringToHex = getExtensionCache().stringToHex;
+        console.log("[WalletProvider] Requesting message signature...");
 
-        if (!web3FromAddress || !stringToHex) {
-          const [dapp, util] = await Promise.all([
-            import("@polkadot/extension-dapp"),
-            import("@polkadot/util"),
-          ]);
-          web3FromAddress = dapp.web3FromAddress;
-          stringToHex = util.stringToHex;
-          getExtensionCache().web3FromAddress = web3FromAddress;
-          getExtensionCache().stringToHex = stringToHex;
-        }
+        // Convert message to hex
+        const messageHex = "0x" + Buffer.from(message, "utf8").toString("hex");
 
-        const injector = await withTimeout(
-          web3FromAddress(state.selectedAccount.address),
-          TIMEOUTS.WALLET_ENABLE,
-          "Get wallet injector for signing"
-        );
-
-        if (!injector.signer.signRaw) {
-          throw new Error("Wallet does not support message signing");
-        }
-
-        const messageHex = stringToHex(message);
-        const { signature } = await withTimeout(
-          injector.signer.signRaw({
-            address: state.selectedAccount.address,
-            data: messageHex,
-            type: "bytes",
-          }),
+        // Request signature using personal_sign (EIP-191)
+        const signature = await withTimeout(
+          window.ethereum.request({
+            method: "personal_sign",
+            params: [messageHex, state.selectedAccount.address],
+          }) as Promise<string>,
           TIMEOUTS.WALLET_SIGN,
           "Sign message"
         );
 
+        console.log("[WalletProvider] Message signed successfully");
         return signature;
       } catch (error) {
+        console.error("[WalletProvider] Signing error:", error);
+
         if (error instanceof TimeoutError) {
-          console.error("Message signing timeout:", error);
           throw new Error(
             "Message signing timed out. Please check your wallet extension and try again."
           );
         }
-        console.error("Message signing error:", error);
+
+        if (error instanceof Error && error.message.includes("User rejected")) {
+          throw new Error(
+            "Signature rejected. Please approve the signature request in your wallet."
+          );
+        }
+
         throw error;
       }
     },
     [state.selectedAccount]
   );
 
-  // Health check for wallet extension
   const checkHealth = useCallback(async (): Promise<boolean> => {
     try {
       if (typeof window === "undefined") return false;
-      const injectedWeb3 = (window as Window & { injectedWeb3?: Record<string, unknown> }).injectedWeb3;
-      return !!(injectedWeb3 && injectedWeb3["polkadot-js"]);
+      return !!window.ethereum;
     } catch {
       return false;
     }
   }, []);
 
-  // Reconnect method for manual retry
   const reconnect = useCallback(async () => {
-    disconnect();
-    console.log("Manual wallet reconnection triggered");
+    console.log("[WalletProvider] Manual reconnection triggered");
     const previousAddress = state.address;
     disconnect();
     await new Promise((resolve) => setTimeout(resolve, 500));
     await connect(previousAddress || undefined);
   }, [connect, disconnect, state.address]);
 
-  // Subscribe to connection state changes
   const onConnectionChange = useCallback(
     (listener: (connected: boolean) => void): (() => void) => {
       connectionListeners.current.add(listener);
-      listener(state.isConnected); // Immediate notification
+      listener(state.isConnected);
       return () => connectionListeners.current.delete(listener);
     },
     [state.isConnected]
@@ -480,7 +340,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
     });
   }, [state.isConnected]);
 
-  // Periodic health check when connected
+  // Periodic health check
   useEffect(() => {
     if (!state.isConnected) {
       setIsHealthy(true);
@@ -493,15 +353,12 @@ export function WalletProvider({ children }: WalletProviderProps) {
 
       if (!healthy) {
         console.warn(
-          "Wallet extension health check failed - extension may be unavailable"
+          "[WalletProvider] Health check failed - wallet may be unavailable"
         );
       }
     };
 
-    // Initial check
     performHealthCheck();
-
-    // Periodic checks every 30 seconds
     const interval = setInterval(performHealthCheck, 30000);
 
     return () => clearInterval(interval);
