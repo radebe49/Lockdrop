@@ -151,12 +151,22 @@ export class ContractService {
         }
 
         // Create provider with custom network config to disable ENS
-        // Passet Hub doesn't support ENS, so we create a network WITHOUT any ENS plugin
-        // This prevents ethers.js from attempting ENS resolution entirely
+        // Passet Hub doesn't support ENS, so we must completely disable ENS resolution
         const network = new ethers.Network(config.network, 420420422);
         
-        // DO NOT attach any ENS plugin - this ensures ENS is completely disabled
-        // If we attach EnsPlugin(null), ethers.js still tries to call resolver methods
+        // Remove all ENS-related plugins from the network
+        // This is the nuclear option to prevent ANY ENS resolution attempts
+        const ensPluginName = 'org.ethers.plugins.network.Ens';
+        try {
+          network.plugins.forEach((plugin) => {
+            if (plugin.name === ensPluginName) {
+              // @ts-expect-error - accessing private method to remove plugin
+              network._plugins.delete(ensPluginName);
+            }
+          });
+        } catch (e) {
+          // Ignore errors - plugin might not exist
+        }
         
         console.log('[ContractService] Creating provider with ENS disabled for network:', config.network);
 
