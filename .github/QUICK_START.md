@@ -31,6 +31,7 @@ NEXT_PUBLIC_NETWORK             # westend
 ```
 
 Get Vercel IDs:
+
 ```bash
 npm i -g vercel
 vercel login
@@ -57,6 +58,7 @@ cat .vercel/project.json
 ## 5. Enable Branch Protection (2 minutes)
 
 Repository Settings → Branches → Add rule for `main`:
+
 - ✅ Require pull request reviews
 - ✅ Require status checks to pass
 

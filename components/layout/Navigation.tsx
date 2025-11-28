@@ -1,53 +1,69 @@
 /**
- * Navigation - Main navigation component
- *
- * Requirements: 11.2, 11.4
+ * Navigation - App navigation component (for authenticated routes)
  */
 
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { WalletConnectButton } from "@/components/wallet/WalletConnectButton";
 import { useWallet } from "@/lib/wallet/WalletProvider";
-import { Logo } from "./Logo";
 
 export function Navigation() {
   const pathname = usePathname();
   const { isConnected } = useWallet();
 
   const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/dashboard", label: "Dashboard", requiresWallet: true },
-    { href: "/create", label: "Create Message", requiresWallet: true },
-    { href: "/settings", label: "Settings" },
+    { href: "/app", label: "Messages" },
+    { href: "/app/create", label: "Create", requiresWallet: true },
+    { href: "/app/settings", label: "Settings" },
   ];
 
   return (
-    <nav className="border-b border-gray-800 bg-gray-900 shadow-sm" role="navigation" aria-label="Main navigation">
-      <div className="container mx-auto px-4">
+    <nav
+      className="sticky top-0 z-50 border-b border-dark-800/50 bg-dark-950/80 backdrop-blur-xl"
+      role="navigation"
+      aria-label="Main navigation"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center" aria-label="Lockdrop home">
-            <Logo size="md" />
+          <Link
+            href="/"
+            className="group flex items-center gap-2"
+            aria-label="Lockdrop home"
+          >
+            <Image
+              src="/logo.png"
+              alt="Lockdrop"
+              width={32}
+              height={32}
+              className="transition-transform group-hover:scale-105"
+            />
+            <span className="gradient-text hidden font-display text-lg font-bold sm:inline">
+              Lockdrop
+            </span>
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-2 md:space-x-6">
+          <div className="flex items-center gap-1 sm:gap-2">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive =
+                pathname === link.href ||
+                (link.href !== "/app" && pathname.startsWith(link.href));
               const isDisabled = link.requiresWallet && !isConnected;
 
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-xs md:text-sm font-medium transition-colors px-2 py-1 rounded ${
+                  className={`rounded-lg px-2 py-2 text-xs font-medium transition-all sm:px-3 sm:text-sm ${
                     isActive
-                      ? "text-blue-400 bg-blue-900"
+                      ? "bg-brand-500/10 text-brand-400"
                       : isDisabled
-                        ? "pointer-events-none cursor-not-allowed text-gray-600"
-                        : "text-gray-300 hover:text-gray-100 hover:bg-gray-800"
+                        ? "pointer-events-none cursor-not-allowed text-dark-600"
+                        : "text-dark-300 hover:bg-dark-800/50 hover:text-dark-100"
                   }`}
                   aria-disabled={isDisabled}
                   aria-current={isActive ? "page" : undefined}
@@ -58,7 +74,9 @@ export function Navigation() {
             })}
 
             {/* Wallet Connect Button */}
-            <WalletConnectButton />
+            <div className="ml-2 sm:ml-4">
+              <WalletConnectButton />
+            </div>
           </div>
         </div>
       </div>

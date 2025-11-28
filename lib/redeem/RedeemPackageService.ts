@@ -1,7 +1,7 @@
 /**
  * Service for creating and managing redeem packages for recipients without wallets
  * Requirements: 6.6
- * 
+ *
  * This service enables senders to create passphrase-protected packages that allow
  * recipients to claim messages after setting up a wallet.
  */
@@ -11,13 +11,13 @@ import type {
   EncryptedRedeemPackage,
   ClaimLink,
   DecryptedRedeemPackage,
-} from '@/types/redeem';
+} from "@/types/redeem";
 
 export class RedeemPackageService {
   /**
    * Derives a cryptographic key from a passphrase using PBKDF2
    * Requirements: 6.6 - Passphrase-based encryption
-   * 
+   *
    * @param passphrase - User-provided passphrase
    * @param salt - Random salt for key derivation
    * @returns Derived AES-GCM key
@@ -29,32 +29,32 @@ export class RedeemPackageService {
     // Import passphrase as key material
     const encoder = new TextEncoder();
     const passphraseKey = await crypto.subtle.importKey(
-      'raw',
+      "raw",
       encoder.encode(passphrase),
-      'PBKDF2',
+      "PBKDF2",
       false,
-      ['deriveKey']
+      ["deriveKey"]
     );
 
     // Derive AES-GCM key using PBKDF2
     return crypto.subtle.deriveKey(
       {
-        name: 'PBKDF2',
+        name: "PBKDF2",
         salt: salt as BufferSource,
         iterations: 100000, // OWASP recommended minimum
-        hash: 'SHA-256',
+        hash: "SHA-256",
       },
       passphraseKey,
-      { name: 'AES-GCM', length: 256 },
+      { name: "AES-GCM", length: 256 },
       false,
-      ['encrypt', 'decrypt']
+      ["encrypt", "decrypt"]
     );
   }
 
   /**
    * Creates a redeem package with the provided message metadata
    * Requirements: 6.6 - Create redeem package JSON
-   * 
+   *
    * @param encryptedKeyCID - CID of the encrypted AES key
    * @param encryptedMessageCID - CID of the encrypted message blob
    * @param messageHash - SHA-256 hash of encrypted message
@@ -91,7 +91,7 @@ export class RedeemPackageService {
   /**
    * Encrypts a redeem package with a passphrase
    * Requirements: 6.6 - Encrypt redeem package
-   * 
+   *
    * @param redeemPackage - Package to encrypt
    * @param passphrase - User-provided passphrase
    * @returns Encrypted package with IV and salt
@@ -101,7 +101,7 @@ export class RedeemPackageService {
     passphrase: string
   ): Promise<EncryptedRedeemPackage> {
     if (!passphrase || passphrase.length < 8) {
-      throw new Error('Passphrase must be at least 8 characters long');
+      throw new Error("Passphrase must be at least 8 characters long");
     }
 
     // Generate random salt and IV
@@ -117,7 +117,7 @@ export class RedeemPackageService {
 
     const encryptedData = await crypto.subtle.encrypt(
       {
-        name: 'AES-GCM',
+        name: "AES-GCM",
         iv,
       },
       key,
@@ -134,7 +134,7 @@ export class RedeemPackageService {
   /**
    * Decrypts a redeem package with a passphrase
    * Requirements: 6.6 - Decrypt redeem package
-   * 
+   *
    * @param encryptedPackage - Encrypted package data
    * @param passphrase - User-provided passphrase
    * @returns Decrypted redeem package
@@ -153,7 +153,7 @@ export class RedeemPackageService {
       // Decrypt package data
       const decryptedData = await crypto.subtle.decrypt(
         {
-          name: 'AES-GCM',
+          name: "AES-GCM",
           iv: encryptedPackage.iv as BufferSource,
         },
         key,
@@ -167,7 +167,7 @@ export class RedeemPackageService {
 
       // Verify expiration
       if (redeemPackage.expiresAt && Date.now() > redeemPackage.expiresAt) {
-        throw new Error('This redeem package has expired');
+        throw new Error("This redeem package has expired");
       }
 
       return {
@@ -175,16 +175,16 @@ export class RedeemPackageService {
         decrypted: true,
       };
     } catch (error) {
-      if (error instanceof Error && error.message.includes('expired')) {
+      if (error instanceof Error && error.message.includes("expired")) {
         throw error;
       }
-      throw new Error('Invalid passphrase or corrupted package');
+      throw new Error("Invalid passphrase or corrupted package");
     }
   }
 
   /**
    * Serializes an encrypted package for IPFS upload
-   * 
+   *
    * @param encryptedPackage - Encrypted package
    * @returns Blob ready for upload
    */
@@ -203,12 +203,12 @@ export class RedeemPackageService {
     combined.set(ivArray, saltArray.length);
     combined.set(dataArray, saltArray.length + ivArray.length);
 
-    return new Blob([combined], { type: 'application/octet-stream' });
+    return new Blob([combined], { type: "application/octet-stream" });
   }
 
   /**
    * Deserializes an encrypted package from IPFS download
-   * 
+   *
    * @param blob - Downloaded blob
    * @returns Encrypted package object
    */
@@ -233,7 +233,7 @@ export class RedeemPackageService {
   /**
    * Generates a claim link for a redeem package
    * Requirements: 6.6 - Generate claim link with package CID
-   * 
+   *
    * @param packageCID - CID of the encrypted package on IPFS
    * @param baseUrl - Base URL of the application
    * @param expiresAt - Optional expiration timestamp

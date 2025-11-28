@@ -408,12 +408,14 @@ Flow:
 ## Key Improvements Visualized
 
 ### Before Fix
+
 ```
 User Action → Disconnect → Reconnect → Disconnect → Reconnect → Success
    (5-10 minutes, 3-5 reconnections)
 ```
 
 ### After Fix
+
 ```
 User Action → Connect Once → Success (Persists Forever)
    (2-3 minutes, 1 connection)

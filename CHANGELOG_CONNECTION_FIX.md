@@ -3,21 +3,25 @@
 ## Date: November 19, 2025
 
 ## Summary
+
 Fixed critical UX issues where wallet and Storacha connections didn't persist, causing users to reconnect multiple times unnecessarily.
 
 ## Problems Solved
 
 ### 1. Wallet Connection Loop
+
 - **Issue:** Wallet disconnected on every page refresh
 - **Root Cause:** WalletProvider cleared localStorage on mount for "security"
 - **Impact:** Users had to reconnect wallet 3+ times during Storacha setup
 
 ### 2. Storacha Authentication Fragility
+
 - **Issue:** Email verification and space creation happened atomically
 - **Root Cause:** No intermediate state persistence
 - **Impact:** If anything broke, users had to start over from scratch
 
 ### 3. No Connection Visibility
+
 - **Issue:** Users couldn't see what was connected
 - **Root Cause:** No unified status display
 - **Impact:** Confusion about what needed attention
@@ -27,6 +31,7 @@ Fixed critical UX issues where wallet and Storacha connections didn't persist, c
 ### Files Modified
 
 #### Core Services
+
 1. **lib/wallet/WalletProvider.tsx**
    - Added connection state persistence to localStorage
    - Implemented silent reconnection using `eth_accounts`
@@ -44,6 +49,7 @@ Fixed critical UX issues where wallet and Storacha connections didn't persist, c
    - Improved state refresh logic
 
 #### UI Components
+
 4. **components/storage/StorachaAuth.tsx**
    - Split authentication flow into recoverable steps
    - Added UI for partial authentication state (email verified, no space)
@@ -64,6 +70,7 @@ Fixed critical UX issues where wallet and Storacha connections didn't persist, c
    - Added exports for new components
 
 #### Documentation
+
 8. **docs/CONNECTION_IMPROVEMENTS.md** (NEW)
    - Technical documentation of changes
    - Testing recommendations
@@ -86,14 +93,16 @@ Fixed critical UX issues where wallet and Storacha connections didn't persist, c
 ### State Persistence Strategy
 
 #### Wallet State
+
 ```typescript
 // Stored in localStorage: lockdrop_wallet_connection
 {
-  wasConnected: boolean
+  wasConnected: boolean;
 }
 ```
 
 #### Storacha State
+
 ```typescript
 // Stored in localStorage: lockdrop_storacha_auth
 {
@@ -106,12 +115,14 @@ Fixed critical UX issues where wallet and Storacha connections didn't persist, c
 ### Connection Recovery Flow
 
 #### Wallet Recovery
+
 1. Check localStorage for previous connection
 2. Call `eth_accounts` (no popup)
 3. If accounts exist, restore connection silently
 4. If no accounts, wait for user to connect
 
 #### Storacha Recovery
+
 1. Load auth state from localStorage
 2. Verify connection with `checkConnection()`
 3. If valid, restore session
@@ -128,6 +139,7 @@ Fixed critical UX issues where wallet and Storacha connections didn't persist, c
 ## Testing Performed
 
 ### Manual Testing
+
 - ✅ Wallet persists across page refresh
 - ✅ Wallet persists across browser restart
 - ✅ Storacha auth persists across page refresh
@@ -138,6 +150,7 @@ Fixed critical UX issues where wallet and Storacha connections didn't persist, c
 - ✅ No unnecessary reconnection prompts
 
 ### Build Verification
+
 - ✅ TypeScript compilation successful
 - ✅ No runtime errors
 - ✅ ESLint warnings addressed
@@ -146,15 +159,16 @@ Fixed critical UX issues where wallet and Storacha connections didn't persist, c
 ## Migration Path
 
 ### For Existing Users
+
 1. **First visit after update:**
    - Will need to reconnect wallet once
    - Will need to re-authenticate with Storacha once
-   
 2. **After reconnection:**
    - Connections persist automatically
    - No further action needed
 
 ### For New Users
+
 - Improved first-time experience
 - Clear guidance through setup
 - Visual feedback on connection status
@@ -204,6 +218,7 @@ Fixed critical UX issues where wallet and Storacha connections didn't persist, c
 ## Rollback Plan
 
 If issues arise, rollback by reverting these commits:
+
 1. Revert wallet persistence changes
 2. Revert Storacha state management changes
 3. Remove new UI components
@@ -214,11 +229,13 @@ Users will experience the old behavior (reconnection required).
 ## Success Metrics
 
 ### Before Fix
+
 - Users reconnected wallet: 3-5 times per session
 - Storacha setup completion rate: ~60%
 - Support tickets about connections: High
 
 ### After Fix (Expected)
+
 - Users reconnect wallet: 1 time (first visit only)
 - Storacha setup completion rate: >90%
 - Support tickets about connections: Minimal

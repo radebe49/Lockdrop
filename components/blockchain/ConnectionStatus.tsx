@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useBlockchainConnection } from '@/hooks/useBlockchainConnection';
+import React from "react";
+import { useBlockchainConnection } from "@/hooks/useBlockchainConnection";
 
 /**
  * Component that displays blockchain connection status
@@ -16,11 +16,11 @@ export function ConnectionStatus() {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-yellow-600 text-white px-4 py-3 shadow-lg">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <div className="fixed left-0 right-0 top-0 z-50 bg-yellow-600 px-4 py-3 text-white shadow-lg">
+      <div className="mx-auto flex max-w-7xl items-center justify-between">
         <div className="flex items-center gap-3">
           <svg
-            className="w-5 h-5 animate-pulse"
+            className="h-5 w-5 animate-pulse"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -36,25 +36,25 @@ export function ConnectionStatus() {
             <p className="font-semibold">Blockchain Connection Lost</p>
             <p className="text-sm opacity-90">
               {isReconnecting
-                ? 'Attempting to reconnect...'
-                : 'Unable to connect to Polkadot RPC endpoint'}
+                ? "Attempting to reconnect..."
+                : "Unable to connect to Polkadot RPC endpoint"}
             </p>
           </div>
         </div>
-        
+
         {!isReconnecting && (
           <button
             onClick={reconnect}
-            className="px-4 py-2 bg-gray-900 text-yellow-400 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            className="rounded-lg bg-gray-900 px-4 py-2 font-medium text-yellow-400 transition-colors hover:bg-gray-800"
           >
             Reconnect
           </button>
         )}
-        
+
         {isReconnecting && (
           <div className="flex items-center gap-2">
             <svg
-              className="animate-spin h-5 w-5"
+              className="h-5 w-5 animate-spin"
               fill="none"
               viewBox="0 0 24 24"
             >

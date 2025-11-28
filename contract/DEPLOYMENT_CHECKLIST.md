@@ -11,6 +11,7 @@
 ## Deployment Steps
 
 ### 1. Get Testnet Tokens
+
 ```bash
 # Visit faucet
 open https://faucet.polkadot.io/paseo
@@ -20,6 +21,7 @@ open https://faucet.polkadot.io/paseo
 ```
 
 ### 2. Set Environment Variables
+
 ```bash
 cd contract
 cat > .env << EOF
@@ -29,11 +31,13 @@ EOF
 ```
 
 ### 3. Deploy Contract
+
 ```bash
 npx hardhat run scripts/deploy.js --network passetHub
 ```
 
 ### 4. Save Contract Address
+
 ```bash
 # Copy the deployed address from output
 # Example: 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
@@ -42,6 +46,7 @@ npx hardhat run scripts/deploy.js --network passetHub
 ## Post-Deployment
 
 ### 1. Update Frontend Configuration
+
 ```bash
 # Edit .env.local in project root
 NEXT_PUBLIC_CONTRACT_ADDRESS=<your_deployed_address>
@@ -50,11 +55,13 @@ NEXT_PUBLIC_NETWORK=passet-hub
 ```
 
 ### 2. Verify Deployment
+
 ```bash
 npx hardhat console --network passetHub
 ```
 
 In console:
+
 ```javascript
 const FutureProof = await ethers.getContractFactory("FutureProof");
 const contract = FutureProof.attach("YOUR_CONTRACT_ADDRESS");
@@ -63,11 +70,13 @@ console.log("Message count:", count.toString()); // Should be 0
 ```
 
 ### 3. Update Documentation
+
 - [ ] Update `contract/DEPLOYMENT_RECORD.md` with new address
 - [ ] Update `README.md` with deployment info
 - [ ] Commit changes to git
 
 ### 4. Test Frontend Integration
+
 - [ ] Connect wallet to Passet Hub
 - [ ] Create a test message
 - [ ] Query sent messages
@@ -77,21 +86,25 @@ console.log("Message count:", count.toString()); // Should be 0
 ## Troubleshooting
 
 ### "Insufficient funds"
+
 - Check wallet balance on Passet Hub
 - Request more tokens from faucet
 - Verify you're on correct network
 
 ### "Invalid network"
+
 - Verify RPC endpoint in hardhat.config.js
 - Check network connectivity
 - Try alternative RPC if available
 
 ### "Nonce too high"
+
 - Reset account in MetaMask/Talisman
 - Clear transaction history
 - Try again
 
 ### "Contract deployment failed"
+
 - Check gas limits in hardhat.config.js
 - Verify contract compiles without errors
 - Check for sufficient balance
@@ -112,6 +125,7 @@ npx hardhat run scripts/test-store.js --network passetHub
 ## Rollback Plan
 
 If deployment fails:
+
 1. Keep old Shibuya deployment active
 2. Debug issues on local network first
 3. Redeploy to Passet Hub when fixed
@@ -138,8 +152,8 @@ If deployment fails:
 
 ---
 
-**Deployment Date:** _____________  
-**Contract Address:** _____________  
-**Deployer Address:** _____________  
-**Gas Used:** _____________  
-**Transaction Hash:** _____________
+**Deployment Date:** **\*\***\_**\*\***  
+**Contract Address:** **\*\***\_**\*\***  
+**Deployer Address:** **\*\***\_**\*\***  
+**Gas Used:** **\*\***\_**\*\***  
+**Transaction Hash:** **\*\***\_**\*\***

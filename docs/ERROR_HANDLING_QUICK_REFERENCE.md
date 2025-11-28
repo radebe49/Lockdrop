@@ -7,15 +7,15 @@ Quick reference guide for using the error handling system in Lockdrop.
 ### 1. Wrap Operations in Try-Catch
 
 ```typescript
-import { ErrorLogger } from '@/lib/monitoring/ErrorLogger';
+import { ErrorLogger } from "@/lib/monitoring/ErrorLogger";
 
 try {
   const result = await someOperation();
   return result;
 } catch (error) {
-  ErrorLogger.log(error, 'Operation Name', {
+  ErrorLogger.log(error, "Operation Name", {
     userId: user.id,
-    additionalContext: 'value',
+    additionalContext: "value",
   });
   throw error; // Re-throw if needed
 }
@@ -24,7 +24,7 @@ try {
 ### 2. Use Retry for Network Operations
 
 ```typescript
-import { withRetry } from '@/utils/retry';
+import { withRetry } from "@/utils/retry";
 
 const result = await withRetry(
   async () => {
@@ -46,14 +46,14 @@ const result = await withRetry(
 import {
   isValidPolkadotAddress,
   isValidFutureTimestamp,
-} from '@/utils/edgeCaseValidation';
+} from "@/utils/edgeCaseValidation";
 
 if (!isValidPolkadotAddress(recipientAddress)) {
-  throw new Error('Invalid recipient address format');
+  throw new Error("Invalid recipient address format");
 }
 
 if (!isValidFutureTimestamp(unlockTimestamp)) {
-  throw new Error('Unlock time must be in the future');
+  throw new Error("Unlock time must be in the future");
 }
 ```
 
@@ -83,7 +83,7 @@ async function uploadToIPFS(blob: Blob): Promise<string> {
         const result = await ipfsService.uploadEncryptedBlob(blob);
         return result.cid;
       } catch (error) {
-        ErrorLogger.log(error, 'IPFS Upload', {
+        ErrorLogger.log(error, "IPFS Upload", {
           blobSize: blob.size,
           blobType: blob.type,
         });
@@ -141,13 +141,13 @@ export function MyComponent() {
 ### Pattern 3: Validation Before Operation
 
 ```typescript
-import { validateMessageMetadata } from '@/utils/edgeCaseValidation';
+import { validateMessageMetadata } from "@/utils/edgeCaseValidation";
 
 function createMessage(metadata: MessageMetadata) {
   // Validate first
   const validation = validateMessageMetadata(metadata);
   if (!validation.valid) {
-    throw new Error(`Validation failed: ${validation.errors.join(', ')}`);
+    throw new Error(`Validation failed: ${validation.errors.join(", ")}`);
   }
 
   // Proceed with operation
@@ -162,16 +162,16 @@ function createMessage(metadata: MessageMetadata) {
 
 ## Error Categories
 
-| Category | Examples | Retryable |
-|----------|----------|-----------|
-| `WALLET` | Extension not found, wallet locked | Yes |
-| `MEDIA` | Permission denied, unsupported format | Partial |
-| `ENCRYPTION` | Key generation failed, decryption error | No |
-| `STORAGE` | IPFS upload failed, CID not found | Yes |
-| `BLOCKCHAIN` | Transaction failed, RPC unavailable | Yes |
-| `UNLOCK` | Timestamp not reached, wrong key | No |
-| `NETWORK` | Timeout, connection refused | Yes |
-| `VALIDATION` | Invalid address, past timestamp | No |
+| Category     | Examples                                | Retryable |
+| ------------ | --------------------------------------- | --------- |
+| `WALLET`     | Extension not found, wallet locked      | Yes       |
+| `MEDIA`      | Permission denied, unsupported format   | Partial   |
+| `ENCRYPTION` | Key generation failed, decryption error | No        |
+| `STORAGE`    | IPFS upload failed, CID not found       | Yes       |
+| `BLOCKCHAIN` | Transaction failed, RPC unavailable     | Yes       |
+| `UNLOCK`     | Timestamp not reached, wrong key        | No        |
+| `NETWORK`    | Timeout, connection refused             | Yes       |
+| `VALIDATION` | Invalid address, past timestamp         | No        |
 
 ## Validation Functions
 
@@ -206,11 +206,11 @@ validateMessageMetadata(metadata: object): { valid: boolean; errors: string[] }
 
 ```typescript
 interface RetryOptions {
-  maxAttempts?: number;        // Default: 3
-  initialDelay?: number;        // Default: 1000ms
-  maxDelay?: number;            // Default: 30000ms
-  backoffMultiplier?: number;   // Default: 2
-  jitterFactor?: number;        // Default: 0.3 (±30%)
+  maxAttempts?: number; // Default: 3
+  initialDelay?: number; // Default: 1000ms
+  maxDelay?: number; // Default: 30000ms
+  backoffMultiplier?: number; // Default: 2
+  jitterFactor?: number; // Default: 0.3 (±30%)
   onRetry?: (attempt: number, error: Error) => void;
   shouldRetry?: (error: Error) => boolean;
 }
@@ -220,7 +220,7 @@ interface RetryOptions {
 
 ```typescript
 // Log an error
-ErrorLogger.log(error, 'Context', { additionalData });
+ErrorLogger.log(error, "Context", { additionalData });
 
 // Get recent logs
 const logs = ErrorLogger.getRecentLogs(10);
@@ -257,15 +257,15 @@ function MyComponent() {
 ## Error Classification
 
 ```typescript
-import { classifyError } from '@/utils/errorHandling';
+import { classifyError } from "@/utils/errorHandling";
 
 const errorInfo = classifyError(error);
 
-console.log(errorInfo.category);        // ErrorCategory
-console.log(errorInfo.severity);        // ErrorSeverity
-console.log(errorInfo.message);         // User-friendly message
-console.log(errorInfo.suggestions);     // Array of suggestions
-console.log(errorInfo.retryable);       // boolean
+console.log(errorInfo.category); // ErrorCategory
+console.log(errorInfo.severity); // ErrorSeverity
+console.log(errorInfo.message); // User-friendly message
+console.log(errorInfo.suggestions); // Array of suggestions
+console.log(errorInfo.retryable); // boolean
 console.log(errorInfo.requiresUserAction); // boolean
 ```
 
@@ -300,6 +300,7 @@ See `docs/EDGE_CASE_TESTING.md` for comprehensive testing guide.
 ## Common Mistakes to Avoid
 
 ❌ **Don't swallow errors silently**
+
 ```typescript
 try {
   await operation();
@@ -309,33 +310,38 @@ try {
 ```
 
 ✅ **Do log and handle errors**
+
 ```typescript
 try {
   await operation();
 } catch (error) {
-  ErrorLogger.log(error, 'Context');
+  ErrorLogger.log(error, "Context");
   setError(error);
 }
 ```
 
 ❌ **Don't retry non-retryable errors**
+
 ```typescript
 // Retrying validation errors - BAD!
 await withRetry(() => validateAddress(address));
 ```
 
 ✅ **Do validate first, then retry network operations**
+
 ```typescript
 validateAddress(address); // Throws if invalid
 await withRetry(() => sendTransaction(address));
 ```
 
 ❌ **Don't show technical errors to users**
+
 ```typescript
 <div>Error: TypeError: Cannot read property 'x' of undefined</div>
 ```
 
 ✅ **Do use ErrorRecovery component**
+
 ```typescript
 <ErrorRecovery error={error} onRetry={handleRetry} />
 ```

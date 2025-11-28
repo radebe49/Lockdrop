@@ -76,18 +76,18 @@ export function WalletProvider({ children }: WalletProviderProps) {
         if (typeof window === "undefined" || !window.ethereum) return;
 
         // Try to get accounts without triggering popup
-        const accounts = await window.ethereum.request({
+        const accounts = (await window.ethereum.request({
           method: "eth_accounts",
-        }) as string[];
+        })) as string[];
 
         if (accounts && accounts.length > 0) {
           console.log("[WalletProvider] Restoring previous connection");
-          
+
           const walletName = window.ethereum.isTalisman
             ? "Talisman"
             : window.ethereum.isMetaMask
-            ? "MetaMask"
-            : "Ethereum Wallet";
+              ? "MetaMask"
+              : "Ethereum Wallet";
 
           const selectedAddress = accounts[0];
           const selectedAccount = {

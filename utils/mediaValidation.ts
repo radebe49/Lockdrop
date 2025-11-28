@@ -4,7 +4,7 @@ import {
   MAX_FILE_SIZE,
   SUPPORTED_FILE_EXTENSIONS,
   type MediaType,
-} from '@/types/media';
+} from "@/types/media";
 
 /**
  * Validate file type
@@ -20,11 +20,11 @@ export function validateFileType(file: File): {
 
   // Check by MIME type first
   if (SUPPORTED_AUDIO_FORMATS.includes(mimeType)) {
-    return { isValid: true, mediaType: 'audio' };
+    return { isValid: true, mediaType: "audio" };
   }
 
   if (SUPPORTED_VIDEO_FORMATS.includes(mimeType)) {
-    return { isValid: true, mediaType: 'video' };
+    return { isValid: true, mediaType: "video" };
   }
 
   // Fallback to file extension check
@@ -34,17 +34,19 @@ export function validateFileType(file: File): {
 
   if (hasValidExtension) {
     // Determine type by extension
-    const isAudio = ['.mp3', '.wav', '.ogg'].some((ext) => fileName.endsWith(ext));
+    const isAudio = [".mp3", ".wav", ".ogg"].some((ext) =>
+      fileName.endsWith(ext)
+    );
     return {
       isValid: true,
-      mediaType: isAudio ? 'audio' : 'video',
+      mediaType: isAudio ? "audio" : "video",
     };
   }
 
   return {
     isValid: false,
     mediaType: null,
-    error: `Unsupported file format. Supported formats: ${SUPPORTED_FILE_EXTENSIONS.join(', ')}`,
+    error: `Unsupported file format. Supported formats: ${SUPPORTED_FILE_EXTENSIONS.join(", ")}`,
   };
 }
 
@@ -78,16 +80,16 @@ export function validateFileSize(file: File): {
 export function getMediaDuration(file: File): Promise<number | undefined> {
   return new Promise((resolve) => {
     const url = URL.createObjectURL(file);
-    const mediaType = file.type.startsWith('video') ? 'video' : 'audio';
+    const mediaType = file.type.startsWith("video") ? "video" : "audio";
     const element = document.createElement(mediaType);
 
-    element.addEventListener('loadedmetadata', () => {
+    element.addEventListener("loadedmetadata", () => {
       const duration = element.duration;
       URL.revokeObjectURL(url);
       resolve(duration);
     });
 
-    element.addEventListener('error', () => {
+    element.addEventListener("error", () => {
       URL.revokeObjectURL(url);
       resolve(undefined);
     });
@@ -100,10 +102,10 @@ export function getMediaDuration(file: File): Promise<number | undefined> {
  * Format file size for display
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) return "0 Bytes";
 
   const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
@@ -118,8 +120,8 @@ export function formatDuration(seconds: number): string {
   const secs = Math.floor(seconds % 60);
 
   if (hours > 0) {
-    return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   }
 
-  return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  return `${minutes}:${secs.toString().padStart(2, "0")}`;
 }

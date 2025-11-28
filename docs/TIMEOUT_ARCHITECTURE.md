@@ -310,7 +310,7 @@ Crypto Operations:
 // │              Standard Implementation Pattern             │
 // └─────────────────────────────────────────────────────────┘
 
-import { withTimeout, TIMEOUTS, TimeoutError } from '@/utils/timeout';
+import { withTimeout, TIMEOUTS, TimeoutError } from "@/utils/timeout";
 
 async function someOperation() {
   try {
@@ -318,19 +318,19 @@ async function someOperation() {
     const result = await withTimeout(
       externalServiceCall(),
       TIMEOUTS.APPROPRIATE_TIMEOUT,
-      'Operation description'
+      "Operation description"
     );
-    
+
     return result;
   } catch (error) {
     // Handle timeout specifically
     if (error instanceof TimeoutError) {
       console.error(`Timeout: ${error.operation} after ${error.timeoutMs}ms`);
       throw new Error(
-        'Operation timed out. Please check your connection and try again.'
+        "Operation timed out. Please check your connection and try again."
       );
     }
-    
+
     // Re-throw other errors
     throw error;
   }

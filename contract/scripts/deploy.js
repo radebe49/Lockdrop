@@ -24,7 +24,7 @@ async function main() {
   console.log("\n✅ Deployment successful!");
   console.log("\nUpdate your .env.local with:");
   console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS=${address}`);
-  
+
   return address;
 }
 

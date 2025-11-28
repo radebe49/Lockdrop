@@ -31,7 +31,7 @@ Your messages are encrypted in your browser, stored on decentralized IPFS, and u
 ✅ **Decentralized**: No central server can access your content  
 ✅ **Time-Locked**: Recipients can't view messages before unlock time  
 ✅ **Permanent**: Messages stored on IPFS are distributed and resilient  
-✅ **Trustless**: Blockchain enforces rules, not corporations  
+✅ **Trustless**: Blockchain enforces rules, not corporations
 
 ## Getting Started
 
@@ -55,7 +55,6 @@ Before using Lockdrop, make sure you have:
 4. **Internet Connection**
    - Required for uploading to IPFS and blockchain
 
-
 ## Connecting Your Wallet
 
 ### Step 1: Install Talisman Wallet
@@ -69,6 +68,7 @@ Before using Lockdrop, make sure you have:
 ### Step 2: Create or Import an Account
 
 **Creating a New Account:**
+
 1. Open Talisman wallet
 2. Click "Create New Account"
 3. Choose "Polkadot" as the network
@@ -78,6 +78,7 @@ Before using Lockdrop, make sure you have:
 7. Set a password for the wallet
 
 **Importing an Existing Account:**
+
 1. Open Talisman wallet
 2. Click "Import Account"
 3. Enter your seed phrase or private key
@@ -95,6 +96,7 @@ You need WND tokens to send messages on the Westend testnet:
 5. Check your balance in Talisman
 
 **Alternative Faucet:**
+
 - Join the [Westend Faucet Matrix room](https://matrix.to/#/#westend_faucet:matrix.org)
 - Send your address in the chat
 - The bot will send you tokens
@@ -109,11 +111,11 @@ You need WND tokens to send messages on the Westend testnet:
 6. You're connected! Your address will appear in the header
 
 **Troubleshooting:**
+
 - If Talisman doesn't pop up, click the extension icon and unlock it
 - Make sure you have at least one Polkadot account created
 - Refresh the page if connection fails
 - Check that Talisman is enabled in your browser extensions
-
 
 ## Creating Time-Locked Messages
 
@@ -127,6 +129,7 @@ You need WND tokens to send messages on the Westend testnet:
 You have two options:
 
 **Option A: Record a Message**
+
 1. Click the "Record" tab
 2. Choose "Audio Only" or "Video"
 3. Click "Start Recording"
@@ -136,6 +139,7 @@ You have two options:
 7. Preview your recording
 
 **Option B: Upload a File**
+
 1. Click the "Upload" tab
 2. Drag and drop a file, or click to browse
 3. Select an audio or video file
@@ -144,6 +148,7 @@ You have two options:
 6. Preview your file
 
 **Note for iOS Safari Users:**
+
 - Recording may not work on older iOS versions
 - Use the upload option instead
 - Record on another device and transfer the file
@@ -194,13 +199,13 @@ You have two options:
    - Recipient will see it in their "Received Messages"
 
 **What Happens Behind the Scenes:**
+
 1. ✅ Media encrypted with AES-256 in your browser
 2. ✅ Encrypted media uploaded to IPFS
 3. ✅ Encryption key encrypted with recipient's public key
 4. ✅ Encrypted key uploaded to IPFS
 5. ✅ Metadata stored on Polkadot blockchain
 6. ✅ Original media and keys cleared from memory
-
 
 ## Viewing Your Messages
 
@@ -216,6 +221,7 @@ The Dashboard shows all your messages in two tabs:
 View all messages you've sent:
 
 **Message Card Information:**
+
 - 👤 **Recipient**: Who will receive the message
 - 📅 **Unlock Date**: When the message becomes viewable
 - 🔒 **Status**: Current state of the message
@@ -225,6 +231,7 @@ View all messages you've sent:
 - 🔗 **CIDs**: IPFS identifiers (for backup)
 
 **Actions:**
+
 - Click "View Details" to see full information
 - Copy CIDs for backup purposes
 - Share claim link (if created for non-wallet recipient)
@@ -234,6 +241,7 @@ View all messages you've sent:
 View all messages sent to you:
 
 **Message Card Information:**
+
 - 👤 **Sender**: Who sent the message
 - 📅 **Unlock Date**: When you can view it
 - 🔒 **Status**: Current state
@@ -243,6 +251,7 @@ View all messages sent to you:
 - 📊 **File Info**: Size and type of media
 
 **Actions:**
+
 - Click "Unlock" when status is "Unlockable"
 - View countdown timer for locked messages
 - Re-watch unlocked messages anytime
@@ -250,12 +259,14 @@ View all messages sent to you:
 ### Filtering and Sorting
 
 **Filter by Status:**
+
 - All Messages
 - Locked Only
 - Unlockable Only
 - Unlocked Only
 
 **Sort Options:**
+
 - Newest First
 - Oldest First
 - Unlock Date (Soonest)
@@ -264,22 +275,24 @@ View all messages sent to you:
 ### Real-Time Updates
 
 The dashboard automatically updates:
+
 - Status changes when unlock time arrives
 - Countdown timers tick down
 - New messages appear automatically
 - No need to refresh the page
-
 
 ## Unlocking and Playing Messages
 
 ### When Can I Unlock a Message?
 
 You can unlock a message when:
+
 - ✅ The unlock timestamp has passed
 - ✅ You're connected with the recipient wallet
 - ✅ The message status shows "Unlockable"
 
 You CANNOT unlock if:
+
 - ❌ The unlock time hasn't arrived yet
 - ❌ You're not the intended recipient
 - ❌ You're using a different wallet
@@ -293,6 +306,7 @@ You CANNOT unlock if:
 ### Step 2: Verify and Decrypt
 
 **Automatic Process:**
+
 1. Lockdrop verifies the unlock timestamp
 2. Downloads encrypted key from IPFS
 3. Talisman decrypts the key using your private key
@@ -302,6 +316,7 @@ You CANNOT unlock if:
 7. Creates a secure playback URL
 
 **What You'll See:**
+
 - Progress indicator during download
 - "Decrypting..." message
 - Media player when ready
@@ -309,6 +324,7 @@ You CANNOT unlock if:
 ### Step 3: Play the Message
 
 **Media Player Controls:**
+
 - ▶️ Play/Pause button
 - 🔊 Volume control
 - ⏩ Seek bar (scrub through video/audio)
@@ -316,6 +332,7 @@ You CANNOT unlock if:
 - 🖥️ Fullscreen (for videos)
 
 **Privacy Features:**
+
 - Media stays in browser memory only
 - Not saved to disk or cache
 - Secure playback URL (can't be shared)
@@ -324,12 +341,14 @@ You CANNOT unlock if:
 ### Step 4: Close the Player
 
 When you're done:
+
 1. Click "Close" or the X button
 2. Media is cleared from memory
 3. Playback URL is revoked
 4. Message status changes to "Unlocked"
 
 **Can I Watch Again?**
+
 - Yes! Click "Unlock" again anytime
 - The decryption process repeats
 - Your private key is always required
@@ -337,27 +356,30 @@ When you're done:
 ### Troubleshooting Unlock Issues
 
 **"Timestamp not reached"**
+
 - Wait until the unlock time arrives
 - Check the countdown timer
 - Ensure your system clock is correct
 
 **"Decryption failed"**
+
 - Make sure you're using the correct wallet
 - Verify you're the intended recipient
 - Check that Talisman is unlocked
 - Try disconnecting and reconnecting wallet
 
 **"Download failed"**
+
 - Check your internet connection
 - Wait a moment and try again
 - IPFS nodes may be temporarily unavailable
 - Contact sender to verify CIDs are correct
 
 **"Hash verification failed"**
+
 - The encrypted data may be corrupted
 - Contact the sender
 - They may need to resend the message
-
 
 ## Privacy Features
 
@@ -368,16 +390,19 @@ Lockdrop is designed with privacy as the foundation. Here's how your data is pro
 ### 1. Client-Side Encryption
 
 **What it means:**
+
 - All encryption happens in YOUR browser
 - Your media never leaves your device unencrypted
 - No server ever sees your plaintext content
 
 **How it works:**
+
 - Browser generates a unique AES-256 key for each message
 - Media is encrypted before upload
 - Only the recipient's private key can decrypt it
 
 **What you see:**
+
 - "Encrypting..." progress indicator
 - Confirmation that encryption completed
 - No plaintext data in network requests
@@ -385,16 +410,19 @@ Lockdrop is designed with privacy as the foundation. Here's how your data is pro
 ### 2. Decentralized Storage
 
 **What it means:**
+
 - Your encrypted content is stored on IPFS
 - Distributed across multiple nodes worldwide
 - No single company controls your data
 
 **How it works:**
+
 - Encrypted files uploaded to Web3.Storage
 - Automatically pinned to IPFS network
 - Content-addressed (CID) for integrity
 
 **Benefits:**
+
 - Resilient to server failures
 - Censorship-resistant
 - Permanent storage option
@@ -402,16 +430,19 @@ Lockdrop is designed with privacy as the foundation. Here's how your data is pro
 ### 3. Blockchain-Enforced Time-Locks
 
 **What it means:**
+
 - Unlock times are enforced by Polkadot blockchain
 - No one can override the timestamp
 - Decentralized consensus guarantees fairness
 
 **How it works:**
+
 - Metadata stored on-chain (CIDs, timestamp, addresses)
 - Smart contract verifies unlock conditions
 - Recipients can't decrypt before timestamp
 
 **Benefits:**
+
 - Trustless enforcement
 - Transparent and verifiable
 - Immutable once set
@@ -419,12 +450,14 @@ Lockdrop is designed with privacy as the foundation. Here's how your data is pro
 ### 4. Zero-Knowledge Design
 
 **What Lockdrop NEVER sees:**
+
 - Your unencrypted media
 - Your encryption keys
 - Your private keys (always in Talisman)
 - Your decrypted content
 
 **What IS visible:**
+
 - Encrypted blobs (meaningless without keys)
 - IPFS CIDs (public identifiers)
 - Blockchain metadata (addresses, timestamps)
@@ -433,12 +466,14 @@ Lockdrop is designed with privacy as the foundation. Here's how your data is pro
 ### 5. Memory Safety
 
 **Automatic protections:**
+
 - Decrypted content only in browser memory
 - Never written to disk or cache
 - Object URLs revoked after playback
 - Sensitive data cleared after operations
 
 **What this prevents:**
+
 - Content leaking to disk
 - Browser cache exposure
 - Memory dumps containing plaintext
@@ -447,6 +482,7 @@ Lockdrop is designed with privacy as the foundation. Here's how your data is pro
 ### Privacy Best Practices
 
 ✅ **DO:**
+
 - Back up your wallet seed phrase securely
 - Verify recipient addresses before sending
 - Use strong, unique passphrases for redeem packages
@@ -454,6 +490,7 @@ Lockdrop is designed with privacy as the foundation. Here's how your data is pro
 - Review transaction details before signing
 
 ❌ **DON'T:**
+
 - Share your seed phrase with anyone
 - Store seed phrases digitally or in the cloud
 - Use the same passphrase for multiple redeem packages
@@ -463,6 +500,7 @@ Lockdrop is designed with privacy as the foundation. Here's how your data is pro
 ### What Data is Public?
 
 **Public Information:**
+
 - Sender and recipient addresses (on blockchain)
 - Unlock timestamps (on blockchain)
 - IPFS CIDs (content identifiers)
@@ -470,6 +508,7 @@ Lockdrop is designed with privacy as the foundation. Here's how your data is pro
 - Message metadata (file size, type)
 
 **Private Information:**
+
 - Media content (encrypted)
 - Encryption keys (encrypted with recipient's public key)
 - Decrypted content (only in recipient's browser)
@@ -484,7 +523,6 @@ You can verify Lockdrop's privacy claims:
 4. **Blockchain Explorer**: View on-chain metadata
 5. **Security Audit**: Review audit reports (if available)
 
-
 ## Key Backup
 
 ### Why Backup is Critical
@@ -496,12 +534,14 @@ There is NO password recovery, NO account restoration, and NO customer support t
 ### What is a Seed Phrase?
 
 A seed phrase (also called recovery phrase or mnemonic) is:
+
 - 12 or 24 words generated when you create a wallet
 - The master key to all your accounts
 - Used to restore your wallet on any device
 - The ONLY way to recover if you lose access
 
 **Example seed phrase:**
+
 ```
 witch collapse practice feed shame open despair creek road again ice least
 ```
@@ -521,6 +561,7 @@ witch collapse practice feed shame open despair creek road again ice least
 #### Step 2: Write It Down
 
 **Best Practice: Paper Backup**
+
 1. Get a piece of paper and pen
 2. Write down all words in order
 3. Number each word (1-12 or 1-24)
@@ -528,6 +569,7 @@ witch collapse practice feed shame open despair creek road again ice least
 5. Verify the order is correct
 
 **Alternative: Metal Backup**
+
 - Use a metal seed phrase backup device
 - Resistant to fire, water, and corrosion
 - Available from crypto hardware vendors
@@ -535,12 +577,14 @@ witch collapse practice feed shame open despair creek road again ice least
 #### Step 3: Store It Securely
 
 **Good Storage Options:**
+
 - ✅ Fireproof safe at home
 - ✅ Safety deposit box at bank
 - ✅ Multiple paper copies in different secure locations
 - ✅ Metal backup in secure location
 
 **BAD Storage Options:**
+
 - ❌ Digital file on computer
 - ❌ Cloud storage (Google Drive, Dropbox, etc.)
 - ❌ Email or messaging apps
@@ -559,15 +603,18 @@ witch collapse practice feed shame open despair creek road again ice least
 ### What to Backup
 
 **Essential:**
+
 - ✅ Wallet seed phrase (12-24 words)
 - ✅ Wallet password (if you might forget it)
 
 **Recommended:**
+
 - ✅ Polkadot addresses (for reference)
 - ✅ Important message CIDs (for re-pinning)
 - ✅ Redeem package passphrases (if you created any)
 
 **Not Necessary:**
+
 - ❌ Transaction hashes (on blockchain forever)
 - ❌ Public keys (derived from seed phrase)
 - ❌ Encrypted content (on IPFS)
@@ -603,12 +650,14 @@ witch collapse practice feed shame open despair creek road again ice least
 ### If You Lose Your Seed Phrase
 
 **Before it's too late:**
+
 - Create a new wallet immediately
 - Transfer any assets to the new wallet
 - Update recipient addresses for future messages
 - Inform senders of your new address
 
 **After it's lost:**
+
 - You cannot recover the account
 - You cannot decrypt received messages
 - You cannot access any assets
@@ -625,7 +674,6 @@ witch collapse practice feed shame open despair creek road again ice least
 - [ ] Never stored digitally or online
 
 **Remember: Your seed phrase is your responsibility. Lockdrop cannot help you recover it!**
-
 
 ## FAQ
 
@@ -812,6 +860,7 @@ A: Yes! Lockdrop is open source. Check the GitHub repository for contribution gu
 
 **Q: Where can I learn more?**  
 A: Visit our documentation:
+
 - User Guide (this document)
 - Developer Guide (for technical details)
 - Design Document (architecture and decisions)
@@ -826,23 +875,27 @@ A: Visit our documentation:
 ## Quick Reference
 
 ### Supported Browsers
+
 - ✅ Chrome 90+
 - ✅ Firefox 88+
 - ✅ Edge 90+
 - ⚠️ Safari 14+ (limited recording support)
 
 ### Supported File Formats
+
 - **Audio**: MP3, WAV, OGG
 - **Video**: MP4, WEBM, MOV
 - **Max Size**: 100MB
 
 ### Important Links
+
 - **Talisman Wallet**: https://talisman.xyz/
 - **Westend Faucet**: https://faucet.polkadot.io/westend
 - **GitHub Repository**: [Your repo URL]
 - **Documentation**: [Your docs URL]
 
 ### Message Status Guide
+
 - 🔒 **Locked**: Unlock time hasn't arrived
 - 🔓 **Unlockable**: Ready to decrypt and view
 - ✅ **Unlocked**: Already viewed (can view again)

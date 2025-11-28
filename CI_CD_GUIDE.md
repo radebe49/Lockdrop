@@ -5,6 +5,7 @@ This guide explains the Continuous Integration and Continuous Deployment (CI/CD)
 ## Overview
 
 The CI/CD pipeline automatically:
+
 - Lints and type-checks code
 - Builds the application
 - Runs tests
@@ -16,37 +17,44 @@ The CI/CD pipeline automatically:
 ### 1. Main CI/CD Pipeline (`ci.yml`)
 
 **Triggers:**
+
 - Push to `main` or `develop` branches
 - Pull requests to `main` or `develop` branches
 
 **Jobs:**
 
 #### Lint and Type Check
+
 - Runs ESLint to check code quality
 - Runs TypeScript compiler for type checking
 - Checks code formatting with Prettier
 
 #### Build
+
 - Installs dependencies
 - Builds Next.js application
 - Uploads build artifacts for inspection
 
 #### Test
+
 - Runs unit tests (if available)
 - Runs integration tests (if available)
 - Continues even if tests fail (for now)
 
 #### Security Audit
+
 - Runs `npm audit` to check for vulnerabilities
 - Uses `audit-ci` for stricter vulnerability checking
 - Continues even if moderate vulnerabilities found
 
 #### Deploy Preview
+
 - Triggers on pull requests
 - Deploys to Vercel preview environment
 - Comments on PR with deployment status
 
 #### Deploy Production
+
 - Triggers on push to `main` branch
 - Deploys to Vercel production environment
 - Only runs if all previous jobs pass
@@ -54,10 +62,12 @@ The CI/CD pipeline automatically:
 ### 2. Dependency Updates (`dependency-update.yml`)
 
 **Triggers:**
+
 - Weekly schedule (Monday 9:00 AM UTC)
 - Manual trigger via GitHub Actions UI
 
 **Actions:**
+
 - Updates npm dependencies to latest compatible versions
 - Runs security audit and applies fixes
 - Creates pull request with changes
@@ -66,11 +76,13 @@ The CI/CD pipeline automatically:
 ### 3. CodeQL Security Analysis (`codeql.yml`)
 
 **Triggers:**
+
 - Push to `main` branch
 - Pull requests to `main` branch
 - Weekly schedule (Wednesday 3:00 AM UTC)
 
 **Actions:**
+
 - Analyzes JavaScript and TypeScript code
 - Detects security vulnerabilities
 - Reports findings in GitHub Security tab
@@ -83,16 +95,14 @@ Add these secrets in GitHub repository settings (Settings → Secrets and variab
 
 #### Required Secrets
 
-| Secret Name | Description | How to Get |
-|------------|-------------|------------|
-| `VERCEL_TOKEN` | Vercel authentication token | [Vercel Account Settings](https://vercel.com/account/tokens) |
-| `VERCEL_ORG_ID` | Vercel organization ID | Run `vercel link` locally, check `.vercel/project.json` |
-| `VERCEL_PROJECT_ID` | Vercel project ID | Run `vercel link` locally, check `.vercel/project.json` |
-| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Smart contract address | Your deployed contract on Westend |
-| `NEXT_PUBLIC_RPC_ENDPOINT` | Polkadot RPC endpoint | `wss://westend-rpc.polkadot.io` |
-| `NEXT_PUBLIC_NETWORK` | Network name | `westend` |
-
-
+| Secret Name                    | Description                 | How to Get                                                   |
+| ------------------------------ | --------------------------- | ------------------------------------------------------------ |
+| `VERCEL_TOKEN`                 | Vercel authentication token | [Vercel Account Settings](https://vercel.com/account/tokens) |
+| `VERCEL_ORG_ID`                | Vercel organization ID      | Run `vercel link` locally, check `.vercel/project.json`      |
+| `VERCEL_PROJECT_ID`            | Vercel project ID           | Run `vercel link` locally, check `.vercel/project.json`      |
+| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Smart contract address      | Your deployed contract on Westend                            |
+| `NEXT_PUBLIC_RPC_ENDPOINT`     | Polkadot RPC endpoint       | `wss://westend-rpc.polkadot.io`                              |
+| `NEXT_PUBLIC_NETWORK`          | Network name                | `westend`                                                    |
 
 ### 2. Get Vercel Credentials
 
@@ -111,6 +121,7 @@ cat .vercel/project.json
 ```
 
 The output will show:
+
 ```json
 {
   "orgId": "team_xxxxx",
@@ -237,11 +248,11 @@ Edit `.github/workflows/ci.yml`:
 ```yaml
 on:
   push:
-    branches: [main, develop, feature/*]  # Add more branches
+    branches: [main, develop, feature/*] # Add more branches
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 0 * * *'  # Run daily at midnight
+    - cron: "0 0 * * *" # Run daily at midnight
 ```
 
 ### Add New Jobs
@@ -251,12 +262,12 @@ jobs:
   my-custom-job:
     name: My Custom Job
     runs-on: ubuntu-latest
-    needs: [lint, build]  # Run after these jobs
-    
+    needs: [lint, build] # Run after these jobs
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Run custom script
         run: npm run my-script
 ```
@@ -274,28 +285,33 @@ jobs:
 ## Best Practices
 
 ### 1. Keep Secrets Secure
+
 - Never commit secrets to Git
 - Rotate tokens regularly
 - Use different tokens for different environments
 - Limit token permissions to minimum required
 
 ### 2. Fast Feedback
+
 - Keep workflows fast (< 5 minutes ideal)
 - Use caching for dependencies
 - Run expensive jobs only when needed
 - Parallelize independent jobs
 
 ### 3. Fail Fast
+
 - Run quick checks (lint, type check) first
 - Fail early on critical errors
 - Use `continue-on-error` for non-critical checks
 
 ### 4. Clear Notifications
+
 - Use descriptive job names
 - Add comments to PRs with deployment URLs
 - Send notifications on production deployments
 
 ### 5. Version Control
+
 - Keep workflow files in version control
 - Review workflow changes in PRs
 - Test workflow changes on feature branches
@@ -305,6 +321,7 @@ jobs:
 ### Issue: Workflow not triggering
 
 **Solution:**
+
 - Check workflow file syntax (YAML is sensitive to indentation)
 - Verify triggers match your branch names
 - Ensure GitHub Actions is enabled in repository settings
@@ -312,6 +329,7 @@ jobs:
 ### Issue: Build fails with "Module not found"
 
 **Solution:**
+
 ```bash
 # Clear cache and reinstall
 rm -rf node_modules package-lock.json
@@ -322,6 +340,7 @@ npm run build
 ### Issue: Vercel deployment fails
 
 **Solution:**
+
 - Verify `VERCEL_TOKEN` is valid and not expired
 - Check `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` are correct
 - Ensure environment variables are set in GitHub Secrets
@@ -330,6 +349,7 @@ npm run build
 ### Issue: Type check fails in CI but passes locally
 
 **Solution:**
+
 ```bash
 # Use exact same TypeScript version as CI
 npm ci  # Instead of npm install
@@ -339,6 +359,7 @@ npx tsc --noEmit
 ### Issue: Security audit fails
 
 **Solution:**
+
 ```bash
 # Update vulnerable packages
 npm audit fix
@@ -360,8 +381,8 @@ Already configured in workflows:
 - name: Setup Node.js
   uses: actions/setup-node@v4
   with:
-    node-version: '18'
-    cache: 'npm'  # Caches node_modules
+    node-version: "18"
+    cache: "npm" # Caches node_modules
 ```
 
 ### Conditional Jobs
@@ -371,7 +392,7 @@ Run jobs only when needed:
 ```yaml
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main'  # Only on main branch
+    if: github.ref == 'refs/heads/main' # Only on main branch
 ```
 
 ### Matrix Builds
@@ -399,9 +420,9 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Deployment environment'
+        description: "Deployment environment"
         required: true
-        default: 'staging'
+        default: "staging"
         type: choice
         options:
           - staging

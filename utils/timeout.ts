@@ -1,6 +1,6 @@
 /**
  * Timeout Utilities
- * 
+ *
  * Provides timeout wrappers for async operations to prevent indefinite hangs
  * when interacting with external services (IPFS, blockchain, wallet extensions).
  */
@@ -9,20 +9,24 @@
  * Error thrown when an operation times out
  */
 export class TimeoutError extends Error {
-  constructor(message: string, public readonly operation: string, public readonly timeoutMs: number) {
+  constructor(
+    message: string,
+    public readonly operation: string,
+    public readonly timeoutMs: number
+  ) {
     super(message);
-    this.name = 'TimeoutError';
+    this.name = "TimeoutError";
   }
 }
 
 /**
  * Wrap a promise with a timeout
- * 
+ *
  * @param promise - The promise to wrap
  * @param timeoutMs - Timeout in milliseconds
  * @param operation - Description of the operation (for error messages)
  * @returns Promise that rejects with TimeoutError if timeout is exceeded
- * 
+ *
  * @example
  * ```typescript
  * const result = await withTimeout(
@@ -64,12 +68,12 @@ export async function withTimeout<T>(
 /**
  * Wrap a promise with a timeout and AbortController
  * Useful for fetch requests and other abortable operations
- * 
+ *
  * @param promiseFn - Function that takes an AbortSignal and returns a promise
  * @param timeoutMs - Timeout in milliseconds
  * @param operation - Description of the operation
  * @returns Promise that rejects with TimeoutError if timeout is exceeded
- * 
+ *
  * @example
  * ```typescript
  * const result = await withAbortTimeout(
@@ -115,11 +119,11 @@ export async function withAbortTimeout<T>(
 
 /**
  * Retry a promise with exponential backoff and timeout
- * 
+ *
  * @param promiseFn - Function that returns a promise
  * @param options - Retry options
  * @returns Promise that resolves with the result or rejects after all retries
- * 
+ *
  * @example
  * ```typescript
  * const result = await withRetry(
@@ -143,14 +147,15 @@ export async function withRetry<T>(
     onRetry?: (attempt: number, error: Error) => void;
   }
 ): Promise<T> {
-  const { maxAttempts, timeoutMs, initialDelayMs, operation, onRetry } = options;
+  const { maxAttempts, timeoutMs, initialDelayMs, operation, onRetry } =
+    options;
   let lastError: Error;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       return await withTimeout(promiseFn(), timeoutMs, operation);
     } catch (error) {
-      lastError = error instanceof Error ? error : new Error('Unknown error');
+      lastError = error instanceof Error ? error : new Error("Unknown error");
 
       if (attempt < maxAttempts) {
         const delay = initialDelayMs * Math.pow(2, attempt - 1);
@@ -169,7 +174,7 @@ export async function withRetry<T>(
 
 /**
  * Sleep for a specified duration
- * 
+ *
  * @param ms - Milliseconds to sleep
  * @returns Promise that resolves after the delay
  */

@@ -94,18 +94,17 @@ export class UnlockService {
       // Parse the encrypted key data (may include metadata)
       const encryptedKeyText = await encryptedKeyBlob.text();
       const keyData = JSON.parse(encryptedKeyText);
-      
+
       // Check if this is the new format with metadata or old format
       const encryptedKey: EncryptedKey = keyData.encryptedKey || keyData;
       const metadata = keyData.metadata || null;
-      
+
       console.log("[UnlockService] Metadata from IPFS:", metadata);
 
       // Stage 3: Decrypt AES key using Talisman wallet
       onProgress?.("Decrypting encryption key", 40);
-      const aesKeyData = await AsymmetricCrypto.decryptAESKeyWithTalisman(
-        encryptedKey
-      );
+      const aesKeyData =
+        await AsymmetricCrypto.decryptAESKeyWithTalisman(encryptedKey);
 
       // Import the AES key
       const aesKey = await CryptoService.importKey(aesKeyData);
@@ -131,16 +130,18 @@ export class UnlockService {
 
       // Stage 6: Decrypt media blob
       onProgress?.("Decrypting media", 80);
-      const encryptedData = await CryptoService.blobToEncryptedData(
-        encryptedMediaBlob
-      );
+      const encryptedData =
+        await CryptoService.blobToEncryptedData(encryptedMediaBlob);
       const decryptedArrayBuffer = await CryptoService.decryptBlob(
         encryptedData,
         aesKey
       );
 
       // Determine MIME type - prefer metadata from IPFS, fallback to detection
-      let mimeType = metadata?.mimeType || message.metadata?.mimeType || "application/octet-stream";
+      let mimeType =
+        metadata?.mimeType ||
+        message.metadata?.mimeType ||
+        "application/octet-stream";
 
       console.log("[UnlockService] MIME type from metadata:", mimeType);
 
@@ -201,8 +202,11 @@ export class UnlockService {
             mimeType = "audio/ogg";
           }
         }
-        
-        console.log("[UnlockService] Detected MIME type from magic numbers:", mimeType);
+
+        console.log(
+          "[UnlockService] Detected MIME type from magic numbers:",
+          mimeType
+        );
       }
 
       console.log("[UnlockService] Final MIME type:", mimeType);
@@ -235,7 +239,7 @@ export class UnlockService {
 
   /**
    * Check if a message has been unlocked
-   * 
+   *
    * Note: Unlock status is determined by comparing current time with unlock timestamp.
    * Once a message's unlock time has passed, it's considered unlockable.
    * There's no need to track "unlocked" state separately since the blockchain
@@ -247,5 +251,4 @@ export class UnlockService {
   static isMessageUnlockable(unlockTimestamp: number): boolean {
     return Date.now() >= unlockTimestamp;
   }
-
 }

@@ -1,31 +1,35 @@
 /**
  * Edge Case Validation Utilities
- * 
+ *
  * Provides validation functions for handling edge cases and
  * preventing common errors.
- * 
+ *
  * Requirements: 12.2 - Handle edge cases
  */
 
 // Pre-load web3Enable to avoid dynamic imports
-let web3EnableCache: typeof import('@polkadot/extension-dapp').web3Enable | null = null;
+let web3EnableCache:
+  | typeof import("@polkadot/extension-dapp").web3Enable
+  | null = null;
 
-if (typeof window !== 'undefined') {
-  import('@polkadot/extension-dapp').then((module) => {
-    web3EnableCache = module.web3Enable;
-  }).catch(err => {
-    console.warn('Failed to preload web3Enable:', err);
-  });
+if (typeof window !== "undefined") {
+  import("@polkadot/extension-dapp")
+    .then((module) => {
+      web3EnableCache = module.web3Enable;
+    })
+    .catch((err) => {
+      console.warn("Failed to preload web3Enable:", err);
+    });
 }
 
 /**
  * Validate Ethereum address format
- * 
+ *
  * Note: Previously validated Polkadot addresses, but the project now uses
  * Ethereum addresses (0x...) for compatibility with ethers.js and pallet-revive
  */
 export function isValidEthereumAddress(address: string): boolean {
-  if (!address || typeof address !== 'string') {
+  if (!address || typeof address !== "string") {
     return false;
   }
 
@@ -39,7 +43,9 @@ export function isValidEthereumAddress(address: string): boolean {
  * Kept for backward compatibility
  */
 export function isValidPolkadotAddress(address: string): boolean {
-  console.warn('isValidPolkadotAddress is deprecated. Use isValidEthereumAddress instead.');
+  console.warn(
+    "isValidPolkadotAddress is deprecated. Use isValidEthereumAddress instead."
+  );
   return isValidEthereumAddress(address);
 }
 
@@ -47,7 +53,7 @@ export function isValidPolkadotAddress(address: string): boolean {
  * Validate IPFS CID format
  */
 export function isValidIPFSCID(cid: string): boolean {
-  if (!cid || typeof cid !== 'string') {
+  if (!cid || typeof cid !== "string") {
     return false;
   }
 
@@ -64,7 +70,7 @@ export function isValidIPFSCID(cid: string): boolean {
  * Validate timestamp is in the future
  */
 export function isValidFutureTimestamp(timestamp: number): boolean {
-  if (!timestamp || typeof timestamp !== 'number') {
+  if (!timestamp || typeof timestamp !== "number") {
     return false;
   }
 
@@ -77,16 +83,16 @@ export function isValidFutureTimestamp(timestamp: number): boolean {
 export function isValidMediaType(mimeType: string): boolean {
   const validTypes = [
     // Audio
-    'audio/mpeg',
-    'audio/mp3',
-    'audio/wav',
-    'audio/ogg',
-    'audio/webm',
+    "audio/mpeg",
+    "audio/mp3",
+    "audio/wav",
+    "audio/ogg",
+    "audio/webm",
     // Video
-    'video/mp4',
-    'video/webm',
-    'video/quicktime',
-    'video/x-msvideo',
+    "video/mp4",
+    "video/webm",
+    "video/quicktime",
+    "video/x-msvideo",
   ];
 
   return validTypes.includes(mimeType.toLowerCase());
@@ -106,7 +112,7 @@ export function isValidFileSize(
  * Check if wallet extension is installed
  */
 export async function isWalletInstalled(): Promise<boolean> {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return false;
   }
 
@@ -114,12 +120,12 @@ export async function isWalletInstalled(): Promise<boolean> {
     // Use cached module or dynamic import as fallback
     let web3Enable = web3EnableCache;
     if (!web3Enable) {
-      const module = await import('@polkadot/extension-dapp');
+      const module = await import("@polkadot/extension-dapp");
       web3Enable = module.web3Enable;
       web3EnableCache = web3Enable;
     }
-    
-    const extensions = await web3Enable('Lockdrop');
+
+    const extensions = await web3Enable("Lockdrop");
     return extensions.length > 0;
   } catch {
     return false;
@@ -137,25 +143,25 @@ export function checkBrowserSupport(): {
 
   // Check Web Crypto API
   if (!window.crypto || !window.crypto.subtle) {
-    missing.push('Web Crypto API');
+    missing.push("Web Crypto API");
   }
 
   // Check MediaRecorder API
   if (!window.MediaRecorder) {
-    missing.push('MediaRecorder API');
+    missing.push("MediaRecorder API");
   }
 
   // Check Blob support
   if (!window.Blob) {
-    missing.push('Blob API');
+    missing.push("Blob API");
   }
 
   // Check localStorage
   try {
-    localStorage.setItem('test', 'test');
-    localStorage.removeItem('test');
+    localStorage.setItem("test", "test");
+    localStorage.removeItem("test");
   } catch {
-    missing.push('localStorage');
+    missing.push("localStorage");
   }
 
   return {
@@ -168,16 +174,16 @@ export function checkBrowserSupport(): {
  * Sanitize user input to prevent XSS
  */
 export function sanitizeInput(input: string): string {
-  if (!input || typeof input !== 'string') {
-    return '';
+  if (!input || typeof input !== "string") {
+    return "";
   }
 
   return input
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
 }
 
 /**
@@ -193,9 +199,9 @@ export async function checkNetworkConnectivity(): Promise<boolean> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
 
-    await fetch('https://www.google.com/favicon.ico', {
-      method: 'HEAD',
-      mode: 'no-cors',
+    await fetch("https://www.google.com/favicon.ico", {
+      method: "HEAD",
+      mode: "no-cors",
       signal: controller.signal,
     });
 
@@ -240,33 +246,33 @@ export function validateMessageMetadata(metadata: {
   const errors: string[] = [];
 
   if (!metadata.encryptedKeyCID || !isValidIPFSCID(metadata.encryptedKeyCID)) {
-    errors.push('Invalid encrypted key CID');
+    errors.push("Invalid encrypted key CID");
   }
 
   if (
     !metadata.encryptedMessageCID ||
     !isValidIPFSCID(metadata.encryptedMessageCID)
   ) {
-    errors.push('Invalid encrypted message CID');
+    errors.push("Invalid encrypted message CID");
   }
 
   if (!metadata.messageHash || metadata.messageHash.length !== 64) {
-    errors.push('Invalid message hash');
+    errors.push("Invalid message hash");
   }
 
   if (
     !metadata.unlockTimestamp ||
-    typeof metadata.unlockTimestamp !== 'number'
+    typeof metadata.unlockTimestamp !== "number"
   ) {
-    errors.push('Invalid unlock timestamp');
+    errors.push("Invalid unlock timestamp");
   }
 
   if (!metadata.sender || !isValidEthereumAddress(metadata.sender)) {
-    errors.push('Invalid sender address (must be Ethereum format: 0x...)');
+    errors.push("Invalid sender address (must be Ethereum format: 0x...)");
   }
 
   if (!metadata.recipient || !isValidEthereumAddress(metadata.recipient)) {
-    errors.push('Invalid recipient address (must be Ethereum format: 0x...)');
+    errors.push("Invalid recipient address (must be Ethereum format: 0x...)");
   }
 
   return {

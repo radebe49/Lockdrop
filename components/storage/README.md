@@ -9,6 +9,7 @@ UI components for IPFS storage operations with Storacha Network.
 Displays real-time upload progress with provider information and error handling.
 
 **Features:**
+
 - Real-time progress tracking (0-100%)
 - Provider badge (Storacha)
 - Status indicators (uploading, success, error)
@@ -19,29 +20,31 @@ Displays real-time upload progress with provider information and error handling.
 **Usage:**
 
 ```tsx
-import { UploadProgress } from '@/components/storage';
-import { ipfsService } from '@/lib/storage';
+import { UploadProgress } from "@/components/storage";
+import { ipfsService } from "@/lib/storage";
 
 function MyComponent() {
   const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
-  const [provider, setProvider] = useState<'storacha'>();
+  const [status, setStatus] = useState<
+    "idle" | "uploading" | "success" | "error"
+  >("idle");
+  const [provider, setProvider] = useState<"storacha">();
   const [error, setError] = useState<string>();
 
   const handleUpload = async (blob: Blob) => {
-    setStatus('uploading');
+    setStatus("uploading");
     setProgress(0);
-    
+
     try {
-      const result = await ipfsService.uploadEncryptedBlob(blob, 'my-file', {
+      const result = await ipfsService.uploadEncryptedBlob(blob, "my-file", {
         onProgress: (p) => setProgress(p),
       });
-      
+
       setProvider(result.provider);
-      setStatus('success');
-      console.log('Uploaded to IPFS:', result.cid);
+      setStatus("success");
+      console.log("Uploaded to IPFS:", result.cid);
     } catch (err) {
-      setStatus('error');
+      setStatus("error");
       setError(err.message);
     }
   };
@@ -53,7 +56,7 @@ function MyComponent() {
       provider={provider}
       error={error}
       onRetry={handleUpload}
-      onCancel={() => setStatus('idle')}
+      onCancel={() => setStatus("idle")}
     />
   );
 }
@@ -61,22 +64,22 @@ function MyComponent() {
 
 **Props:**
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `progress` | `number` | Current upload progress (0-100) |
-| `status` | `'idle' \| 'uploading' \| 'success' \| 'error'` | Upload status |
-| `provider` | `'storacha'` | Provider being used (optional) |
-| `error` | `string` | Error message if upload failed (optional) |
-| `onRetry` | `() => void` | Callback for retry action (optional) |
-| `onCancel` | `() => void` | Callback for cancel action (optional) |
+| Prop       | Type                                            | Description                               |
+| ---------- | ----------------------------------------------- | ----------------------------------------- |
+| `progress` | `number`                                        | Current upload progress (0-100)           |
+| `status`   | `'idle' \| 'uploading' \| 'success' \| 'error'` | Upload status                             |
+| `provider` | `'storacha'`                                    | Provider being used (optional)            |
+| `error`    | `string`                                        | Error message if upload failed (optional) |
+| `onRetry`  | `() => void`                                    | Callback for retry action (optional)      |
+| `onCancel` | `() => void`                                    | Callback for cancel action (optional)     |
 
 ## Integration with IPFSService
 
 The UploadProgress component is designed to work seamlessly with the IPFSService:
 
 ```tsx
-import { ipfsService } from '@/lib/storage';
-import { UploadProgress } from '@/components/storage';
+import { ipfsService } from "@/lib/storage";
+import { UploadProgress } from "@/components/storage";
 
 // The StorachaService automatically:
 // 1. Tries Storacha upload (3 attempts with exponential backoff)
@@ -85,12 +88,12 @@ import { UploadProgress } from '@/components/storage';
 
 const result = await ipfsService.uploadEncryptedBlob(
   encryptedBlob,
-  'encrypted-media',
+  "encrypted-media",
   {
     onProgress: (progress) => {
       // Update UI with progress
       setProgress(progress);
-    }
+    },
   }
 );
 
@@ -101,6 +104,7 @@ setProvider(result.provider);
 ## Testing
 
 Visit `/test-media` to see a live demo of the UploadProgress component with simulated upload behavior including:
+
 - Progress tracking
 - Provider display (Storacha)
 - Error handling with retry
@@ -109,4 +113,5 @@ Visit `/test-media` to see a live demo of the UploadProgress component with simu
 ## Requirements
 
 This component fulfills:
+
 - **Requirement 5.4**: Upload progress tracking and display

@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
 /**
  * Component for generating redeem packages for recipients without wallets
  * Requirements: 6.6
  */
 
-import { useState } from 'react';
-import { RedeemPackageService } from '@/lib/redeem';
-import { IPFSService } from '@/lib/storage';
-import type { ClaimLink } from '@/types/redeem';
+import { useState } from "react";
+import { RedeemPackageService } from "@/lib/redeem";
+import { IPFSService } from "@/lib/storage";
+import type { ClaimLink } from "@/types/redeem";
 
 interface RedeemPackageGeneratorProps {
   encryptedKeyCID: string;
@@ -29,8 +29,8 @@ export function RedeemPackageGenerator({
   onComplete,
   onCancel,
 }: RedeemPackageGeneratorProps) {
-  const [passphrase, setPassphrase] = useState('');
-  const [confirmPassphrase, setConfirmPassphrase] = useState('');
+  const [passphrase, setPassphrase] = useState("");
+  const [confirmPassphrase, setConfirmPassphrase] = useState("");
   const [expirationDays, setExpirationDays] = useState(30);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,12 +41,12 @@ export function RedeemPackageGenerator({
 
     // Validate passphrase
     if (passphrase.length < 8) {
-      setError('Passphrase must be at least 8 characters long');
+      setError("Passphrase must be at least 8 characters long");
       return;
     }
 
     if (passphrase !== confirmPassphrase) {
-      setError('Passphrases do not match');
+      setError("Passphrases do not match");
       return;
     }
 
@@ -70,9 +70,8 @@ export function RedeemPackageGenerator({
       );
 
       // Serialize for upload
-      const packageBlob = RedeemPackageService.serializeEncryptedPackage(
-        encryptedPackage
-      );
+      const packageBlob =
+        RedeemPackageService.serializeEncryptedPackage(encryptedPackage);
 
       // Upload to IPFS
       const uploadResult = await IPFSService.uploadFile(packageBlob);
@@ -87,9 +86,9 @@ export function RedeemPackageGenerator({
 
       onComplete(claimLink);
     } catch (err) {
-      console.error('Failed to generate redeem package:', err);
+      console.error("Failed to generate redeem package:", err);
       setError(
-        err instanceof Error ? err.message : 'Failed to generate redeem package'
+        err instanceof Error ? err.message : "Failed to generate redeem package"
       );
     } finally {
       setIsGenerating(false);
@@ -97,12 +96,12 @@ export function RedeemPackageGenerator({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">
+    <div className="mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-md">
+      <h2 className="mb-4 text-2xl font-bold">
         Create Claim Link for Recipient Without Wallet
       </h2>
 
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded">
+      <div className="mb-6 rounded border border-blue-200 bg-blue-50 p-4">
         <p className="text-sm text-blue-900">
           Since the recipient doesn&apos;t have a wallet yet, you can create a
           passphrase-protected claim link. Share the link and passphrase with
@@ -116,17 +115,17 @@ export function RedeemPackageGenerator({
         <div>
           <label
             htmlFor="passphrase"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="mb-1 block text-sm font-medium text-gray-700"
           >
             Passphrase (min. 8 characters)
           </label>
           <div className="relative">
             <input
               id="passphrase"
-              type={showPassphrase ? 'text' : 'password'}
+              type={showPassphrase ? "text" : "password"}
               value={passphrase}
               onChange={(e) => setPassphrase(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter a strong passphrase"
               disabled={isGenerating}
             />
@@ -135,7 +134,7 @@ export function RedeemPackageGenerator({
               onClick={() => setShowPassphrase(!showPassphrase)}
               className="absolute right-2 top-2 text-sm text-gray-600 hover:text-gray-800"
             >
-              {showPassphrase ? 'Hide' : 'Show'}
+              {showPassphrase ? "Hide" : "Show"}
             </button>
           </div>
         </div>
@@ -144,16 +143,16 @@ export function RedeemPackageGenerator({
         <div>
           <label
             htmlFor="confirmPassphrase"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="mb-1 block text-sm font-medium text-gray-700"
           >
             Confirm Passphrase
           </label>
           <input
             id="confirmPassphrase"
-            type={showPassphrase ? 'text' : 'password'}
+            type={showPassphrase ? "text" : "password"}
             value={confirmPassphrase}
             onChange={(e) => setConfirmPassphrase(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Re-enter passphrase"
             disabled={isGenerating}
           />
@@ -163,7 +162,7 @@ export function RedeemPackageGenerator({
         <div>
           <label
             htmlFor="expirationDays"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="mb-1 block text-sm font-medium text-gray-700"
           >
             Package Expiration (days)
           </label>
@@ -174,17 +173,17 @@ export function RedeemPackageGenerator({
             max="365"
             value={expirationDays}
             onChange={(e) => setExpirationDays(parseInt(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isGenerating}
           />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="mt-1 text-xs text-gray-500">
             The claim link will expire after this many days
           </p>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+          <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
             {error}
           </div>
         )}
@@ -194,14 +193,14 @@ export function RedeemPackageGenerator({
           <button
             onClick={handleGenerate}
             disabled={isGenerating || !passphrase || !confirmPassphrase}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
           >
-            {isGenerating ? 'Generating...' : 'Generate Claim Link'}
+            {isGenerating ? "Generating..." : "Generate Claim Link"}
           </button>
           <button
             onClick={onCancel}
             disabled={isGenerating}
-            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors"
+            className="rounded-md border border-gray-300 px-4 py-2 transition-colors hover:bg-gray-50 disabled:opacity-50"
           >
             Cancel
           </button>
@@ -209,11 +208,11 @@ export function RedeemPackageGenerator({
       </div>
 
       {/* Security Warning */}
-      <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
-        <p className="text-sm text-yellow-900 font-medium mb-2">
+      <div className="mt-6 rounded border border-yellow-200 bg-yellow-50 p-4">
+        <p className="mb-2 text-sm font-medium text-yellow-900">
           Important Security Notes:
         </p>
-        <ul className="text-xs text-yellow-800 space-y-1 list-disc list-inside">
+        <ul className="list-inside list-disc space-y-1 text-xs text-yellow-800">
           <li>Share the passphrase through a secure, separate channel</li>
           <li>The passphrase cannot be recovered if lost</li>
           <li>

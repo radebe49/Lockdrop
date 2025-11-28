@@ -54,8 +54,6 @@ export class IPFSService {
     );
   }
 
-
-
   /**
    * Sleep for a specified duration (used for retry backoff)
    *
@@ -220,8 +218,6 @@ export class IPFSService {
       "Legacy Web3.Storage upload is deprecated. Please use StorachaService instead."
     );
   }
-
-
 
   /**
    * Validate CID format

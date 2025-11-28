@@ -8,12 +8,46 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useWallet } from "@/lib/wallet/WalletProvider";
-import { ContractService } from "@/lib/contract/ContractService";
-import { UnlockService, UnlockResult } from "@/lib/unlock";
-import { UnlockFlow, MediaPlayer } from "@/components/unlock";
 import { Message } from "@/types/contract";
 import { calculateMessageStatus } from "@/utils/dateUtils";
+import type { UnlockResult } from "@/lib/unlock";
+
+// Dynamic imports for code splitting - heavy components loaded on demand
+const UnlockFlow = dynamic(
+  () => import("@/components/unlock").then((mod) => ({ default: mod.UnlockFlow })),
+  {
+    loading: () => (
+      <div className="flex min-h-screen items-center justify-center bg-dark-950">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-brand-500"></div>
+          <p className="mt-4 text-dark-400">Loading unlock interface...</p>
+        </div>
+      </div>
+    ),
+    ssr: false,
+  }
+);
+
+const MediaPlayer = dynamic(
+  () => import("@/components/unlock").then((mod) => ({ default: mod.MediaPlayer })),
+  {
+    loading: () => (
+      <div className="flex min-h-screen items-center justify-center bg-dark-950">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-brand-500"></div>
+          <p className="mt-4 text-dark-400">Loading media player...</p>
+        </div>
+      </div>
+    ),
+    ssr: false,
+  }
+);
+
+// Lazy load heavy services
+const loadContractService = () => import("@/lib/contract/ContractService").then((mod) => mod.ContractService);
+const loadUnlockService = () => import("@/lib/unlock").then((mod) => mod.UnlockService);
 
 export default function UnlockPage() {
   const router = useRouter();
@@ -38,6 +72,12 @@ export default function UnlockPage() {
       try {
         setLoading(true);
         setError(null);
+
+        // Lazy load services for better code splitting
+        const [ContractService, UnlockService] = await Promise.all([
+          loadContractService(),
+          loadUnlockService(),
+        ]);
 
         // Get all received messages and find the one we want
         const messages = await ContractService.getReceivedMessages(address);
@@ -72,9 +112,7 @@ export default function UnlockPage() {
 
         setMessage(msg);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load message"
-        );
+        setError(err instanceof Error ? err.message : "Failed to load message");
       } finally {
         setLoading(false);
       }
@@ -85,6 +123,8 @@ export default function UnlockPage() {
 
   const handleUnlock = async (msg: Message) => {
     try {
+      // Lazy load unlock service
+      const UnlockService = await loadUnlockService();
       const result = await UnlockService.unlockMessage(msg, {
         onProgress: (stage, progress) => {
           console.log(`${stage}: ${progress}%`);
@@ -93,12 +133,10 @@ export default function UnlockPage() {
 
       // Mark message as viewed in localStorage
       const viewedKey = `message_viewed_${msg.id}`;
-      localStorage.setItem(viewedKey, 'true');
+      localStorage.setItem(viewedKey, "true");
 
       // Update message status to Unlocked
-      setMessage((prev) =>
-        prev ? { ...prev, status: "Unlocked" } : null
-      );
+      setMessage((prev) => (prev ? { ...prev, status: "Unlocked" } : null));
 
       // Set unlock result to show player
       setUnlockResult(result);
@@ -120,9 +158,9 @@ export default function UnlockPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
           <p className="mt-4 text-gray-600">Loading message...</p>
         </div>
       </div>
@@ -131,11 +169,11 @@ export default function UnlockPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-          <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-4">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+        <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
             <svg
-              className="w-6 h-6 text-red-600"
+              className="h-6 w-6 text-red-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -148,13 +186,13 @@ export default function UnlockPage() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
+          <h2 className="mb-2 text-center text-xl font-bold text-gray-900">
             Unable to Load Message
           </h2>
-          <p className="text-gray-600 text-center mb-6">{error}</p>
+          <p className="mb-6 text-center text-gray-600">{error}</p>
           <button
             onClick={handleClose}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
           >
             Back to Dashboard
           </button>

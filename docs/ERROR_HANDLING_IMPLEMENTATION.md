@@ -5,6 +5,7 @@ This document describes the comprehensive error handling system implemented in L
 ## Overview
 
 The error handling system provides:
+
 - Centralized error classification and logging
 - User-friendly error messages with recovery suggestions
 - Automatic retry logic with exponential backoff
@@ -19,13 +20,14 @@ The error handling system provides:
 Classifies errors into categories and provides structured information:
 
 ```typescript
-import { classifyError } from '@/utils/errorHandling';
+import { classifyError } from "@/utils/errorHandling";
 
 const errorInfo = classifyError(error);
 // Returns: category, severity, message, suggestions, retryable, etc.
 ```
 
 **Error Categories:**
+
 - `WALLET` - Wallet connection and authentication issues
 - `MEDIA` - Media recording and upload issues
 - `ENCRYPTION` - Encryption/decryption failures
@@ -37,6 +39,7 @@ const errorInfo = classifyError(error);
 - `UNKNOWN` - Unclassified errors
 
 **Severity Levels:**
+
 - `INFO` - Informational messages
 - `WARNING` - Non-critical issues
 - `ERROR` - Operation failures
@@ -47,15 +50,16 @@ const errorInfo = classifyError(error);
 Centralized error logging with context:
 
 ```typescript
-import { ErrorLogger } from '@/lib/monitoring/ErrorLogger';
+import { ErrorLogger } from "@/lib/monitoring/ErrorLogger";
 
-ErrorLogger.log(error, 'Message Creation', {
-  messageId: '123',
-  recipientAddress: '5Grw...',
+ErrorLogger.log(error, "Message Creation", {
+  messageId: "123",
+  recipientAddress: "5Grw...",
 });
 ```
 
 **Features:**
+
 - In-memory log storage (last 100 errors)
 - Console logging based on severity
 - Production monitoring integration points
@@ -66,7 +70,7 @@ ErrorLogger.log(error, 'Message Creation', {
 Automatic retry with exponential backoff:
 
 ```typescript
-import { withRetry } from '@/utils/retry';
+import { withRetry } from "@/utils/retry";
 
 const result = await withRetry(
   async () => {
@@ -83,6 +87,7 @@ const result = await withRetry(
 ```
 
 **Features:**
+
 - Exponential backoff with jitter
 - Configurable retry attempts
 - Custom retry conditions
@@ -98,14 +103,15 @@ import {
   isValidIPFSCID,
   isValidFutureTimestamp,
   checkBrowserSupport,
-} from '@/utils/edgeCaseValidation';
+} from "@/utils/edgeCaseValidation";
 
 if (!isValidPolkadotAddress(address)) {
-  throw new Error('Invalid Polkadot address');
+  throw new Error("Invalid Polkadot address");
 }
 ```
 
 **Validators:**
+
 - Polkadot address format
 - IPFS CID format
 - Future timestamps
@@ -132,6 +138,7 @@ import { ErrorRecovery } from '@/components/ui';
 ```
 
 **Features:**
+
 - Color-coded severity indicators
 - User-friendly error messages
 - Actionable recovery suggestions
@@ -143,7 +150,7 @@ import { ErrorRecovery } from '@/components/ui';
 Monitor network connectivity:
 
 ```typescript
-import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 
 const { isOnline, isConnecting, lastChecked } = useNetworkStatus();
 
@@ -153,6 +160,7 @@ if (!isOnline) {
 ```
 
 **Features:**
+
 - Real-time online/offline detection
 - Periodic connectivity checks
 - Connection state tracking
@@ -168,6 +176,7 @@ Error boundaries are implemented for all major pages:
 - `app/claim/[packageCID]/error.tsx` - Claim errors
 
 Each boundary provides:
+
 - Context-specific error messages
 - Recovery suggestions
 - Retry functionality
@@ -178,23 +187,27 @@ Each boundary provides:
 All service classes implement comprehensive error handling:
 
 ### CryptoService
+
 - Key generation failures
 - Encryption/decryption errors
 - Memory cleanup failures
 
 ### IPFSService
+
 - Upload failures with retry
 - Download failures with retry
 - CID verification
 - Fallback to Pinata
 
 ### ContractService
+
 - RPC connection failures
 - Transaction submission errors
 - Query failures with retry
 - Insufficient funds detection
 
 ### UnlockService
+
 - Timestamp verification
 - Decryption failures
 - Hash verification
@@ -203,18 +216,21 @@ All service classes implement comprehensive error handling:
 ## Retry Strategies
 
 ### IPFS Operations
+
 - Max 3 attempts
 - Exponential backoff: 1s, 2s, 4s
 - Jitter: ±30%
 - Fallback to Pinata on failure
 
 ### Blockchain Operations
+
 - Max 3 attempts per endpoint
 - Multiple fallback RPC endpoints
 - Exponential backoff: 1s, 2s, 4s
 - Helpful error messages with faucet links
 
 ### Network Operations
+
 - Automatic retry on transient failures
 - Fail fast on non-retryable errors
 - Timeout handling
@@ -223,6 +239,7 @@ All service classes implement comprehensive error handling:
 ## Edge Cases Handled
 
 ### Wallet
+
 - ✅ Extension not installed
 - ✅ Wallet locked
 - ✅ Connection rejected
@@ -231,6 +248,7 @@ All service classes implement comprehensive error handling:
 - ✅ Wrong account selected
 
 ### Media
+
 - ✅ Permission denied
 - ✅ Unsupported format
 - ✅ File too large
@@ -238,6 +256,7 @@ All service classes implement comprehensive error handling:
 - ✅ Corrupted file
 
 ### Network
+
 - ✅ Offline mode
 - ✅ Slow connection
 - ✅ Timeout
@@ -245,6 +264,7 @@ All service classes implement comprehensive error handling:
 - ✅ DNS errors
 
 ### Blockchain
+
 - ✅ Insufficient funds
 - ✅ Transaction cancelled
 - ✅ RPC unavailable
@@ -252,6 +272,7 @@ All service classes implement comprehensive error handling:
 - ✅ Contract not found
 
 ### IPFS
+
 - ✅ Upload failure
 - ✅ Download failure
 - ✅ CID not found
@@ -259,6 +280,7 @@ All service classes implement comprehensive error handling:
 - ✅ Gateway timeout
 
 ### Validation
+
 - ✅ Invalid addresses
 - ✅ Past timestamps
 - ✅ Invalid CIDs
@@ -268,55 +290,62 @@ All service classes implement comprehensive error handling:
 ## Testing
 
 ### Unit Tests
+
 - `tests/edge-cases.test.ts` - Edge case validation
 - `tests/network-resilience.test.ts` - Network error handling
 
 ### Integration Tests
+
 - Error boundary rendering
 - Retry logic execution
 - Service error handling
 
 ### Manual Testing
+
 - See `docs/EDGE_CASE_TESTING.md` for comprehensive checklist
 
 ## Best Practices
 
 ### 1. Always Use Try-Catch
+
 ```typescript
 try {
   await riskyOperation();
 } catch (error) {
-  ErrorLogger.log(error, 'Operation Context');
+  ErrorLogger.log(error, "Operation Context");
   throw error; // Re-throw if needed
 }
 ```
 
 ### 2. Provide Context
+
 ```typescript
-ErrorLogger.log(error, 'Message Creation', {
-  step: 'encryption',
+ErrorLogger.log(error, "Message Creation", {
+  step: "encryption",
   fileSize: blob.size,
   recipient: recipientAddress,
 });
 ```
 
 ### 3. Use Retry for Transient Failures
+
 ```typescript
-const result = await withRetry(
-  () => ipfsService.upload(blob),
-  { maxAttempts: 3 }
-);
+const result = await withRetry(() => ipfsService.upload(blob), {
+  maxAttempts: 3,
+});
 ```
 
 ### 4. Validate Early
+
 ```typescript
 if (!isValidPolkadotAddress(address)) {
-  throw new Error('Invalid address');
+  throw new Error("Invalid address");
 }
 // Proceed with operation
 ```
 
 ### 5. Provide Recovery Options
+
 ```typescript
 <ErrorRecovery
   error={error}
@@ -334,10 +363,10 @@ In production, integrate with monitoring services:
 private static sendToMonitoring(entry: ErrorLogEntry): void {
   // Sentry
   Sentry.captureException(entry);
-  
+
   // LogRocket
   LogRocket.captureException(entry);
-  
+
   // Custom endpoint
   fetch('/api/errors', {
     method: 'POST',
@@ -349,18 +378,21 @@ private static sendToMonitoring(entry: ErrorLogEntry): void {
 ## User Experience
 
 ### Error Messages
+
 - Clear, non-technical language
 - Specific to the error context
 - Actionable suggestions
 - Technical details available but hidden
 
 ### Recovery Options
+
 - Retry button for retryable errors
 - Dismiss button for non-blocking errors
 - Navigation to relevant pages
 - Help links and documentation
 
 ### Visual Feedback
+
 - Color-coded severity (red, yellow, blue)
 - Icons for error types
 - Progress indicators during retry

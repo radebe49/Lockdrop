@@ -1,9 +1,3 @@
-/**
- * Logo - Lockdrop logo component
- *
- * Requirements: 11.1
- */
-
 "use client";
 
 import Image from "next/image";
@@ -11,23 +5,28 @@ import Image from "next/image";
 interface LogoProps {
   size?: "sm" | "md" | "lg";
   showIcon?: boolean;
+  showText?: boolean;
 }
 
-export function Logo({ size = "md", showIcon = true }: LogoProps) {
-  const sizeClasses = {
-    sm: "text-xl",
-    md: "text-2xl",
-    lg: "text-5xl",
-  };
-
+export function Logo({
+  size = "md",
+  showIcon = true,
+  showText = true,
+}: LogoProps) {
   const iconSizes = {
     sm: { width: 24, height: 24 },
     md: { width: 32, height: 32 },
     lg: { width: 64, height: 64 },
   };
 
+  const textSizes = {
+    sm: "text-lg",
+    md: "text-xl",
+    lg: "text-4xl",
+  };
+
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center gap-2">
       {showIcon && (
         <Image
           src="/logo.png"
@@ -38,11 +37,13 @@ export function Logo({ size = "md", showIcon = true }: LogoProps) {
           priority
         />
       )}
-      <span
-        className={`${sizeClasses[size]} bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text font-bold text-transparent`}
-      >
-        Lockdrop
-      </span>
+      {showText && (
+        <span
+          className={`${textSizes[size]} gradient-text font-display font-bold`}
+        >
+          Lockdrop
+        </span>
+      )}
     </div>
   );
 }

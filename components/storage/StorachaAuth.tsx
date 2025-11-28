@@ -1,35 +1,40 @@
-'use client';
+"use client";
 
 /**
  * Storacha Authentication Component
- * 
+ *
  * Handles email-based authentication and space creation for Storacha Network.
  * Users authenticate via email verification and create a space for storing content.
  */
 
-import { useState, useEffect } from 'react';
-import { storachaService } from '@/lib/storage';
-import type { AuthState } from '@/lib/storage';
+import { useState, useEffect } from "react";
+import { storachaService } from "@/lib/storage";
+import type { AuthState } from "@/lib/storage";
 
 interface StorachaAuthProps {
   onAuthComplete?: () => void;
   className?: string;
 }
 
-export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthProps) {
-  const [email, setEmail] = useState('');
-  const [spaceName, setSpaceName] = useState('lockdrop-space');
-  const [status, setStatus] = useState('');
+export function StorachaAuth({
+  onAuthComplete,
+  className = "",
+}: StorachaAuthProps) {
+  const [email, setEmail] = useState("");
+  const [spaceName, setSpaceName] = useState("lockdrop-space");
+  const [status, setStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [authState, setAuthState] = useState<AuthState>(storachaService.getAuthState());
-  const [error, setError] = useState('');
+  const [authState, setAuthState] = useState<AuthState>(
+    storachaService.getAuthState()
+  );
+  const [error, setError] = useState("");
 
   // Check auth state on mount and verify connection
   useEffect(() => {
     const checkConnection = async () => {
       const state = storachaService.getAuthState();
       setAuthState(state);
-      
+
       if (state.isAuthenticated && state.spaceDid) {
         // Verify the connection is still valid
         try {
@@ -37,63 +42,69 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
           if (status.canRestore) {
             onAuthComplete?.();
           } else if (status.needsSpace) {
-            setStatus('⚠️ Space setup incomplete. Please create a space to continue.');
+            setStatus(
+              "⚠️ Space setup incomplete. Please create a space to continue."
+            );
           }
         } catch (error) {
           console.warn("Failed to verify Storacha connection:", error);
         }
       }
     };
-    
+
     checkConnection();
   }, [onAuthComplete]);
 
   const handleLogin = async () => {
-    if (!email || !email.includes('@')) {
-      setError('Please enter a valid email address');
+    if (!email || !email.includes("@")) {
+      setError("Please enter a valid email address");
       return;
     }
 
     setIsLoading(true);
-    setError('');
-    setStatus('');
+    setError("");
+    setStatus("");
 
     try {
       // Step 1: Send verification email
-      setStatus('📧 Sending verification email...');
+      setStatus("📧 Sending verification email...");
       await storachaService.login(email);
-      
+
       // Update state immediately after login
       const currentState = storachaService.getAuthState();
       setAuthState(currentState);
-      
-      setStatus('✅ Email verified! Creating your space...');
-      
+
+      setStatus("✅ Email verified! Creating your space...");
+
       // Step 2: Create space
       await storachaService.createSpace(spaceName);
-      
-      setStatus('🎉 Ready to upload!');
-      
+
+      setStatus("🎉 Ready to upload!");
+
       // Update state with space
       const finalState = storachaService.getAuthState();
       setAuthState(finalState);
 
       // Notify parent component
       onAuthComplete?.();
-      
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
+      const errorMessage =
+        err instanceof Error ? err.message : "Authentication failed";
       setError(errorMessage);
-      setStatus('');
-      
+      setStatus("");
+
       // Provide helpful error messages
-      if (errorMessage.includes('timeout')) {
-        setError('Email verification timed out. Please check your email and try again.');
-      } else if (errorMessage.includes('network')) {
-        setError('Network error. Please check your connection and try again.');
-      } else if (errorMessage.includes('Must be authenticated')) {
+      if (errorMessage.includes("timeout")) {
+        setError(
+          "Email verification timed out. Please check your email and try again."
+        );
+      } else if (errorMessage.includes("network")) {
+        setError("Network error. Please check your connection and try again.");
+      } else if (errorMessage.includes("Must be authenticated")) {
         // User is partially authenticated but needs to complete space creation
-        setError('Authentication incomplete. Click "Create Space" to continue.');
+        setError(
+          'Authentication incomplete. Click "Create Space" to continue.'
+        );
       }
     } finally {
       setIsLoading(false);
@@ -102,34 +113,35 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
 
   const handleCreateSpace = async () => {
     if (!authState.isAuthenticated) {
-      setError('Please authenticate with email first');
+      setError("Please authenticate with email first");
       return;
     }
 
     setIsLoading(true);
-    setError('');
-    setStatus('Creating your space...');
+    setError("");
+    setStatus("Creating your space...");
 
     try {
       await storachaService.createSpace(spaceName);
-      
-      setStatus('🎉 Ready to upload!');
-      
+
+      setStatus("🎉 Ready to upload!");
+
       const finalState = storachaService.getAuthState();
       setAuthState(finalState);
 
       onAuthComplete?.();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create space';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to create space";
       setError(errorMessage);
-      setStatus('');
+      setStatus("");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !isLoading) {
+    if (e.key === "Enter" && !isLoading) {
       handleLogin();
     }
   };
@@ -137,7 +149,9 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
   // Already authenticated with space
   if (authState.isAuthenticated && authState.spaceDid) {
     return (
-      <div className={`rounded-lg border border-green-700 bg-green-900 p-4 ${className}`}>
+      <div
+        className={`rounded-lg border border-green-700 bg-green-900 p-4 ${className}`}
+      >
         <div className="flex items-start justify-between">
           <div className="flex items-start">
             <div className="flex-shrink-0">
@@ -158,8 +172,10 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
                 Storacha Connected
               </h3>
               <div className="mt-2 text-sm text-green-300">
-                <p>✓ Authenticated as <strong>{authState.email}</strong></p>
-                <p className="mt-1 text-xs font-mono truncate">
+                <p>
+                  ✓ Authenticated as <strong>{authState.email}</strong>
+                </p>
+                <p className="mt-1 truncate font-mono text-xs">
                   Space: {authState.spaceDid}
                 </p>
               </div>
@@ -173,7 +189,9 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
   // Authenticated but no space - allow space creation
   if (authState.isAuthenticated && !authState.spaceDid) {
     return (
-      <div className={`rounded-lg border border-yellow-700 bg-yellow-900 p-6 shadow-sm ${className}`}>
+      <div
+        className={`rounded-lg border border-yellow-700 bg-yellow-900 p-6 shadow-sm ${className}`}
+      >
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-gray-100">
             Complete Storacha Setup
@@ -189,7 +207,10 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
         <div className="space-y-4">
           {/* Space Name Input */}
           <div>
-            <label htmlFor="spaceName" className="block text-sm font-medium text-gray-300">
+            <label
+              htmlFor="spaceName"
+              className="block text-sm font-medium text-gray-300"
+            >
               Space Name
             </label>
             <input
@@ -200,7 +221,7 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
               onKeyPress={handleKeyPress}
               placeholder="my-lockdrop-space"
               disabled={isLoading}
-              className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-800 text-gray-100 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed"
+              className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-800 px-3 py-2 text-gray-100 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-700"
             />
           </div>
 
@@ -208,12 +229,12 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
           <button
             onClick={handleCreateSpace}
             disabled={isLoading || !spaceName}
-            className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300"
           >
             {isLoading ? (
               <span className="flex items-center justify-center">
                 <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  className="-ml-1 mr-2 h-4 w-4 animate-spin text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                 >
@@ -234,7 +255,7 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
                 Creating Space...
               </span>
             ) : (
-              'Create Space'
+              "Create Space"
             )}
           </button>
 
@@ -275,7 +296,9 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
 
   // Authentication form
   return (
-    <div className={`rounded-lg border border-gray-700 bg-gray-800 p-6 shadow-sm ${className}`}>
+    <div
+      className={`rounded-lg border border-gray-700 bg-gray-800 p-6 shadow-sm ${className}`}
+    >
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-gray-100">
           Connect to Storacha Network
@@ -288,7 +311,10 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
       <div className="space-y-4">
         {/* Email Input */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-300"
+          >
             Email Address
           </label>
           <input
@@ -299,7 +325,7 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
             onKeyPress={handleKeyPress}
             placeholder="your-email@example.com"
             disabled={isLoading}
-            className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-900 text-gray-100 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed"
+            className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-gray-100 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-700"
           />
           <p className="mt-1 text-xs text-gray-400">
             You&apos;ll receive a verification email to confirm your identity
@@ -308,7 +334,10 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
 
         {/* Space Name Input */}
         <div>
-          <label htmlFor="spaceName" className="block text-sm font-medium text-gray-300">
+          <label
+            htmlFor="spaceName"
+            className="block text-sm font-medium text-gray-300"
+          >
             Space Name (Optional)
           </label>
           <input
@@ -319,7 +348,7 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
             onKeyPress={handleKeyPress}
             placeholder="my-lockdrop-space"
             disabled={isLoading}
-            className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-900 text-gray-100 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed"
+            className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-gray-100 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-700"
           />
           <p className="mt-1 text-xs text-gray-400">
             A friendly name for your storage space
@@ -330,12 +359,12 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
         <button
           onClick={handleLogin}
           disabled={isLoading || !email}
-          className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300"
         >
           {isLoading ? (
             <span className="flex items-center justify-center">
               <svg
-                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                className="-ml-1 mr-2 h-4 w-4 animate-spin text-white"
                 fill="none"
                 viewBox="0 0 24 24"
               >
@@ -356,7 +385,7 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
               Authenticating...
             </span>
           ) : (
-            'Connect with Storacha'
+            "Connect with Storacha"
           )}
         </button>
 
@@ -392,7 +421,7 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
         )}
 
         {/* Info Box */}
-        <div className="rounded-md bg-gray-900 p-3 border border-gray-700">
+        <div className="rounded-md border border-gray-700 bg-gray-900 p-3">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
@@ -409,8 +438,10 @@ export function StorachaAuth({ onAuthComplete, className = '' }: StorachaAuthPro
             </div>
             <div className="ml-3">
               <p className="text-xs text-gray-300">
-                <strong>What is Storacha?</strong> A decentralized storage network built on IPFS and Filecoin. 
-                Your data is encrypted client-side and stored across a distributed network with 99.9% availability.
+                <strong>What is Storacha?</strong> A decentralized storage
+                network built on IPFS and Filecoin. Your data is encrypted
+                client-side and stored across a distributed network with 99.9%
+                availability.
               </p>
             </div>
           </div>

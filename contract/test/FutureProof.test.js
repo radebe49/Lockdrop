@@ -14,7 +14,7 @@ describe("Lockdrop", function () {
 
   beforeEach(async function () {
     [owner, recipient, otherAccount] = await ethers.getSigners();
-    
+
     const Lockdrop = await ethers.getContractFactory("Lockdrop");
     lockdrop = await Lockdrop.deploy();
     await lockdrop.waitForDeployment();
@@ -49,7 +49,13 @@ describe("Lockdrop", function () {
       const futureTimestamp = (await time.latest()) + 3600;
 
       await expect(
-        lockdrop.storeMessage("", VALID_MESSAGE_CID, VALID_HASH, futureTimestamp, recipient.address)
+        lockdrop.storeMessage(
+          "",
+          VALID_MESSAGE_CID,
+          VALID_HASH,
+          futureTimestamp,
+          recipient.address
+        )
       ).to.be.revertedWithCustomError(lockdrop, "InvalidKeyCID");
     });
 
@@ -57,7 +63,13 @@ describe("Lockdrop", function () {
       const futureTimestamp = (await time.latest()) + 3600;
 
       await expect(
-        lockdrop.storeMessage(VALID_KEY_CID, "", VALID_HASH, futureTimestamp, recipient.address)
+        lockdrop.storeMessage(
+          VALID_KEY_CID,
+          "",
+          VALID_HASH,
+          futureTimestamp,
+          recipient.address
+        )
       ).to.be.revertedWithCustomError(lockdrop, "InvalidMessageCID");
     });
 
@@ -65,7 +77,13 @@ describe("Lockdrop", function () {
       const futureTimestamp = (await time.latest()) + 3600;
 
       await expect(
-        lockdrop.storeMessage(VALID_KEY_CID, VALID_MESSAGE_CID, "short", futureTimestamp, recipient.address)
+        lockdrop.storeMessage(
+          VALID_KEY_CID,
+          VALID_MESSAGE_CID,
+          "short",
+          futureTimestamp,
+          recipient.address
+        )
       ).to.be.revertedWithCustomError(lockdrop, "InvalidMessageHash");
     });
 
@@ -73,7 +91,13 @@ describe("Lockdrop", function () {
       const pastTimestamp = (await time.latest()) - 3600;
 
       await expect(
-        lockdrop.storeMessage(VALID_KEY_CID, VALID_MESSAGE_CID, VALID_HASH, pastTimestamp, recipient.address)
+        lockdrop.storeMessage(
+          VALID_KEY_CID,
+          VALID_MESSAGE_CID,
+          VALID_HASH,
+          pastTimestamp,
+          recipient.address
+        )
       ).to.be.revertedWithCustomError(lockdrop, "InvalidTimestamp");
     });
 
@@ -81,7 +105,13 @@ describe("Lockdrop", function () {
       const futureTimestamp = (await time.latest()) + 3600;
 
       await expect(
-        lockdrop.storeMessage(VALID_KEY_CID, VALID_MESSAGE_CID, VALID_HASH, futureTimestamp, owner.address)
+        lockdrop.storeMessage(
+          VALID_KEY_CID,
+          VALID_MESSAGE_CID,
+          VALID_HASH,
+          futureTimestamp,
+          owner.address
+        )
       ).to.be.revertedWithCustomError(lockdrop, "SenderIsRecipient");
     });
   });
@@ -90,7 +120,13 @@ describe("Lockdrop", function () {
     it("Should retrieve a stored message", async function () {
       const futureTimestamp = (await time.latest()) + 3600;
 
-      await lockdrop.storeMessage(VALID_KEY_CID, VALID_MESSAGE_CID, VALID_HASH, futureTimestamp, recipient.address);
+      await lockdrop.storeMessage(
+        VALID_KEY_CID,
+        VALID_MESSAGE_CID,
+        VALID_HASH,
+        futureTimestamp,
+        recipient.address
+      );
 
       const message = await lockdrop.getMessage(0);
 
@@ -102,7 +138,10 @@ describe("Lockdrop", function () {
     });
 
     it("Should revert if message not found", async function () {
-      await expect(lockdrop.getMessage(999)).to.be.revertedWithCustomError(lockdrop, "MessageNotFound");
+      await expect(lockdrop.getMessage(999)).to.be.revertedWithCustomError(
+        lockdrop,
+        "MessageNotFound"
+      );
     });
   });
 
@@ -110,8 +149,20 @@ describe("Lockdrop", function () {
     it("Should return all messages sent by an address", async function () {
       const futureTimestamp = (await time.latest()) + 3600;
 
-      await lockdrop.storeMessage(VALID_KEY_CID, VALID_MESSAGE_CID, VALID_HASH, futureTimestamp, recipient.address);
-      await lockdrop.storeMessage(VALID_KEY_CID, VALID_MESSAGE_CID, VALID_HASH, futureTimestamp, otherAccount.address);
+      await lockdrop.storeMessage(
+        VALID_KEY_CID,
+        VALID_MESSAGE_CID,
+        VALID_HASH,
+        futureTimestamp,
+        recipient.address
+      );
+      await lockdrop.storeMessage(
+        VALID_KEY_CID,
+        VALID_MESSAGE_CID,
+        VALID_HASH,
+        futureTimestamp,
+        otherAccount.address
+      );
 
       const sentMessages = await lockdrop.getSentMessages(owner.address);
 
@@ -125,10 +176,26 @@ describe("Lockdrop", function () {
     it("Should return all messages received by an address", async function () {
       const futureTimestamp = (await time.latest()) + 3600;
 
-      await lockdrop.storeMessage(VALID_KEY_CID, VALID_MESSAGE_CID, VALID_HASH, futureTimestamp, recipient.address);
-      await lockdrop.connect(otherAccount).storeMessage(VALID_KEY_CID, VALID_MESSAGE_CID, VALID_HASH, futureTimestamp, recipient.address);
+      await lockdrop.storeMessage(
+        VALID_KEY_CID,
+        VALID_MESSAGE_CID,
+        VALID_HASH,
+        futureTimestamp,
+        recipient.address
+      );
+      await lockdrop
+        .connect(otherAccount)
+        .storeMessage(
+          VALID_KEY_CID,
+          VALID_MESSAGE_CID,
+          VALID_HASH,
+          futureTimestamp,
+          recipient.address
+        );
 
-      const receivedMessages = await lockdrop.getReceivedMessages(recipient.address);
+      const receivedMessages = await lockdrop.getReceivedMessages(
+        recipient.address
+      );
 
       expect(receivedMessages.length).to.equal(2);
       expect(receivedMessages[0].sender).to.equal(owner.address);

@@ -30,25 +30,33 @@ Check your connection status anytime in the Settings page:
 ## Common Issues & Solutions
 
 ### "Wallet keeps disconnecting"
+
 **Solution:** This has been fixed! Your wallet now stays connected. If you're still experiencing this:
+
 1. Make sure you're using the latest version
 2. Try disconnecting and reconnecting once
 3. Check that your wallet extension is enabled
 
 ### "Email verified but can't upload"
+
 **Solution:** You need to complete the space creation:
+
 1. Go to Settings
 2. Look for "Complete Storacha Setup" section
 3. Click "Create Space"
 
 ### "Lost connection after closing browser"
+
 **Solution:** This should no longer happen! Connections now persist. If you're experiencing this:
+
 1. Clear your browser cache
 2. Reconnect both wallet and storage
 3. Connections will persist from then on
 
 ### "Multiple connection popups"
+
 **Solution:** This was a bug that's now fixed. You should only see:
+
 - One wallet popup on first connection
 - One email verification for Storacha
 - No popups on subsequent visits
@@ -56,11 +64,13 @@ Check your connection status anytime in the Settings page:
 ## Understanding Connection States
 
 ### Wallet States
+
 - **Not Connected:** Click "Connect Wallet" to start
 - **Connected:** Green indicator, shows your address
 - **Reconnecting:** Happens automatically on page load
 
 ### Storage States
+
 - **Not Connected:** Need to authenticate with email
 - **Email Verified:** Need to create a space
 - **Ready:** Green indicator, can upload files
@@ -86,16 +96,19 @@ Check your connection status anytime in the Settings page:
 ## Privacy & Security
 
 ### What's Stored Locally?
+
 - Wallet connection preference (not your private keys!)
 - Storacha email and space ID (not your files!)
 - No sensitive data is stored in localStorage
 
 ### What Requires Approval?
+
 - First wallet connection (one-time)
 - Email verification (one-time)
 - Every transaction signature (for security)
 
 ### What Happens Automatically?
+
 - Wallet reconnection on page load
 - Storacha session restoration
 - Connection health checks

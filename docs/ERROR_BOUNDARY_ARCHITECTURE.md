@@ -70,6 +70,7 @@
 ## Error Flow
 
 ### 1. Component-Level Errors
+
 ```
 MediaRecorder throws error
     ↓
@@ -81,6 +82,7 @@ Display inline error message
 ```
 
 ### 2. Page-Level Errors
+
 ```
 Async operation fails (encryption, upload, transaction)
     ↓
@@ -94,6 +96,7 @@ User can retry or navigate away
 ```
 
 ### 3. Root-Level Errors
+
 ```
 Critical failure (WalletProvider, routing)
     ↓
@@ -108,28 +111,30 @@ User can retry or return home
 
 ## Error Categories & Handlers
 
-| Error Type | Handler | Fallback UI | Recovery |
-|------------|---------|-------------|----------|
-| **Wallet Connection** | Page boundary | Wallet error message + install instructions | Retry connection |
-| **Media Permission** | Component onError | Inline error + alternative options | Grant permission or upload file |
-| **Media Upload** | Component onError | Inline error + format/size info | Try different file |
-| **Form Validation** | Component state | Inline validation messages | Fix input |
-| **Encryption** | Page boundary | Crypto error + browser suggestions | Try different browser |
-| **IPFS Upload** | Page boundary | Upload error + retry/fallback info | Retry or use Pinata |
-| **Blockchain Tx** | Page boundary (create) | Transaction error + faucet links | Get tokens or retry |
-| **Blockchain Query** | Page boundary (dashboard) | Network error + status check | Retry or check network |
-| **Message Decryption** | Page boundary (dashboard) | Decryption error + account check | Switch account or retry |
-| **Critical App** | Root boundary | Global error + cache clear instructions | Refresh or report issue |
+| Error Type             | Handler                   | Fallback UI                                 | Recovery                        |
+| ---------------------- | ------------------------- | ------------------------------------------- | ------------------------------- |
+| **Wallet Connection**  | Page boundary             | Wallet error message + install instructions | Retry connection                |
+| **Media Permission**   | Component onError         | Inline error + alternative options          | Grant permission or upload file |
+| **Media Upload**       | Component onError         | Inline error + format/size info             | Try different file              |
+| **Form Validation**    | Component state           | Inline validation messages                  | Fix input                       |
+| **Encryption**         | Page boundary             | Crypto error + browser suggestions          | Try different browser           |
+| **IPFS Upload**        | Page boundary             | Upload error + retry/fallback info          | Retry or use Pinata             |
+| **Blockchain Tx**      | Page boundary (create)    | Transaction error + faucet links            | Get tokens or retry             |
+| **Blockchain Query**   | Page boundary (dashboard) | Network error + status check                | Retry or check network          |
+| **Message Decryption** | Page boundary (dashboard) | Decryption error + account check            | Switch account or retry         |
+| **Critical App**       | Root boundary             | Global error + cache clear instructions     | Refresh or report issue         |
 
 ## Error Message Strategy
 
 ### Principle: Progressive Disclosure
+
 1. **Primary Message**: User-friendly, non-technical
 2. **Suggestions**: Actionable steps to resolve
 3. **Technical Details**: Collapsible, for advanced users
 4. **Actions**: Retry, navigate, or report
 
 ### Example: Wallet Error
+
 ```
 ┌─────────────────────────────────────────┐
 │ 🔴 Wallet Connection Error              │
@@ -151,18 +156,21 @@ User can retry or return home
 ## Testing Strategy
 
 ### Unit Tests
+
 - Test error boundary rendering
 - Test error message selection logic
 - Test retry functionality
 - Test navigation after error
 
 ### Integration Tests
+
 - Test wallet connection failures
 - Test media permission denials
 - Test form validation errors
 - Test async operation failures
 
 ### E2E Tests
+
 - Test complete error recovery flows
 - Test error boundary fallback UI
 - Test error logging
@@ -171,13 +179,14 @@ User can retry or return home
 ## Monitoring & Analytics
 
 ### Error Tracking (Future)
+
 ```typescript
 // In production, integrate with monitoring service
 useEffect(() => {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     Sentry.captureException(error, {
       tags: {
-        errorBoundary: 'create-page',
+        errorBoundary: "create-page",
         errorType: getErrorType(error),
       },
       user: {
@@ -189,6 +198,7 @@ useEffect(() => {
 ```
 
 ### Metrics to Track
+
 - Error rate by type
 - Error recovery success rate
 - Time to recovery
@@ -204,5 +214,4 @@ useEffect(() => {
 ✅ **Log for Debugging**: Console logs + future monitoring  
 ✅ **Progressive Disclosure**: Hide technical details by default  
 ✅ **Accessible**: Semantic HTML, proper ARIA labels  
-✅ **Responsive**: Mobile-friendly error UI  
-
+✅ **Responsive**: Mobile-friendly error UI

@@ -7,7 +7,7 @@ export interface WalletAccount {
     name?: string;
     source: string;
   };
-  type: 'ethereum' | 'polkadot';
+  type: "ethereum" | "polkadot";
 }
 
 export interface WalletState {

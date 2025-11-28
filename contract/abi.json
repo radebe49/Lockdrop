@@ -182,9 +182,7 @@
           }
         ],
         "default": false,
-        "docs": [
-          "Get all messages sent by a specific address"
-        ],
+        "docs": ["Get all messages sent by a specific address"],
         "label": "get_sent_messages",
         "mutates": false,
         "payable": false,
@@ -205,9 +203,7 @@
           }
         ],
         "default": false,
-        "docs": [
-          "Get all messages received by a specific address"
-        ],
+        "docs": ["Get all messages received by a specific address"],
         "label": "get_received_messages",
         "mutates": false,
         "payable": false,
@@ -228,9 +224,7 @@
           }
         ],
         "default": false,
-        "docs": [
-          "Get a specific message by ID"
-        ],
+        "docs": ["Get a specific message by ID"],
         "label": "get_message",
         "mutates": false,
         "payable": false,
@@ -243,9 +237,7 @@
       {
         "args": [],
         "default": false,
-        "docs": [
-          "Get the total number of messages stored"
-        ],
+        "docs": ["Get the total number of messages stored"],
         "label": "get_message_count",
         "mutates": false,
         "payable": false,

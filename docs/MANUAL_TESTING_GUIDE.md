@@ -523,15 +523,15 @@ This guide provides a comprehensive checklist for manually testing the Lockdrop 
 
 ### Test Summary
 
-- Total Tests: ___
-- Passed: ___
-- Failed: ___
-- Blocked: ___
+- Total Tests: \_\_\_
+- Passed: \_\_\_
+- Failed: \_\_\_
+- Blocked: \_\_\_
 
 ### Issues Found
 
 | Issue | Severity | Browser | Status |
-|-------|----------|---------|--------|
+| ----- | -------- | ------- | ------ |
 |       |          |         |        |
 
 ### Notes
@@ -556,6 +556,6 @@ _Add any additional observations or notes here_
 - [ ] Performance is acceptable
 - [ ] Accessibility requirements are met
 
-**Tester Name:** _______________  
-**Date:** _______________  
-**Version:** _______________
+**Tester Name:** **\*\***\_\_\_**\*\***  
+**Date:** **\*\***\_\_\_**\*\***  
+**Version:** **\*\***\_\_\_**\*\***

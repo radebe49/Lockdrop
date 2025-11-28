@@ -1,13 +1,13 @@
 /**
  * Retry Utilities
- * 
+ *
  * Provides retry logic with exponential backoff for handling
  * transient failures in network operations.
- * 
+ *
  * Requirements: 12.1 - Add retry mechanisms for network errors
  */
 
-import { isRetryableError } from './errorHandling';
+import { isRetryableError } from "./errorHandling";
 
 /**
  * Retry options
@@ -37,7 +37,7 @@ const DEFAULT_OPTIONS: Required<RetryOptions> = {
 
 /**
  * Execute a function with retry logic and exponential backoff
- * 
+ *
  * @param fn Function to execute
  * @param options Retry options
  * @returns Promise resolving to function result
@@ -94,7 +94,7 @@ function sleep(ms: number): Promise<void> {
 
 /**
  * Create a retry wrapper for a function
- * 
+ *
  * @param fn Function to wrap
  * @param options Retry options
  * @returns Wrapped function with retry logic

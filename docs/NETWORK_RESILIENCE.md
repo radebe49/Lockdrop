@@ -22,11 +22,13 @@ The service automatically attempts to reconnect when the WebSocket connection is
 If the primary RPC endpoint fails, the service automatically tries fallback endpoints:
 
 **Westend Fallbacks**:
+
 - `wss://westend-rpc.polkadot.io` (primary)
 - `wss://rpc.polkadot.io/westend`
 - `wss://westend.api.onfinality.io/public-ws`
 
 **Rococo Fallbacks**:
+
 - `wss://rococo-rpc.polkadot.io` (primary)
 - `wss://rpc.polkadot.io/rococo`
 
@@ -39,7 +41,7 @@ import { useBlockchainConnection } from '@/hooks/useBlockchainConnection';
 
 function MyComponent() {
   const { isConnected, isReconnecting, reconnect } = useBlockchainConnection();
-  
+
   if (!isConnected) {
     return (
       <div>
@@ -50,7 +52,7 @@ function MyComponent() {
       </div>
     );
   }
-  
+
   return <div>Connected!</div>;
 }
 ```
@@ -77,14 +79,14 @@ export default function Layout({ children }) {
 Verify the connected network matches your configuration:
 
 ```typescript
-import { ContractService } from '@/lib/contract/ContractService';
+import { ContractService } from "@/lib/contract/ContractService";
 
 // Check if connected to correct network
 const isCorrectNetwork = await ContractService.verifyNetwork();
 
 if (!isCorrectNetwork) {
   // Show warning to user
-  alert('Please switch to Westend network in your wallet');
+  alert("Please switch to Westend network in your wallet");
 }
 ```
 
@@ -93,14 +95,14 @@ if (!isCorrectNetwork) {
 Trigger manual reconnection from UI:
 
 ```typescript
-import { ContractService } from '@/lib/contract/ContractService';
+import { ContractService } from "@/lib/contract/ContractService";
 
 async function handleReconnect() {
   try {
     await ContractService.reconnect();
-    console.log('Reconnected successfully');
+    console.log("Reconnected successfully");
   } catch (error) {
-    console.error('Reconnection failed:', error);
+    console.error("Reconnection failed:", error);
   }
 }
 ```
@@ -122,6 +124,7 @@ if (chainInfo) {
 ### Retryable Errors
 
 The service automatically retries these errors:
+
 - Network timeouts
 - Connection refused
 - DNS lookup failures
@@ -132,6 +135,7 @@ The service automatically retries these errors:
 ### Non-Retryable Errors
 
 These errors fail immediately:
+
 - Invalid addresses
 - Contract not found
 - Configuration errors
@@ -169,12 +173,14 @@ if (!isConnected) {
 try {
   await ContractService.storeMessage(params, account);
 } catch (error) {
-  if (error.message.includes('timeout')) {
-    showError('Operation timed out. Please check your connection and try again.');
-  } else if (error.message.includes('balance')) {
-    showError('Insufficient balance. Get testnet tokens from the faucet.');
+  if (error.message.includes("timeout")) {
+    showError(
+      "Operation timed out. Please check your connection and try again."
+    );
+  } else if (error.message.includes("balance")) {
+    showError("Insufficient balance. Get testnet tokens from the faucet.");
   } else {
-    showError('Transaction failed. Please try again.');
+    showError("Transaction failed. Please try again.");
   }
 }
 ```
@@ -185,11 +191,11 @@ try {
 async function createMessage() {
   // Verify network first
   const isCorrectNetwork = await ContractService.verifyNetwork();
-  
+
   if (!isCorrectNetwork) {
-    throw new Error('Please switch to Westend network');
+    throw new Error("Please switch to Westend network");
   }
-  
+
   // Proceed with message creation
   await ContractService.storeMessage(params, account);
 }

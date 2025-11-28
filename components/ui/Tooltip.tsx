@@ -75,7 +75,7 @@ export function Tooltip({
       {isVisible && (
         <div
           ref={tooltipRef}
-          className={`absolute ${positionClasses[position]} z-50 px-3 py-2 text-sm text-white bg-gray-900 rounded-lg shadow-lg whitespace-nowrap max-w-xs animate-in fade-in zoom-in duration-150`}
+          className={`absolute ${positionClasses[position]} animate-in fade-in zoom-in z-50 max-w-xs whitespace-nowrap rounded-lg bg-gray-900 px-3 py-2 text-sm text-white shadow-lg duration-150`}
           role="tooltip"
         >
           {content}

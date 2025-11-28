@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useRef, DragEvent } from 'react';
-import type { MediaFile } from '@/types/media';
+import { useState, useRef, DragEvent } from "react";
+import type { MediaFile } from "@/types/media";
 import {
   validateFileType,
   validateFileSize,
   getMediaDuration,
-} from '@/utils/mediaValidation';
+} from "@/utils/mediaValidation";
 
 interface MediaUploaderProps {
   onFileSelect: (mediaFile: MediaFile) => void;
@@ -37,7 +37,7 @@ export function MediaUploader({ onFileSelect, onError }: MediaUploaderProps) {
       // Validate file type - Requirement 3.1
       const typeValidation = validateFileType(file);
       if (!typeValidation.isValid || !typeValidation.mediaType) {
-        throw new Error(typeValidation.error || 'Invalid file type');
+        throw new Error(typeValidation.error || "Invalid file type");
       }
 
       // Validate file size - Requirement 3.2
@@ -62,7 +62,8 @@ export function MediaUploader({ onFileSelect, onError }: MediaUploaderProps) {
       // Directly pass to parent - no confirmation step
       onFileSelect(mediaFile);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to process file';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to process file";
       setError(errorMessage);
       if (onError) {
         onError(err instanceof Error ? err : new Error(errorMessage));
@@ -71,7 +72,7 @@ export function MediaUploader({ onFileSelect, onError }: MediaUploaderProps) {
       setIsProcessing(false);
       // Reset file input
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     }
   };
@@ -79,7 +80,9 @@ export function MediaUploader({ onFileSelect, onError }: MediaUploaderProps) {
   /**
    * Handle file selection from input
    */
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
       await processFile(file);
@@ -170,9 +173,9 @@ export function MediaUploader({ onFileSelect, onError }: MediaUploaderProps) {
         onDrop={handleDrop}
         className={`relative rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
           isDragging
-            ? 'border-blue-500 bg-blue-900/20'
-            : 'border-gray-600 bg-gray-900 hover:border-gray-500'
-        } ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}
+            ? "border-blue-500 bg-blue-900/20"
+            : "border-gray-600 bg-gray-900 hover:border-gray-500"
+        } ${isProcessing ? "pointer-events-none opacity-50" : ""}`}
       >
         <div className="flex flex-col items-center space-y-4">
           <svg
@@ -191,7 +194,7 @@ export function MediaUploader({ onFileSelect, onError }: MediaUploaderProps) {
 
           <div>
             <p className="text-lg font-medium text-gray-200">
-              {isProcessing ? 'Processing file...' : 'Drop your file here'}
+              {isProcessing ? "Processing file..." : "Drop your file here"}
             </p>
             <p className="mt-1 text-sm text-gray-400">or</p>
           </div>

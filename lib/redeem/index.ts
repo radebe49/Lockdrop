@@ -3,4 +3,4 @@
  * Requirements: 6.6
  */
 
-export { RedeemPackageService } from './RedeemPackageService';
+export { RedeemPackageService } from "./RedeemPackageService";

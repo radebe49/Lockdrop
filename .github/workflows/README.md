@@ -5,13 +5,16 @@ This directory contains automated workflows for Lockdrop's CI/CD pipeline.
 ## Workflows
 
 ### 🔄 CI/CD Pipeline (`ci.yml`)
+
 **Purpose**: Main continuous integration and deployment workflow
 
 **Triggers**:
+
 - Push to `main` or `develop`
 - Pull requests to `main` or `develop`
 
 **Jobs**:
+
 1. **Lint**: ESLint, TypeScript, Prettier checks
 2. **Build**: Next.js application build
 3. **Test**: Unit and integration tests
@@ -20,26 +23,32 @@ This directory contains automated workflows for Lockdrop's CI/CD pipeline.
 6. **Deploy Production**: Vercel production for main branch
 
 ### 📦 Dependency Updates (`dependency-update.yml`)
+
 **Purpose**: Automated weekly dependency updates
 
 **Triggers**:
+
 - Weekly schedule (Monday 9:00 AM UTC)
 - Manual dispatch
 
 **Actions**:
+
 - Updates npm packages
 - Runs security audit
 - Creates pull request for review
 
 ### 🔒 CodeQL Analysis (`codeql.yml`)
+
 **Purpose**: Security vulnerability scanning
 
 **Triggers**:
+
 - Push to `main`
 - Pull requests to `main`
 - Weekly schedule (Wednesday 3:00 AM UTC)
 
 **Actions**:
+
 - Analyzes JavaScript/TypeScript code
 - Detects security issues
 - Reports to GitHub Security tab
@@ -48,14 +57,14 @@ This directory contains automated workflows for Lockdrop's CI/CD pipeline.
 
 Configure in: Repository Settings → Secrets and variables → Actions
 
-| Secret | Description |
-|--------|-------------|
-| `VERCEL_TOKEN` | Vercel authentication token |
-| `VERCEL_ORG_ID` | Vercel organization ID |
-| `VERCEL_PROJECT_ID` | Vercel project ID |
-| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Smart contract address |
-| `NEXT_PUBLIC_RPC_ENDPOINT` | Polkadot RPC endpoint |
-| `NEXT_PUBLIC_NETWORK` | Network name (westend) |
+| Secret                         | Description                 |
+| ------------------------------ | --------------------------- |
+| `VERCEL_TOKEN`                 | Vercel authentication token |
+| `VERCEL_ORG_ID`                | Vercel organization ID      |
+| `VERCEL_PROJECT_ID`            | Vercel project ID           |
+| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Smart contract address      |
+| `NEXT_PUBLIC_RPC_ENDPOINT`     | Polkadot RPC endpoint       |
+| `NEXT_PUBLIC_NETWORK`          | Network name (westend)      |
 
 ## Quick Commands
 

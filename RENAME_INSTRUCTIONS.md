@@ -22,6 +22,7 @@ After renaming on GitHub, run this command in your terminal:
 ```
 
 This script will automatically:
+
 - ✅ Update `package.json` and `package-lock.json`
 - ✅ Update all documentation files
 - ✅ Update GitHub workflow files
@@ -75,10 +76,12 @@ git push origin main
 ## What Gets Updated
 
 ### Package Files
+
 - `package.json` - name field
 - `package-lock.json` - name field
 
 ### Documentation
+
 - `CHANGELOG.md`
 - `CONTRIBUTING.md`
 - `LICENSE`
@@ -88,17 +91,20 @@ git push origin main
 - `POLKADOT_ECOSYSTEM_EXPLAINED.md`
 
 ### GitHub Files
+
 - `.github/QUICK_START.md`
 - `.github/DEPLOYMENT_CHECKLIST.md`
 - `.github/workflows/ci.yml`
 - `.github/ISSUE_TEMPLATE/bug_report.md`
 
 ### Source Code
+
 - `utils/edgeCaseValidation.ts` - web3Enable app name
 - `utils/errorHandling.ts` - error messages
 - Various README files
 
 ### Git Configuration
+
 - Remote URL: `https://github.com/radebe49/lockdrop.git`
 
 ---
@@ -156,15 +162,18 @@ git stash pop
 If you have these services connected, update them too:
 
 ### Vercel
+
 1. Go to Vercel dashboard
 2. Select your project
 3. Settings → General → Project Name
 4. Update to "lockdrop"
 
 ### Environment Variables
+
 No changes needed - `.env.local` doesn't reference the repo name
 
 ### CI/CD
+
 The script updates `.github/workflows/ci.yml` automatically
 
 ---
@@ -172,6 +181,7 @@ The script updates `.github/workflows/ci.yml` automatically
 ## Questions?
 
 If you encounter any issues:
+
 1. Check the script output for errors
 2. Review `git status` to see what changed
 3. Test locally before pushing

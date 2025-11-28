@@ -1,19 +1,99 @@
 /**
  * Network Resilience Tests
- * 
+ *
  * Tests for network error handling, retry logic, and offline scenarios
- * 
+ *
  * Requirements: 12.2 - Test with network disconnection
- * 
- * NOTE: This is a reference implementation for network resilience testing.
- * To run these tests, install Jest:
- * npm install --save-dev jest @types/jest ts-jest
- * 
- * Then configure jest.config.js and run: npm test
  */
 
-// import { describe, test, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { withRetry } from "../utils/retry";
+import { isRetryableError } from "../utils/errorHandling";
+
+describe("Network Resilience", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe("Retry Logic", () => {
+    it("retries on network errors", async () => {
+      let attempts = 0;
+      const mockFn = vi.fn(async () => {
+        attempts++;
+        if (attempts < 3) {
+          throw new Error("Network timeout");
+        }
+        return "success";
+      });
+
+      const result = await withRetry(mockFn, { maxAttempts: 3, initialDelay: 10 });
+
+      expect(result).toBe("success");
+      expect(mockFn).toHaveBeenCalledTimes(3);
+    });
+
+    it("respects max attempts", async () => {
+      const mockFn = vi.fn(async () => {
+        throw new Error("Network error");
+      });
+
+      await expect(
+        withRetry(mockFn, { maxAttempts: 3, initialDelay: 10 })
+      ).rejects.toThrow("Network error");
+
+      expect(mockFn).toHaveBeenCalledTimes(3);
+    });
+
+    it("calls onRetry callback", async () => {
+      let attempts = 0;
+      const mockFn = vi.fn(async () => {
+        attempts++;
+        if (attempts < 2) {
+          throw new Error("Network timeout");
+        }
+        return "success";
+      });
+
+      const onRetry = vi.fn();
+
+      await withRetry(mockFn, {
+        maxAttempts: 3,
+        initialDelay: 10,
+        onRetry,
+      });
+
+      expect(onRetry).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("Error Classification", () => {
+    it("identifies retryable network errors", () => {
+      const retryableErrors = [
+        "Network timeout",
+        "Connection refused",
+        "fetch failed",
+      ];
+
+      retryableErrors.forEach((errorMsg) => {
+        expect(isRetryableError(new Error(errorMsg))).toBe(true);
+      });
+    });
+
+    it("identifies non-retryable validation errors", () => {
+      const nonRetryableErrors = [
+        "Invalid address",
+        "Validation failed",
+      ];
+
+      nonRetryableErrors.forEach((errorMsg) => {
+        expect(isRetryableError(new Error(errorMsg))).toBe(false);
+      });
+    });
+  });
+});
+
 /*
+// Additional tests commented out for reference
 import { withRetry } from '../utils/retry';
 import { isRetryableError } from '../utils/errorHandling';
 

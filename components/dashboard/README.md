@@ -5,14 +5,17 @@ This directory contains components for displaying and managing time-locked messa
 ## Components
 
 ### MessageCard
+
 Displays an individual message with status badge, metadata, and action buttons.
 
 **Props:**
+
 - `message: Message` - The message to display
 - `type: "sent" | "received"` - Whether this is a sent or received message
 - `onUnlock?: (message: Message) => void` - Callback for unlock button (received messages only)
 
 **Features:**
+
 - Status badge with color coding (Locked/Unlockable/Unlocked)
 - Formatted addresses and timestamps
 - Time until unlock countdown
@@ -20,36 +23,44 @@ Displays an individual message with status badge, metadata, and action buttons.
 - Message metadata display (size, type, duration)
 
 ### MessageList
+
 Displays a grid of message cards with empty state.
 
 **Props:**
+
 - `messages: Message[]` - Array of messages to display
 - `type: "sent" | "received"` - Message type
 - `onUnlock?: (message: Message) => void` - Unlock callback
 
 **Features:**
+
 - Responsive grid layout (1/2/3 columns)
 - Empty state with helpful message
 - Passes unlock handler to cards
 
 ### MessageFilters
+
 Filter and sort controls for message lists.
 
 **Props:**
+
 - `statusFilter: MessageStatus | "All"` - Current status filter
 - `onStatusFilterChange: (status) => void` - Status filter change handler
 - `sortOrder: "newest" | "oldest"` - Current sort order
 - `onSortOrderChange: (order) => void` - Sort order change handler
 
 **Features:**
+
 - Status filter dropdown (All/Locked/Unlockable/Unlocked)
 - Sort order dropdown (Newest/Oldest)
 - Responsive layout
 
 ### Pagination
+
 Pagination controls for large message lists.
 
 **Props:**
+
 - `currentPage: number` - Current page number (1-indexed)
 - `totalPages: number` - Total number of pages
 - `onPageChange: (page: number) => void` - Page change handler
@@ -57,6 +68,7 @@ Pagination controls for large message lists.
 - `totalItems: number` - Total number of items
 
 **Features:**
+
 - Desktop and mobile layouts
 - Page number buttons with ellipsis for large page counts
 - Previous/Next navigation
@@ -64,12 +76,15 @@ Pagination controls for large message lists.
 - Auto-hides when only one page
 
 ### SentMessages
+
 Container component for sent messages view.
 
 **Props:**
+
 - `address: string` - User's wallet address
 
 **Features:**
+
 - Loads sent messages from blockchain
 - Real-time status updates (every 10 seconds)
 - Status filtering and sorting
@@ -78,12 +93,15 @@ Container component for sent messages view.
 - Refresh button
 
 ### ReceivedMessages
+
 Container component for received messages view.
 
 **Props:**
+
 - `address: string` - User's wallet address
 
 **Features:**
+
 - Loads received messages from blockchain
 - Tracks unlocked messages in localStorage
 - Real-time status updates (every 10 seconds)
@@ -114,6 +132,7 @@ import { SentMessages, ReceivedMessages } from '@/components/dashboard';
 ## Status Calculation
 
 Message status is calculated based on:
+
 1. **Locked**: Current time < unlock timestamp
 2. **Unlockable**: Current time >= unlock timestamp AND not yet unlocked
 3. **Unlocked**: Message has been decrypted and viewed by recipient

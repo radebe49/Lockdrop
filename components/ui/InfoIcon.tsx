@@ -17,12 +17,12 @@ export function InfoIcon({ content, position = "top" }: InfoIconProps) {
   return (
     <Tooltip content={content} position={position}>
       <button
-        className="inline-flex items-center justify-center w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-100"
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
         aria-label="More information"
         type="button"
       >
         <svg
-          className="w-4 h-4"
+          className="h-4 w-4"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"

@@ -153,10 +153,10 @@ export class ContractService {
         // Create provider with custom network config to disable ENS
         // Passet Hub doesn't support ENS, so we must completely disable ENS resolution
         const network = new ethers.Network(config.network, 420420422);
-        
+
         // Remove all ENS-related plugins from the network
         // This is the nuclear option to prevent ANY ENS resolution attempts
-        const ensPluginName = 'org.ethers.plugins.network.Ens';
+        const ensPluginName = "org.ethers.plugins.network.Ens";
         try {
           network.plugins.forEach((plugin) => {
             if (plugin.name === ensPluginName) {
@@ -167,12 +167,19 @@ export class ContractService {
         } catch (e) {
           // Ignore errors - plugin might not exist
         }
-        
-        console.log('[ContractService] Creating provider with ENS disabled for network:', config.network);
 
-        const provider = new ethers.JsonRpcProvider(config.rpcEndpoint, network, {
-          staticNetwork: network, // Prevents network auto-detection
-        });
+        console.log(
+          "[ContractService] Creating provider with ENS disabled for network:",
+          config.network
+        );
+
+        const provider = new ethers.JsonRpcProvider(
+          config.rpcEndpoint,
+          network,
+          {
+            staticNetwork: network, // Prevents network auto-detection
+          }
+        );
 
         // Test connection
         await withTimeout(
@@ -340,7 +347,7 @@ export class ContractService {
     senderAddress: string
   ): Promise<MessageMetadata[]> {
     const contract = await this.getContract();
-    
+
     // Use staticCall to bypass ENS resolution
     // This calls the contract method directly without address resolution
     const messages = await withTimeout(
@@ -373,7 +380,7 @@ export class ContractService {
     recipientAddress: string
   ): Promise<MessageMetadata[]> {
     const contract = await this.getContract();
-    
+
     // Use staticCall to bypass ENS resolution
     // This calls the contract method directly without address resolution
     const messages = await withTimeout(

@@ -108,8 +108,6 @@ Lockdrop uses Storacha Network for decentralized storage. To enable uploads:
 5. Your space will be created automatically
 6. Connection persists across sessions - no need to reconnect!
 
-
-
 ### Installation
 
 1. **Clone the repository:**
@@ -153,12 +151,12 @@ NEXT_PUBLIC_STORACHA_GATEWAY=storacha.link
 
 ### Environment Variables Explained
 
-| Variable                       | Required | Description                                                          |
-| ------------------------------ | -------- | -------------------------------------------------------------------- |
-| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Yes      | **Ethereum-format address (0x...)** of deployed Solidity contract    |
+| Variable                       | Required | Description                                                                        |
+| ------------------------------ | -------- | ---------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Yes      | **Ethereum-format address (0x...)** of deployed Solidity contract                  |
 | `NEXT_PUBLIC_RPC_ENDPOINT`     | Yes      | Passet Hub Ethereum RPC endpoint: `https://testnet-passet-hub-eth-rpc.polkadot.io` |
-| `NEXT_PUBLIC_NETWORK`          | Yes      | Network name (use `passet-hub` for testnet)                          |
-| `NEXT_PUBLIC_STORACHA_GATEWAY` | No       | Storacha gateway URL (default: `storacha.link`)                      |
+| `NEXT_PUBLIC_NETWORK`          | Yes      | Network name (use `passet-hub` for testnet)                                        |
+| `NEXT_PUBLIC_STORACHA_GATEWAY` | No       | Storacha gateway URL (default: `storacha.link`)                                    |
 
 **Important:** Passet Hub uses pallet-revive (PolkaVM) which requires **Ethereum-format addresses (0x...)**, not Substrate SS58 addresses (5...).
 

@@ -36,12 +36,14 @@ We've significantly improved how connections work:
 ### What Happens to My Data?
 
 **Nothing changes with your data:**
+
 - ✅ Your existing messages are safe
 - ✅ Your encryption keys are unchanged
 - ✅ Your IPFS content is still accessible
 - ✅ Your blockchain transactions are unaffected
 
 **Only connection preferences are affected:**
+
 - ⚠️ You'll need to reconnect once (one-time setup)
 - ✅ After that, everything persists
 
@@ -50,6 +52,7 @@ We've significantly improved how connections work:
 ### Step 1: Reconnect Wallet
 
 **What you'll see:**
+
 ```
 ┌─────────────────────────────────────┐
 │  Wallet Connection                  │
@@ -61,6 +64,7 @@ We've significantly improved how connections work:
 ```
 
 **What to do:**
+
 1. Click "Connect Wallet"
 2. Your wallet extension will popup
 3. Approve the connection
@@ -71,6 +75,7 @@ We've significantly improved how connections work:
 ### Step 2: Re-authenticate Storacha
 
 **What you'll see:**
+
 ```
 ┌─────────────────────────────────────┐
 │  Storacha Network                   │
@@ -83,6 +88,7 @@ We've significantly improved how connections work:
 ```
 
 **What to do:**
+
 1. Enter your email (same one you used before)
 2. Click "Connect with Storacha"
 3. Check your email and click verification link
@@ -94,6 +100,7 @@ We've significantly improved how connections work:
 ### Step 3: Verify Everything Works
 
 **Check the Connection Status:**
+
 ```
 ┌─────────────────────────────────────┐
 │  Connection Status                  │
@@ -106,6 +113,7 @@ We've significantly improved how connections work:
 ```
 
 **Test persistence:**
+
 1. Refresh the page (F5)
 2. Both should still show 🟢 Connected
 3. Close and reopen browser
@@ -116,12 +124,11 @@ We've significantly improved how connections work:
 ### "I reconnected but it disconnected again"
 
 **Possible causes:**
+
 1. You're using an old cached version
    - **Solution:** Hard refresh (Ctrl+Shift+R or Cmd+Shift+R)
-   
 2. Browser is clearing localStorage
    - **Solution:** Check browser settings, allow localStorage for this site
-   
 3. Private/Incognito mode
    - **Solution:** Use normal browsing mode for persistence
 
@@ -130,6 +137,7 @@ We've significantly improved how connections work:
 This means your email was verified but space wasn't created.
 
 **Solution:**
+
 1. You'll see a yellow indicator
 2. Click "Create Space" button
 3. No need to verify email again!
@@ -137,6 +145,7 @@ This means your email was verified but space wasn't created.
 ### "I see errors in the console"
 
 **Solution:**
+
 1. Clear browser cache
 2. Hard refresh (Ctrl+Shift+R)
 3. Reconnect both wallet and storage
@@ -147,6 +156,7 @@ This means your email was verified but space wasn't created.
 **This is unrelated to the connection update.**
 
 **Solution:**
+
 1. Check you're connected to the same wallet address
 2. Check the Dashboard page
 3. Messages are stored on blockchain, they can't be lost
@@ -154,6 +164,7 @@ This means your email was verified but space wasn't created.
 ## Benefits You'll Notice
 
 ### Before Update
+
 ```
 Visit 1: Connect wallet → Use app → Close browser
 Visit 2: Connect wallet again → Use app → Refresh page
@@ -162,6 +173,7 @@ Visit 3: Connect wallet again → Use app
 ```
 
 ### After Update
+
 ```
 Visit 1: Connect wallet → Use app → Close browser
 Visit 2: Already connected! → Use app → Refresh page
@@ -174,37 +186,44 @@ Visit 3: Still connected! → Use app
 ## FAQ
 
 ### Q: Do I need to reconnect every time I update the app?
+
 **A:** No! Only this one time. Future updates won't require reconnection.
 
 ### Q: What if I use multiple devices?
+
 **A:** Each device needs to connect once. After that, each device remembers its connection.
 
 ### Q: What if I use multiple browsers?
+
 **A:** Each browser needs to connect once. Connections are stored per-browser.
 
 ### Q: Can I disconnect and reconnect?
+
 **A:** Yes! You can disconnect anytime from Settings. When you reconnect, it will persist again.
 
 ### Q: What if I clear my browser data?
+
 **A:** You'll need to reconnect (just like the first time). Your messages are safe on blockchain.
 
 ### Q: Is this secure?
+
 **A:** Yes! We only store connection preferences, never private keys or sensitive data.
 
 ### Q: What about mobile?
+
 **A:** Same process! Connect once on mobile, it persists.
 
 ## Comparison: Before vs After
 
-| Aspect | Before | After |
-|--------|--------|-------|
-| Wallet reconnections per session | 3-5 times | 1 time (first visit only) |
-| Storacha re-auth per session | 2-3 times | 1 time (first visit only) |
-| Setup time | 5-10 minutes | 2-3 minutes |
-| User frustration | High 😞 | Low 😊 |
-| Connection persistence | None | Permanent ✅ |
-| Error recovery | Start over | Resume where left off |
-| Status visibility | None | Clear indicators |
+| Aspect                           | Before       | After                     |
+| -------------------------------- | ------------ | ------------------------- |
+| Wallet reconnections per session | 3-5 times    | 1 time (first visit only) |
+| Storacha re-auth per session     | 2-3 times    | 1 time (first visit only) |
+| Setup time                       | 5-10 minutes | 2-3 minutes               |
+| User frustration                 | High 😞      | Low 😊                    |
+| Connection persistence           | None         | Permanent ✅              |
+| Error recovery                   | Start over   | Resume where left off     |
+| Status visibility                | None         | Clear indicators          |
 
 ## What's Next?
 

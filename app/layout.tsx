@@ -1,13 +1,24 @@
 import type { Metadata } from "next";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { WalletProvider } from "@/lib/wallet/WalletProvider";
-import { Navigation, Footer } from "@/components/layout";
-import { ToastProvider, SkipToContent } from "@/components/ui";
 import { Analytics } from "@vercel/analytics/react";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+// Using Space Grotesk as display font (similar geometric feel to Satoshi, available on Google Fonts)
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-satoshi",
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "Lockdrop - Guaranteed by math, not corporations",
-  description: "Lockdrop: Decentralized time-capsule for time-locked audio/video messages with blockchain-enforced privacy",
+  description:
+    "Decentralized time-capsule for time-locked audio/video messages with blockchain-enforced privacy",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -28,17 +39,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="antialiased bg-gray-900 flex flex-col min-h-screen">
-        <SkipToContent />
-        <ToastProvider>
-          <WalletProvider>
-            <Navigation />
-            <main id="main-content" className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </WalletProvider>
-        </ToastProvider>
+      <body
+        className={`${inter.variable} ${spaceGrotesk.variable} min-h-screen bg-dark-950 font-sans text-dark-100 antialiased`}
+      >
+        {children}
         <Analytics />
       </body>
     </html>

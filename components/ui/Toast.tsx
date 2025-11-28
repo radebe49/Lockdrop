@@ -17,12 +17,7 @@ interface ToastProps {
   onClose: () => void;
 }
 
-export function Toast({
-  message,
-  type,
-  duration = 5000,
-  onClose,
-}: ToastProps) {
+export function Toast({ message, type, duration = 5000, onClose }: ToastProps) {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
@@ -65,13 +60,13 @@ export function Toast({
 
   return (
     <div
-      className={`${style.bg} ${style.text} border rounded-lg shadow-lg p-4 flex items-start gap-3 min-w-[300px] max-w-md transition-all duration-300 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+      className={`${style.bg} ${style.text} flex min-w-[300px] max-w-md items-start gap-3 rounded-lg border p-4 shadow-lg transition-all duration-300 ${
+        isVisible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
       }`}
       role="alert"
     >
       <div
-        className={`${style.iconBg} text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold`}
+        className={`${style.iconBg} flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white`}
       >
         {style.icon}
       </div>
@@ -83,11 +78,11 @@ export function Toast({
           setIsVisible(false);
           setTimeout(onClose, 300);
         }}
-        className="text-gray-400 hover:text-gray-600 transition-colors"
+        className="text-gray-400 transition-colors hover:text-gray-600"
         aria-label="Close notification"
       >
         <svg
-          className="w-4 h-4"
+          className="h-4 w-4"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"

@@ -150,37 +150,36 @@ Implements requirement 6.6: Recipient-without-wallet flow
 ## Usage Example
 
 ```typescript
-import { RedeemPackageService } from '@/lib/redeem';
-import { IPFSService } from '@/lib/storage';
+import { RedeemPackageService } from "@/lib/redeem";
+import { IPFSService } from "@/lib/storage";
 
 // Create and encrypt package
 const redeemPackage = RedeemPackageService.createRedeemPackage(
-  'bafybeiabc...',
-  'bafybeiabc...',
-  'sha256hash...',
+  "bafybeiabc...",
+  "bafybeiabc...",
+  "sha256hash...",
   Date.now() + 86400000,
-  '5GrwvaEF...'
+  "5GrwvaEF..."
 );
 
 const encryptedPackage = await RedeemPackageService.encryptRedeemPackage(
   redeemPackage,
-  'my-secure-passphrase'
+  "my-secure-passphrase"
 );
 
 // Upload to IPFS
-const packageBlob = RedeemPackageService.serializeEncryptedPackage(
-  encryptedPackage
-);
+const packageBlob =
+  RedeemPackageService.serializeEncryptedPackage(encryptedPackage);
 const { cid } = await IPFSService.uploadFile(packageBlob);
 
 // Generate claim link
 const claimLink = RedeemPackageService.generateClaimLink(
   cid,
-  'https://lockdrop.app'
+  "https://lockdrop.app"
 );
 
-console.log('Share this link:', claimLink.url);
-console.log('Share this passphrase separately:', 'my-secure-passphrase');
+console.log("Share this link:", claimLink.url);
+console.log("Share this passphrase separately:", "my-secure-passphrase");
 ```
 
 ## Future Enhancements

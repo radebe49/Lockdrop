@@ -29,13 +29,13 @@ export function MessageFilters({
   ];
 
   return (
-    <div className="bg-gray-800 rounded-lg shadow-sm border border-gray-700 p-4 mb-6">
-      <div className="flex flex-col sm:flex-row gap-4">
+    <div className="mb-6 rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm">
+      <div className="flex flex-col gap-4 sm:flex-row">
         {/* Status Filter */}
         <div className="flex-1">
           <label
             htmlFor="status-filter"
-            className="block text-sm font-medium text-gray-300 mb-2"
+            className="mb-2 block text-sm font-medium text-gray-300"
           >
             Filter by Status
           </label>
@@ -45,7 +45,7 @@ export function MessageFilters({
             onChange={(e) =>
               onStatusFilterChange(e.target.value as MessageStatus | "All")
             }
-            className="w-full rounded-md bg-gray-900 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+            className="w-full rounded-md border-gray-600 bg-gray-900 text-sm text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
             {statusOptions.map((status) => (
               <option key={status} value={status}>
@@ -59,7 +59,7 @@ export function MessageFilters({
         <div className="flex-1">
           <label
             htmlFor="sort-order"
-            className="block text-sm font-medium text-gray-300 mb-2"
+            className="mb-2 block text-sm font-medium text-gray-300"
           >
             Sort by Date
           </label>
@@ -69,7 +69,7 @@ export function MessageFilters({
             onChange={(e) =>
               onSortOrderChange(e.target.value as "newest" | "oldest")
             }
-            className="w-full rounded-md bg-gray-900 text-gray-100 border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+            className="w-full rounded-md border-gray-600 bg-gray-900 text-sm text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>

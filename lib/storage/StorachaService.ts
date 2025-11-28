@@ -90,7 +90,10 @@ export class StorachaService {
       // If we have a saved space DID, try to restore it as current space
       if (this.authState.spaceDid) {
         try {
-          console.log("Storacha: Attempting to restore space:", this.authState.spaceDid);
+          console.log(
+            "Storacha: Attempting to restore space:",
+            this.authState.spaceDid
+          );
           await this.client.setCurrentSpace(
             this.authState.spaceDid as `did:${string}:${string}`
           );
@@ -98,7 +101,9 @@ export class StorachaService {
         } catch (error) {
           console.warn("Failed to restore space from saved state:", error);
           // Don't clear the space DID immediately - user might need to re-authenticate
-          console.log("Storacha: Space restoration failed, may need re-authentication");
+          console.log(
+            "Storacha: Space restoration failed, may need re-authentication"
+          );
         }
       }
 
@@ -118,7 +123,7 @@ export class StorachaService {
       const emailAddress = email as `${string}@${string}`;
 
       console.log("Storacha: Sending login email to", emailAddress);
-      
+
       // Save email immediately so we don't lose it
       this.authState = {
         isAuthenticated: false,
@@ -153,11 +158,11 @@ export class StorachaService {
       console.log("Storacha: Authentication state saved");
     } catch (error) {
       console.error("Storacha login error:", error);
-      
+
       // Clear partial state on error
       this.authState = { isAuthenticated: false };
       this.saveAuthState();
-      
+
       throw new Error(
         `Authentication failed: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -236,11 +241,11 @@ export class StorachaService {
   }> {
     try {
       const client = await this.getClient();
-      
+
       // Check if we have accounts (authenticated)
       const accounts = client.accounts();
       const hasAccounts = Object.keys(accounts).length > 0;
-      
+
       // Check if we have a current space
       const currentSpace = client.currentSpace();
       const hasSpace = !!currentSpace;
@@ -314,9 +319,38 @@ export class StorachaService {
     filename: string = "encrypted-media",
     options: UploadOptions = {}
   ): Promise<StorachaUploadResult> {
-    if (!this.isReady()) {
+    // Provide more specific error messages
+    if (!this.authState.isAuthenticated) {
       throw new Error(
-        "Client not ready. Please authenticate and create a space first."
+        "Not authenticated. Please go to Settings and connect with Storacha using your email."
+      );
+    }
+
+    if (!this.authState.spaceDid) {
+      throw new Error(
+        "No storage space configured. Please go to Settings and create a Storacha space."
+      );
+    }
+
+    // Try to ensure space is set before upload
+    try {
+      const client = await this.getClient();
+      const currentSpace = client.currentSpace();
+
+      if (!currentSpace) {
+        // Try to restore the space from saved state
+        console.log(
+          "Storacha: No current space, attempting to restore from saved state..."
+        );
+        await client.setCurrentSpace(
+          this.authState.spaceDid as `did:${string}:${string}`
+        );
+        console.log("Storacha: Space restored successfully");
+      }
+    } catch (error) {
+      console.error("Storacha: Failed to set space before upload:", error);
+      throw new Error(
+        "Failed to set storage space. Please go to Settings and reconnect Storacha."
       );
     }
 

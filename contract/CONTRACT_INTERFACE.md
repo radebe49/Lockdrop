@@ -1,10 +1,13 @@
 # Lockdrop Contract Interface
 
 ## Contract Address
+
 **Passet Hub Testnet:** `<TO_BE_DEPLOYED>`
 
 ## ABI Location
+
 After compilation, the ABI is available at:
+
 - `contract/artifacts/contracts/FutureProof.sol/FutureProof.json`
 
 ## Function Signatures
@@ -12,6 +15,7 @@ After compilation, the ABI is available at:
 ### Write Functions
 
 #### storeMessage
+
 ```solidity
 function storeMessage(
     string calldata encryptedKeyCid,
@@ -23,6 +27,7 @@ function storeMessage(
 ```
 
 **Parameters:**
+
 - `encryptedKeyCid`: IPFS CID of encrypted AES key (non-empty string)
 - `encryptedMessageCid`: IPFS CID of encrypted message (non-empty string)
 - `messageHash`: SHA-256 hash (minimum 64 characters)
@@ -34,6 +39,7 @@ function storeMessage(
 **Emits:** `MessageStored(messageId, sender, recipient, unlockTimestamp)`
 
 **Errors:**
+
 - `InvalidKeyCID()` - Empty key CID
 - `InvalidMessageCID()` - Empty message CID
 - `InvalidMessageHash()` - Hash too short
@@ -43,52 +49,60 @@ function storeMessage(
 ### Read Functions
 
 #### getMessage
+
 ```solidity
-function getMessage(uint64 messageId) 
-    external 
-    view 
+function getMessage(uint64 messageId)
+    external
+    view
     returns (MessageMetadata memory)
 ```
 
 **Parameters:**
+
 - `messageId`: The message ID to query
 
 **Returns:** MessageMetadata struct
 
 **Errors:**
+
 - `MessageNotFound()` - Message doesn't exist
 
 #### getSentMessages
+
 ```solidity
-function getSentMessages(address sender) 
-    external 
-    view 
+function getSentMessages(address sender)
+    external
+    view
     returns (MessageMetadata[] memory)
 ```
 
 **Parameters:**
+
 - `sender`: Address to query sent messages for
 
 **Returns:** Array of MessageMetadata
 
 #### getReceivedMessages
+
 ```solidity
-function getReceivedMessages(address recipient) 
-    external 
-    view 
+function getReceivedMessages(address recipient)
+    external
+    view
     returns (MessageMetadata[] memory)
 ```
 
 **Parameters:**
+
 - `recipient`: Address to query received messages for
 
 **Returns:** Array of MessageMetadata
 
 #### getMessageCount
+
 ```solidity
-function getMessageCount() 
-    external 
-    view 
+function getMessageCount()
+    external
+    view
     returns (uint64)
 ```
 
@@ -97,6 +111,7 @@ function getMessageCount()
 ## Data Structures
 
 ### MessageMetadata
+
 ```solidity
 struct MessageMetadata {
     string encryptedKeyCid;      // IPFS CID of encrypted key
@@ -112,6 +127,7 @@ struct MessageMetadata {
 ## Events
 
 ### MessageStored
+
 ```solidity
 event MessageStored(
     uint64 indexed messageId,
@@ -130,21 +146,23 @@ event MessageStored(
 ### JavaScript/ethers.js
 
 ```javascript
-import { ethers } from 'ethers';
-import FutureProofABI from './FutureProof.abi.json';
+import { ethers } from "ethers";
+import FutureProofABI from "./FutureProof.abi.json";
 
 // Connect to contract
-const provider = new ethers.JsonRpcProvider('wss://testnet-passet-hub.polkadot.io');
+const provider = new ethers.JsonRpcProvider(
+  "wss://testnet-passet-hub.polkadot.io"
+);
 const signer = await provider.getSigner();
 const contract = new ethers.Contract(CONTRACT_ADDRESS, FutureProofABI, signer);
 
 // Store a message
 const tx = await contract.storeMessage(
-    "QmKeyABC123",
-    "QmMessageXYZ789",
-    "a".repeat(64), // 64-char hash
-    Math.floor(Date.now() / 1000) + 86400, // 24 hours from now
-    recipientAddress
+  "QmKeyABC123",
+  "QmMessageXYZ789",
+  "a".repeat(64), // 64-char hash
+  Math.floor(Date.now() / 1000) + 86400, // 24 hours from now
+  recipientAddress
 );
 await tx.wait();
 
@@ -157,37 +175,40 @@ const sentMessages = await contract.getSentMessages(senderAddress);
 console.log(`Sent ${sentMessages.length} messages`);
 
 // Listen for events
-contract.on("MessageStored", (messageId, sender, recipient, unlockTimestamp) => {
+contract.on(
+  "MessageStored",
+  (messageId, sender, recipient, unlockTimestamp) => {
     console.log(`New message ${messageId} from ${sender} to ${recipient}`);
-});
+  }
+);
 ```
 
 ### TypeScript Types
 
 ```typescript
 interface MessageMetadata {
-    encryptedKeyCid: string;
-    encryptedMessageCid: string;
-    messageHash: string;
-    unlockTimestamp: bigint;
-    sender: string;
-    recipient: string;
-    createdAt: bigint;
+  encryptedKeyCid: string;
+  encryptedMessageCid: string;
+  messageHash: string;
+  unlockTimestamp: bigint;
+  sender: string;
+  recipient: string;
+  createdAt: bigint;
 }
 
 interface FutureProofContract {
-    storeMessage(
-        encryptedKeyCid: string,
-        encryptedMessageCid: string,
-        messageHash: string,
-        unlockTimestamp: bigint,
-        recipient: string
-    ): Promise<bigint>;
-    
-    getMessage(messageId: bigint): Promise<MessageMetadata>;
-    getSentMessages(sender: string): Promise<MessageMetadata[]>;
-    getReceivedMessages(recipient: string): Promise<MessageMetadata[]>;
-    getMessageCount(): Promise<bigint>;
+  storeMessage(
+    encryptedKeyCid: string,
+    encryptedMessageCid: string,
+    messageHash: string,
+    unlockTimestamp: bigint,
+    recipient: string
+  ): Promise<bigint>;
+
+  getMessage(messageId: bigint): Promise<MessageMetadata>;
+  getSentMessages(sender: string): Promise<MessageMetadata[]>;
+  getReceivedMessages(recipient: string): Promise<MessageMetadata[]>;
+  getMessageCount(): Promise<bigint>;
 }
 ```
 
@@ -195,15 +216,15 @@ interface FutureProofContract {
 
 Approximate gas costs on Passet Hub:
 
-| Function | Gas Cost |
-|----------|----------|
-| storeMessage | ~150,000 |
-| getMessage | ~30,000 |
-| getSentMessages | ~50,000 + (n * 20,000) |
-| getReceivedMessages | ~50,000 + (n * 20,000) |
-| getMessageCount | ~25,000 |
+| Function            | Gas Cost                |
+| ------------------- | ----------------------- |
+| storeMessage        | ~150,000                |
+| getMessage          | ~30,000                 |
+| getSentMessages     | ~50,000 + (n \* 20,000) |
+| getReceivedMessages | ~50,000 + (n \* 20,000) |
+| getMessageCount     | ~25,000                 |
 
-*Note: Actual costs may vary based on data size and network conditions*
+_Note: Actual costs may vary based on data size and network conditions_
 
 ## Frontend Integration Checklist
 
@@ -226,11 +247,11 @@ const contract = FutureProof.attach("CONTRACT_ADDRESS");
 
 // Store test message
 const tx = await contract.storeMessage(
-    "QmTest",
-    "QmTest2",
-    "a".repeat(64),
-    Math.floor(Date.now() / 1000) + 3600,
-    "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+  "QmTest",
+  "QmTest2",
+  "a".repeat(64),
+  Math.floor(Date.now() / 1000) + 3600,
+  "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
 );
 await tx.wait();
 
@@ -242,6 +263,7 @@ console.log("Messages:", count.toString());
 ## Network Configuration
 
 ### Passet Hub Testnet
+
 - **RPC:** wss://testnet-passet-hub.polkadot.io
 - **Chain ID:** 1000
 - **Currency:** PAS
@@ -261,6 +283,7 @@ console.log("Messages:", count.toString());
 ## Upgrade Path
 
 This contract is **not upgradeable**. For future versions:
+
 1. Deploy new contract
 2. Update frontend configuration
 3. Migrate data if needed

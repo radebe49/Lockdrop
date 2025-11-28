@@ -5,6 +5,7 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 ## Pre-Deployment
 
 ### Code Quality
+
 - [ ] All linting errors resolved (`npm run lint`)
 - [ ] TypeScript type checking passes (`npx tsc --noEmit`)
 - [ ] Code formatted with Prettier (`npm run format`)
@@ -12,6 +13,7 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 - [ ] No console errors in development mode
 
 ### Testing
+
 - [ ] Wallet connection tested with Talisman
 - [ ] Media recording/upload tested
 - [ ] Encryption/decryption flow verified
@@ -22,6 +24,7 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 - [ ] Tested on Chrome, Firefox, Safari
 
 ### Documentation
+
 - [ ] README.md updated with deployment URL
 - [ ] Environment variables documented
 - [ ] Setup instructions verified
@@ -31,6 +34,7 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 ## GitHub Setup
 
 ### Repository Configuration
+
 - [ ] Repository created on GitHub
 - [ ] Repository set to public
 - [ ] Code pushed to `main` branch
@@ -40,18 +44,21 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 - [ ] CONTRIBUTING.md added
 
 ### Branch Protection
+
 - [ ] Branch protection enabled for `main`
 - [ ] Require pull request reviews
 - [ ] Require status checks to pass
 - [ ] Require branches to be up to date
 
 ### GitHub Actions
+
 - [ ] Workflows added to `.github/workflows/`
 - [ ] GitHub Actions enabled in settings
 - [ ] Workflow permissions set correctly
 - [ ] Status checks configured
 
 ### Secrets Configuration
+
 - [ ] `VERCEL_TOKEN` added
 - [ ] `VERCEL_ORG_ID` added
 - [ ] `VERCEL_PROJECT_ID` added
@@ -63,6 +70,7 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 ## Vercel Setup
 
 ### Project Configuration
+
 - [ ] Vercel account created
 - [ ] Project created/imported from GitHub
 - [ ] Framework preset: Next.js
@@ -71,18 +79,21 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 - [ ] Install command: `npm install`
 
 ### Environment Variables
+
 - [ ] Production environment variables set
 - [ ] Preview environment variables set
 - [ ] `NEXT_PUBLIC_DEMO_MODE=false` for production
 - [ ] All required variables configured
 
 ### Domain Configuration
+
 - [ ] Custom domain added (optional)
 - [ ] DNS configured correctly
 - [ ] HTTPS certificate active
 - [ ] Domain verified
 
 ### Deployment Settings
+
 - [ ] Auto-deploy from `main` enabled
 - [ ] Preview deployments for PRs enabled
 - [ ] Build & Development Settings verified
@@ -91,6 +102,7 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 ## First Deployment
 
 ### Initial Deploy
+
 - [ ] Push to `main` branch
 - [ ] GitHub Actions workflow triggered
 - [ ] All CI checks pass (lint, build, test)
@@ -98,6 +110,7 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 - [ ] Deployment URL accessible
 
 ### Verification
+
 - [ ] Homepage loads correctly
 - [ ] Wallet connection works
 - [ ] Media recording/upload functional
@@ -108,6 +121,7 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 - [ ] HTTPS enabled and working
 
 ### Performance
+
 - [ ] Page load time acceptable (< 3s)
 - [ ] Lighthouse score reviewed
 - [ ] Core Web Vitals checked
@@ -116,18 +130,21 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 ## Post-Deployment
 
 ### Monitoring
+
 - [ ] Vercel Analytics enabled
 - [ ] Error tracking configured (optional)
 - [ ] Deployment notifications set up
 - [ ] Logs reviewed for errors
 
 ### Documentation Updates
+
 - [ ] README updated with live URL
 - [ ] Deployment guide verified
 - [ ] User guide reflects production
 - [ ] Known issues documented
 
 ### Security
+
 - [ ] Environment variables secured
 - [ ] No secrets in code
 - [ ] HTTPS enforced
@@ -135,6 +152,7 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 - [ ] Security audit passed
 
 ### Communication
+
 - [ ] Deployment announced to team
 - [ ] User documentation shared
 - [ ] Feedback channels established
@@ -143,18 +161,21 @@ Use this checklist to ensure proper deployment setup for Lockdrop.
 ## Ongoing Maintenance
 
 ### Weekly
+
 - [ ] Review Dependabot alerts
 - [ ] Check deployment logs
 - [ ] Monitor error rates
 - [ ] Review user feedback
 
 ### Monthly
+
 - [ ] Update dependencies
 - [ ] Review security scans
 - [ ] Check performance metrics
 - [ ] Update documentation
 
 ### As Needed
+
 - [ ] Respond to issues
 - [ ] Deploy bug fixes
 - [ ] Release new features

@@ -24,7 +24,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Handle wallet connection and account selection
     - Implement wallet disconnection
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
-  
   - [x] 2.2 Build wallet UI components
     - Create WalletConnectButton component
     - Create AccountSelector component
@@ -42,7 +41,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Implement media blob decryption
     - Add secure memory cleanup after operations
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
-  
   - [x] 3.2 Implement asymmetric key encryption
     - Implement public key retrieval from Talisman API
     - Add Ed25519/Sr25519 to X25519 key conversion using @polkadot/util-crypto
@@ -60,7 +58,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Save recorded media as Blob in memory
     - Detect iOS Safari and show upload-only fallback
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
-  
   - [x] 4.2 Implement file upload
     - Create MediaUploader component with drag-and-drop
     - Validate file types (MP3, WAV, OGG, MP4, WEBM, MOV)
@@ -68,7 +65,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Load uploaded files as Blob in memory
     - Display file preview and metadata
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
-  
   - [x] 4.3 Create media preview component
     - Build MediaPreview component for playback
     - Display media metadata (size, type, duration)
@@ -85,12 +81,10 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Return IPFS CID on successful upload
     - Verify CID accessibility after upload (attempt retrieval)
     - _Requirements: 3.6, 5.1, 5.2, 5.4, 5.6_
-  
   - [x] 5.2 Implement retry logic for storage uploads
     - Retry logic with exponential backoff
     - Surface upload state to user
     - _Requirements: 5.3_
-  
   - [x] 5.3 Build upload progress UI
     - Create UploadProgress component
     - Display upload percentage and status
@@ -106,7 +100,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Load contract ABI and address from environment variables
     - Implement connection error handling
     - _Requirements: 6.2, 13.5_
-  
   - [x] 6.2 Implement contract write operations
     - Create storeMessage function to submit metadata
     - Build transaction with encryptedKeyCID, encryptedMessageCID, messageHash, unlockTimestamp, recipient
@@ -115,7 +108,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Display success confirmation to user
     - Show faucet guidance on transaction failure
     - _Requirements: 6.2, 6.3, 6.4, 6.5_
-  
   - [x] 6.3 Implement contract read operations
     - Create getSentMessages query function
     - Create getReceivedMessages query function
@@ -131,7 +123,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Integrate media recording/upload components
     - Add message preview section
     - _Requirements: 2.1, 3.1, 6.2_
-  
   - [x] 7.2 Implement end-to-end message creation
     - Orchestrate media capture/upload
     - Generate AES key and encrypt media blob
@@ -152,7 +143,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Create MessageCard component with status badge
     - Implement responsive grid layout
     - _Requirements: 7.1, 7.2, 8.1, 8.2, 11.4_
-  
   - [x] 8.2 Implement sent messages view
     - Query blockchain for sent messages
     - Display message cards with recipient, timestamp, status
@@ -160,7 +150,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Implement real-time status updates
     - Add loading and error states
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
-  
   - [x] 8.3 Implement received messages view
     - Query blockchain for received messages
     - Display message cards with sender, timestamp, status
@@ -169,7 +158,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Implement real-time status updates
     - Add loading and error states
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
-  
   - [x] 8.4 Add message filtering and sorting
     - Implement status filter (All/Locked/Unlockable/Unlocked)
     - Add date range filter
@@ -185,7 +173,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Add unlock button (enabled when unlockable)
     - Display unlock progress
     - _Requirements: 9.1, 9.2_
-  
   - [x] 9.2 Implement timestamp verification and decryption
     - Verify current time >= unlock timestamp
     - Prevent decryption if timestamp not reached
@@ -197,7 +184,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Decrypt media blob using recovered AES key
     - Handle decryption errors
     - _Requirements: 9.1, 9.2, 9.4, 9.5, 9.6, 10.1_
-  
   - [x] 9.3 Build secure media player
     - Create MediaPlayer component
     - Generate object URL from decrypted blob
@@ -206,7 +192,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Revoke object URL on close
     - Clear decrypted data from memory on close
     - _Requirements: 10.2, 10.3, 10.4, 10.5, 10.6_
-  
   - [x] 9.4 Add demo mode for simulated unlocks
     - Add DEMO_MODE environment variable check
     - Bypass timestamp verification in demo mode
@@ -225,7 +210,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Generate claim link with package CID
     - Display claim link to sender
     - _Requirements: 6.6_
-  
   - [x] 10.2 Build claim interface
     - Create ClaimMessage page accessible via claim link
     - Parse package CID from URL
@@ -244,21 +228,18 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Create footer with links
     - Implement consistent color scheme and typography
     - _Requirements: 11.1, 11.2_
-  
   - [x] 11.2 Add loading states and feedback
     - Create LoadingSpinner component
     - Add loading states for all async operations
     - Implement success/error toast notifications
     - Add confirmation dialogs for critical actions
     - _Requirements: 11.3_
-  
   - [x] 11.3 Implement tooltips and help text
     - Add tooltips for privacy features
     - Create info icons with explanations
     - Add help text for wallet connection
     - Display key backup warnings
     - _Requirements: 11.5, 14.3, 14.4_
-  
   - [x] 11.4 Ensure responsive design
     - Test and optimize for mobile screens
     - Ensure touch-friendly controls
@@ -274,7 +255,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Add retry mechanisms for network errors
     - Log errors for debugging
     - _Requirements: All error scenarios from design_
-  
   - [x] 12.2 Handle edge cases
     - Test with no wallet installed
     - Test with wallet locked
@@ -303,7 +283,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Include recommended key conversion libraries
     - Add redeem package expiry policies
     - _Requirements: 12.3, 12.6, 13.2, 13.4, 14.2, 14.5_
-  
   - [x] 13.2 Create developer documentation
     - Document API reference for all modules
     - Include contract ABI documentation
@@ -313,7 +292,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Add troubleshooting section
     - Document Ed25519/Sr25519 to X25519 conversion steps
     - _Requirements: 12.3_
-  
   - [x] 13.3 Write user guide
     - Create "How to connect Talisman wallet" guide
     - Write "How to create time-locked messages" tutorial
@@ -330,14 +308,12 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Set up custom domain (optional)
     - Configure build settings
     - _Requirements: 12.1_
-  
   - [x] 14.2 Create GitHub repository
     - Initialize Git repository
     - Create public GitHub repository
     - Push code to GitHub
     - Write clear commit messages
     - _Requirements: 12.2_
-  
   - [x] 14.3 Set up CI/CD pipeline
     - Create GitHub Actions workflow
     - Add linting and type checking steps
@@ -354,14 +330,12 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Implement get_received_messages query
     - Add access control and validation
     - _Requirements: 6.2, 7.1, 8.1_
-  
   - [x] 15.2 Deploy contract to Westend
     - Compile contract to WASM
     - Deploy to Westend testnet
     - Verify contract on blockchain explorer
     - Document contract address and ABI
     - _Requirements: 12.5, 13.1_
-  
 
 - [x] 16. Testing and quality assurance
   - [x] 16.1 Write unit tests
@@ -372,7 +346,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Test timestamp validation
     - Test status calculation logic
     - _Requirements: Various_
-  
   - [x] 16.2 Write integration tests
     - Test wallet connection flow
     - Test message creation end-to-end
@@ -380,7 +353,6 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Test dashboard data loading
     - Test unlock flow with timestamp verification
     - _Requirements: Various_
-  
   - [x] 16.3 Perform manual testing
     - Test on Chrome, Firefox, Safari
     - Test Talisman wallet integration
@@ -394,30 +366,27 @@ This implementation plan breaks down the Lockdrop application into discrete, man
     - Test responsive design on mobile
     - _Requirements: Various_
 
-- [ ] 17. Final polish and launch preparation
-  - [ ] 17.1 Optimize performance
+- [x] 17. Final polish and launch preparation
+  - [x] 17.1 Optimize performance
     - Analyze bundle size and optimize
     - Implement code splitting
     - Optimize images and assets
     - Test loading times
     - _Requirements: 11.2_
-  
-  - [ ] 17.2 Security audit
+  - [x] 17.2 Security audit
     - Verify no plaintext leakage
     - Confirm key cleanup after operations
     - Validate timestamp enforcement
     - Check object URL revocation
     - Review error messages for information disclosure
     - _Requirements: 4.4, 10.4, 10.5, 10.6_
-  
-  - [ ] 17.3 Final testing and bug fixes
+  - [x] 17.3 Final testing and bug fixes
     - Perform end-to-end testing of all features
     - Fix any remaining bugs
     - Test on production environment
     - Verify all documentation is accurate
     - _Requirements: All_
-  
-  - [ ] 17.4 Launch
+  - [x] 17.4 Launch
     - Deploy to production
     - Announce on social media
     - Submit to hackathon

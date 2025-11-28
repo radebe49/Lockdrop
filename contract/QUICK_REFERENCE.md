@@ -14,6 +14,7 @@ cd contract
 ## Contract Functions
 
 ### store_message (mutates)
+
 Store a new time-locked message.
 
 ```rust
@@ -27,12 +28,14 @@ store_message(
 ```
 
 **Validations**:
+
 - CIDs must not be empty
 - Hash must be 64+ characters
 - Timestamp must be in future
 - Sender ≠ recipient
 
 ### get_sent_messages (read-only)
+
 Get all messages sent by an address.
 
 ```rust
@@ -42,6 +45,7 @@ get_sent_messages(
 ```
 
 ### get_received_messages (read-only)
+
 Get all messages received by an address.
 
 ```rust
@@ -51,6 +55,7 @@ get_received_messages(
 ```
 
 ### get_message (read-only)
+
 Get a specific message by ID.
 
 ```rust
@@ -60,6 +65,7 @@ get_message(
 ```
 
 ### get_message_count (read-only)
+
 Get total number of messages.
 
 ```rust
@@ -92,6 +98,7 @@ get_message_count() -> u64
 ## Events
 
 ### MessageStored
+
 Emitted when a message is stored.
 
 ```rust

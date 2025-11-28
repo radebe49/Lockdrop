@@ -1,6 +1,6 @@
-export { MessageCreationService } from './MessageCreationService';
+export { MessageCreationService } from "./MessageCreationService";
 export type {
   MessageCreationParams,
   MessageCreationProgress,
   MessageCreationResult,
-} from './MessageCreationService';
+} from "./MessageCreationService";

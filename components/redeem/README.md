@@ -13,6 +13,7 @@ These components enable senders to create passphrase-protected claim links for r
 Allows senders to create a passphrase-protected redeem package.
 
 **Features:**
+
 - Passphrase input with confirmation
 - Configurable expiration period
 - Encrypts package with PBKDF2-derived key
@@ -20,6 +21,7 @@ Allows senders to create a passphrase-protected redeem package.
 - Generates shareable claim link
 
 **Usage:**
+
 ```tsx
 <RedeemPackageGenerator
   encryptedKeyCID="bafybeiabc..."
@@ -28,7 +30,7 @@ Allows senders to create a passphrase-protected redeem package.
   unlockTimestamp={1234567890}
   senderAddress="5GrwvaEF..."
   onComplete={(claimLink) => console.log(claimLink)}
-  onCancel={() => console.log('Cancelled')}
+  onCancel={() => console.log("Cancelled")}
 />
 ```
 
@@ -37,20 +39,22 @@ Allows senders to create a passphrase-protected redeem package.
 Displays the generated claim link to the sender with instructions.
 
 **Features:**
+
 - Copy-to-clipboard functionality
 - Security reminders
 - Expiration information
 - Sharing instructions
 
 **Usage:**
+
 ```tsx
 <ClaimLinkDisplay
   claimLink={{
-    url: 'https://app.com/claim/bafybeiabc...',
-    packageCID: 'bafybeiabc...',
-    expiresAt: 1234567890
+    url: "https://app.com/claim/bafybeiabc...",
+    packageCID: "bafybeiabc...",
+    expiresAt: 1234567890,
   }}
-  onClose={() => console.log('Closed')}
+  onClose={() => console.log("Closed")}
 />
 ```
 
@@ -59,6 +63,7 @@ Displays the generated claim link to the sender with instructions.
 Allows recipients to claim messages using a passphrase.
 
 **Features:**
+
 - Passphrase input
 - Downloads encrypted package from IPFS
 - Decrypts package with passphrase
@@ -66,10 +71,11 @@ Allows recipients to claim messages using a passphrase.
 - Saves claimed message to localStorage
 
 **Usage:**
+
 ```tsx
 <ClaimInterface
   packageCID="bafybeiabc..."
-  onClaimed={(package) => console.log('Claimed:', package)}
+  onClaimed={(package) => console.log("Claimed:", package)}
 />
 ```
 

@@ -17,17 +17,17 @@ npm install
 Storacha uses email-based authentication:
 
 ```typescript
-import { storachaService } from '@/lib/storage';
+import { storachaService } from "@/lib/storage";
 
-await storachaService.login('your-email@example.com');
-await storachaService.createSpace('my-space');
+await storachaService.login("your-email@example.com");
+await storachaService.createSpace("my-space");
 ```
 
 ## Usage
 
 ```typescript
 // Upload
-const result = await storachaService.uploadEncryptedBlob(blob, 'file.bin');
+const result = await storachaService.uploadEncryptedBlob(blob, "file.bin");
 
 // Download
 const blob = await storachaService.downloadEncryptedBlob(cid);

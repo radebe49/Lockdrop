@@ -19,6 +19,7 @@ Lockdrop supports multiple IPFS storage providers with a unified interface. The 
 - Free tier - 5GB storage + egress per month
 
 **When to use:**
+
 - New implementations (recommended)
 - Production deployments
 - When you need reliable, fast IPFS storage
@@ -32,6 +33,7 @@ Lockdrop supports multiple IPFS storage providers with a unified interface. The 
 - Backward compatible - All existing CIDs work
 
 **When to use:**
+
 - Maintaining existing code
 - Gradual migration to Storacha
 - Testing legacy functionality
@@ -46,6 +48,7 @@ Lockdrop supports multiple IPFS storage providers with a unified interface. The 
 - Realistic CIDs - Generated using SHA-256
 
 **When to use:**
+
 - Local development
 - Unit/integration testing
 - CI/CD pipelines
@@ -60,16 +63,16 @@ The active service is controlled by the `USE_MOCK` flag in `lib/storage/index.ts
 ### Using Storacha Service (Recommended)
 
 ```typescript
-import { StorachaService } from '@/lib/storage';
+import { StorachaService } from "@/lib/storage";
 
 // 1. Authenticate with email
-await StorachaService.login('user@example.com');
+await StorachaService.login("user@example.com");
 
 // 2. Create a space
-const spaceDid = await StorachaService.createSpace('my-messages');
+const spaceDid = await StorachaService.createSpace("my-messages");
 
 // 3. Upload encrypted blob
-const result = await StorachaService.uploadFile(encryptedBlob, 'message.enc');
+const result = await StorachaService.uploadFile(encryptedBlob, "message.enc");
 
 // 4. Download encrypted blob
 const blob = await StorachaService.downloadFile(result.cid);
@@ -80,18 +83,20 @@ const blob = await StorachaService.downloadFile(result.cid);
 ### From Legacy Web3.Storage to Storacha
 
 **Step 1: Update imports**
+
 ```typescript
 // BEFORE
-import { IPFSService } from '@/lib/storage';
+import { IPFSService } from "@/lib/storage";
 
 // AFTER
-import { StorachaService } from '@/lib/storage';
+import { StorachaService } from "@/lib/storage";
 ```
 
 **Step 2: Add authentication flow**
+
 ```typescript
-await StorachaService.login('user@example.com');
-await StorachaService.createSpace('my-space');
+await StorachaService.login("user@example.com");
+await StorachaService.createSpace("my-space");
 ```
 
 **Step 3: Update upload/download calls** (same interface!)

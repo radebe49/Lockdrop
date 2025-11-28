@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useRef, useCallback, useEffect } from 'react';
-import type { MediaType, RecordingState } from '@/types/media';
+import { useState, useRef, useCallback, useEffect } from "react";
+import type { MediaType, RecordingState } from "@/types/media";
 
 /**
  * Custom hook for media recording functionality
  * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5
  */
-export function useMediaRecorder(mediaType: MediaType = 'audio') {
+export function useMediaRecorder(mediaType: MediaType = "audio") {
   const [recordingState, setRecordingState] = useState<RecordingState>({
     isRecording: false,
     isPaused: false,
@@ -25,22 +25,26 @@ export function useMediaRecorder(mediaType: MediaType = 'audio') {
    * Request microphone and camera permissions
    * Requirement 2.1: Request permissions from browser
    */
-  const requestPermissions = useCallback(async (): Promise<MediaStream | null> => {
-    try {
-      const constraints: MediaStreamConstraints = {
-        audio: true,
-        video: mediaType === 'video',
-      };
+  const requestPermissions =
+    useCallback(async (): Promise<MediaStream | null> => {
+      try {
+        const constraints: MediaStreamConstraints = {
+          audio: true,
+          video: mediaType === "video",
+        };
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      return stream;
-    } catch (error) {
-      console.error('Permission denied or error accessing media devices:', error);
-      throw new Error(
-        `Failed to access ${mediaType === 'video' ? 'camera and microphone' : 'microphone'}. Please grant permissions.`
-      );
-    }
-  }, [mediaType]);
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        return stream;
+      } catch (error) {
+        console.error(
+          "Permission denied or error accessing media devices:",
+          error
+        );
+        throw new Error(
+          `Failed to access ${mediaType === "video" ? "camera and microphone" : "microphone"}. Please grant permissions.`
+        );
+      }
+    }, [mediaType]);
 
   /**
    * Start recording
@@ -49,21 +53,21 @@ export function useMediaRecorder(mediaType: MediaType = 'audio') {
   const startRecording = useCallback(async () => {
     try {
       const stream = await requestPermissions();
-      
+
       if (!stream) {
-        throw new Error('Failed to get media stream');
+        throw new Error("Failed to get media stream");
       }
 
       // Determine the best supported MIME type
       const mimeTypes = [
-        'video/webm;codecs=vp9',
-        'video/webm;codecs=vp8',
-        'video/webm',
-        'audio/webm',
-        'audio/mp4',
+        "video/webm;codecs=vp9",
+        "video/webm;codecs=vp8",
+        "video/webm",
+        "audio/webm",
+        "audio/mp4",
       ];
 
-      let mimeType = '';
+      let mimeType = "";
       for (const type of mimeTypes) {
         if (MediaRecorder.isTypeSupported(type)) {
           mimeType = type;
@@ -85,7 +89,8 @@ export function useMediaRecorder(mediaType: MediaType = 'audio') {
 
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunksRef.current, {
-          type: mimeType || (mediaType === 'video' ? 'video/webm' : 'audio/webm'),
+          type:
+            mimeType || (mediaType === "video" ? "video/webm" : "audio/webm"),
         });
 
         setRecordingState((prev) => ({
@@ -118,7 +123,7 @@ export function useMediaRecorder(mediaType: MediaType = 'audio') {
         stream,
       });
     } catch (error) {
-      console.error('Failed to start recording:', error);
+      console.error("Failed to start recording:", error);
       throw error;
     }
   }, [mediaType, requestPermissions]);
@@ -130,7 +135,7 @@ export function useMediaRecorder(mediaType: MediaType = 'audio') {
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && recordingState.isRecording) {
       mediaRecorderRef.current.stop();
-      
+
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;

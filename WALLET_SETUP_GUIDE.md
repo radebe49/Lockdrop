@@ -109,17 +109,21 @@ MetaMask is a popular alternative as all accounts are Ethereum by default.
 ### Check Your Address Format
 
 ✅ **Correct (Ethereum):**
+
 ```
 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
 ```
+
 - Starts with `0x`
 - Followed by 40 hexadecimal characters
 - Total length: 42 characters
 
 ❌ **Wrong (Substrate):**
+
 ```
 5E2jTHsQfRCq8wBPeHgwKQAeCMwSsxYCCZfB4dG2SWhp4ZTv
 ```
+
 - Starts with number/letter (not 0x)
 - 47-48 characters long
 - This will NOT work on Passet Hub
@@ -145,6 +149,7 @@ MetaMask is a popular alternative as all accounts are Ethereum by default.
 **Problem:** You're using a Substrate address (5...)
 
 **Solution:**
+
 - MetaMask: All addresses are correct by default
 - Talisman: Make sure you created an **Ethereum account**, not Polkadot
 
@@ -153,6 +158,7 @@ MetaMask is a popular alternative as all accounts are Ethereum by default.
 **Problem:** Wrong network configuration
 
 **Solution:**
+
 1. Check RPC endpoint: `wss://testnet-passet-hub.polkadot.io`
 2. Verify network name: `passet-hub`
 3. Restart browser/wallet
@@ -162,6 +168,7 @@ MetaMask is a popular alternative as all accounts are Ethereum by default.
 **Problem:** No PAS tokens
 
 **Solution:**
+
 1. Visit faucet: https://faucet.polkadot.io/paseo
 2. Use your 0x... address
 3. Wait for tokens to arrive
@@ -172,6 +179,7 @@ MetaMask is a popular alternative as all accounts are Ethereum by default.
 **Problem:** You created a Polkadot account instead of Ethereum
 
 **Solution:**
+
 1. Create a new account in Talisman
 2. Select **"Ethereum"** as account type
 3. Use this new account for Lockdrop
@@ -180,11 +188,11 @@ MetaMask is a popular alternative as all accounts are Ethereum by default.
 
 ## Quick Reference
 
-| Wallet | Account Type | Address Format | Works with Passet Hub? |
-|--------|-------------|----------------|----------------------|
-| MetaMask | Ethereum (default) | 0x... | ✅ Yes |
-| Talisman (Ethereum) | Ethereum | 0x... | ✅ Yes |
-| Talisman (Polkadot) | Substrate | 5... | ❌ No |
+| Wallet              | Account Type       | Address Format | Works with Passet Hub? |
+| ------------------- | ------------------ | -------------- | ---------------------- |
+| MetaMask            | Ethereum (default) | 0x...          | ✅ Yes                 |
+| Talisman (Ethereum) | Ethereum           | 0x...          | ✅ Yes                 |
+| Talisman (Polkadot) | Substrate          | 5...           | ❌ No                  |
 
 ---
 

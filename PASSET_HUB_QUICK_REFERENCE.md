@@ -3,15 +3,19 @@
 ## 🔗 RPC Endpoints
 
 ### Ethereum RPC (Use This!)
+
 ```
 https://testnet-passet-hub-eth-rpc.polkadot.io
 ```
+
 ✅ For: Solidity contracts, forge, cast, ethers.js, MetaMask
 
 ### Substrate RPC (Advanced Only)
+
 ```
 wss://testnet-passet-hub.polkadot.io
 ```
+
 ⚠️ For: Polkadot.js API, substrate pallets only
 
 ## 📝 Contract Details
@@ -26,6 +30,7 @@ Token:    PAS (12 decimals)
 ## 🚀 Quick Commands
 
 ### Deploy Contract
+
 ```bash
 forge create --resolc \
   --rpc-url https://testnet-passet-hub-eth-rpc.polkadot.io \
@@ -34,24 +39,28 @@ forge create --resolc \
 ```
 
 ### Check Balance
+
 ```bash
 cast balance 0xYourAddress \
   --rpc-url https://testnet-passet-hub-eth-rpc.polkadot.io
 ```
 
 ### Get Nonce
+
 ```bash
 cast nonce 0xYourAddress \
   --rpc-url https://testnet-passet-hub-eth-rpc.polkadot.io
 ```
 
 ### Verify Contract
+
 ```bash
 cast code 0xContractAddress \
   --rpc-url https://testnet-passet-hub-eth-rpc.polkadot.io
 ```
 
 ### Call Contract
+
 ```bash
 cast call 0xContractAddress \
   "getMessageCount()(uint256)" \
@@ -89,21 +98,23 @@ NEXT_PUBLIC_STORACHA_GATEWAY=storacha.link
 ## 🛠️ Wallet Setup
 
 ### MetaMask
+
 - All accounts work by default ✅
 - Use Ethereum address (0x...)
 
 ### Talisman
+
 - Create **Ethereum account** (NOT Polkadot) ✅
 - Select "Ethereum" when creating account
 
 ## ⚠️ Common Errors
 
-| Error | Solution |
-|-------|----------|
-| "Method not found" | Use Ethereum RPC, not Substrate RPC |
-| "Invalid address" | Use 0x... format, not 5... format |
-| "Insufficient balance" | Get tokens from faucet |
-| "Connection refused" | Check RPC URL (HTTPS, not WSS) |
+| Error                  | Solution                            |
+| ---------------------- | ----------------------------------- |
+| "Method not found"     | Use Ethereum RPC, not Substrate RPC |
+| "Invalid address"      | Use 0x... format, not 5... format   |
+| "Insufficient balance" | Get tokens from faucet              |
+| "Connection refused"   | Check RPC URL (HTTPS, not WSS)      |
 
 ## 📚 Documentation
 

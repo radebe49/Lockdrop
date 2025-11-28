@@ -18,7 +18,7 @@ interface MessageListProps {
 export function MessageList({ messages, type, onUnlock }: MessageListProps) {
   if (messages.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="py-12 text-center">
         <svg
           className="mx-auto h-12 w-12 text-gray-600"
           fill="none"
@@ -45,7 +45,7 @@ export function MessageList({ messages, type, onUnlock }: MessageListProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {messages.map((message) => (
         <MessageCard
           key={message.id}

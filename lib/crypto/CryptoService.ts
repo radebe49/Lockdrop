@@ -6,19 +6,19 @@
 export interface EncryptedData {
   ciphertext: ArrayBuffer;
   iv: Uint8Array;
-  algorithm: 'AES-GCM';
+  algorithm: "AES-GCM";
   keyLength: 256;
 }
 
 export interface EncryptionMetadata {
-  algorithm: 'AES-GCM';
+  algorithm: "AES-GCM";
   keyLength: 256;
   ivLength: 12;
   tagLength: 16;
 }
 
 export class CryptoService {
-  private static readonly ALGORITHM = 'AES-GCM';
+  private static readonly ALGORITHM = "AES-GCM";
   private static readonly KEY_LENGTH = 256;
   private static readonly IV_LENGTH = 12; // 96 bits recommended for GCM
   private static readonly TAG_LENGTH = 16; // 128 bits authentication tag
@@ -35,11 +35,13 @@ export class CryptoService {
           length: this.KEY_LENGTH,
         },
         true, // extractable
-        ['encrypt', 'decrypt']
+        ["encrypt", "decrypt"]
       );
       return key;
     } catch (error) {
-      throw new Error(`Failed to generate AES key: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to generate AES key: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
@@ -73,7 +75,9 @@ export class CryptoService {
         keyLength: this.KEY_LENGTH,
       };
     } catch (error) {
-      throw new Error(`Failed to encrypt blob: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to encrypt blob: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
@@ -88,7 +92,7 @@ export class CryptoService {
     try {
       // Convert IV to standard Uint8Array to avoid type issues
       const ivArray = new Uint8Array(encryptedData.iv);
-      
+
       const plaintext = await crypto.subtle.decrypt(
         {
           name: this.ALGORITHM,
@@ -101,7 +105,9 @@ export class CryptoService {
 
       return plaintext;
     } catch (error) {
-      throw new Error(`Failed to decrypt blob: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to decrypt blob: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
@@ -110,9 +116,11 @@ export class CryptoService {
    */
   static async exportKey(key: CryptoKey): Promise<ArrayBuffer> {
     try {
-      return await crypto.subtle.exportKey('raw', key);
+      return await crypto.subtle.exportKey("raw", key);
     } catch (error) {
-      throw new Error(`Failed to export key: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to export key: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
@@ -122,28 +130,32 @@ export class CryptoService {
   static async importKey(keyData: ArrayBuffer): Promise<CryptoKey> {
     try {
       return await crypto.subtle.importKey(
-        'raw',
+        "raw",
         keyData,
         {
           name: this.ALGORITHM,
           length: this.KEY_LENGTH,
         },
         true,
-        ['encrypt', 'decrypt']
+        ["encrypt", "decrypt"]
       );
     } catch (error) {
-      throw new Error(`Failed to import key: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to import key: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
   /**
    * Secure memory cleanup - overwrite sensitive data
    * Requirements: 4.4, 4.5
-   * 
+   *
    * Note: crypto.getRandomValues() has a limit of 65536 bytes.
    * For larger buffers, we chunk the operation.
    */
-  static secureCleanup(...buffers: (ArrayBuffer | Uint8Array | null | undefined)[]): void {
+  static secureCleanup(
+    ...buffers: (ArrayBuffer | Uint8Array | null | undefined)[]
+  ): void {
     const MAX_RANDOM_BYTES = 65536; // crypto.getRandomValues() limit
 
     for (const buffer of buffers) {
@@ -151,7 +163,7 @@ export class CryptoService {
 
       try {
         let view: Uint8Array;
-        
+
         if (buffer instanceof ArrayBuffer) {
           view = new Uint8Array(buffer);
         } else if (buffer instanceof Uint8Array) {
@@ -173,7 +185,7 @@ export class CryptoService {
         }
       } catch (error) {
         // Best effort cleanup - log but don't throw
-        console.warn('Secure cleanup failed:', error);
+        console.warn("Secure cleanup failed:", error);
       }
     }
   }
@@ -183,11 +195,16 @@ export class CryptoService {
    */
   static encryptedDataToBlob(encryptedData: EncryptedData): Blob {
     // Combine IV and ciphertext into a single blob
-    const combined = new Uint8Array(encryptedData.iv.length + encryptedData.ciphertext.byteLength);
+    const combined = new Uint8Array(
+      encryptedData.iv.length + encryptedData.ciphertext.byteLength
+    );
     combined.set(encryptedData.iv, 0);
-    combined.set(new Uint8Array(encryptedData.ciphertext), encryptedData.iv.length);
-    
-    return new Blob([combined], { type: 'application/octet-stream' });
+    combined.set(
+      new Uint8Array(encryptedData.ciphertext),
+      encryptedData.iv.length
+    );
+
+    return new Blob([combined], { type: "application/octet-stream" });
   }
 
   /**
@@ -201,7 +218,7 @@ export class CryptoService {
 
         // Extract IV (first IV_LENGTH bytes)
         const iv = combined.slice(0, this.IV_LENGTH);
-        
+
         // Extract ciphertext (remaining bytes)
         const ciphertext = combined.slice(this.IV_LENGTH).buffer;
 
@@ -212,7 +229,11 @@ export class CryptoService {
           keyLength: this.KEY_LENGTH,
         });
       } catch (error) {
-        reject(new Error(`Failed to parse encrypted blob: ${error instanceof Error ? error.message : 'Unknown error'}`));
+        reject(
+          new Error(
+            `Failed to parse encrypted blob: ${error instanceof Error ? error.message : "Unknown error"}`
+          )
+        );
       }
     });
   }

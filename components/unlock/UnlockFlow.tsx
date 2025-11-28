@@ -75,8 +75,7 @@ export function UnlockFlow({ message, onUnlock, onClose }: UnlockFlowProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-gray-800 shadow-xl border border-gray-700">
-
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg border border-gray-700 bg-gray-800 shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-700 px-6 py-4">
           <h2 className="text-2xl font-bold text-gray-100">Unlock Message</h2>

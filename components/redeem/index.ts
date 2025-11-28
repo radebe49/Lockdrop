@@ -3,6 +3,6 @@
  * Requirements: 6.6
  */
 
-export { RedeemPackageGenerator } from './RedeemPackageGenerator';
-export { ClaimLinkDisplay } from './ClaimLinkDisplay';
-export { ClaimInterface } from './ClaimInterface';
+export { RedeemPackageGenerator } from "./RedeemPackageGenerator";
+export { ClaimLinkDisplay } from "./ClaimLinkDisplay";
+export { ClaimInterface } from "./ClaimInterface";

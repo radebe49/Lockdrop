@@ -1,9 +1,11 @@
 # Connection Flow Testing Script
 
 ## Purpose
+
 Verify that wallet and Storacha connections persist correctly across various scenarios.
 
 ## Prerequisites
+
 - Development server running (`npm run dev`)
 - Talisman or MetaMask installed
 - Valid email address for Storacha
@@ -13,6 +15,7 @@ Verify that wallet and Storacha connections persist correctly across various sce
 ### Scenario 1: First Time User - Happy Path
 
 **Steps:**
+
 1. Open app in fresh browser (clear localStorage first)
 2. Navigate to Settings page
 3. Click "Connect Wallet"
@@ -25,6 +28,7 @@ Verify that wallet and Storacha connections persist correctly across various sce
 10. Verify green dot appears for storage in Connection Status
 
 **Expected Results:**
+
 - ✅ Wallet connects on first try
 - ✅ Storacha authenticates successfully
 - ✅ Both show green status
@@ -33,11 +37,13 @@ Verify that wallet and Storacha connections persist correctly across various sce
 ### Scenario 2: Page Refresh - Persistence Test
 
 **Steps:**
+
 1. Complete Scenario 1 first
 2. Refresh the page (F5)
 3. Check Connection Status
 
 **Expected Results:**
+
 - ✅ Wallet still connected (no popup)
 - ✅ Storacha still authenticated
 - ✅ Both show green status
@@ -46,6 +52,7 @@ Verify that wallet and Storacha connections persist correctly across various sce
 ### Scenario 3: Browser Restart - Long-term Persistence
 
 **Steps:**
+
 1. Complete Scenario 1 first
 2. Close browser completely
 3. Reopen browser
@@ -53,6 +60,7 @@ Verify that wallet and Storacha connections persist correctly across various sce
 5. Check Connection Status
 
 **Expected Results:**
+
 - ✅ Wallet reconnects automatically
 - ✅ Storacha session restored
 - ✅ Both show green status
@@ -61,6 +69,7 @@ Verify that wallet and Storacha connections persist correctly across various sce
 ### Scenario 4: Partial Authentication Recovery
 
 **Steps:**
+
 1. Start fresh (clear localStorage)
 2. Connect wallet
 3. Enter email for Storacha
@@ -71,6 +80,7 @@ Verify that wallet and Storacha connections persist correctly across various sce
 8. Navigate to Settings
 
 **Expected Results:**
+
 - ✅ Wallet still connected
 - ✅ Storacha shows "Complete Storacha Setup" UI
 - ✅ Yellow dot for storage (partial state)
@@ -80,6 +90,7 @@ Verify that wallet and Storacha connections persist correctly across various sce
 ### Scenario 5: Network Interruption
 
 **Steps:**
+
 1. Start fresh
 2. Connect wallet
 3. Start Storacha authentication
@@ -88,6 +99,7 @@ Verify that wallet and Storacha connections persist correctly across various sce
 6. Check status
 
 **Expected Results:**
+
 - ✅ Wallet remains connected
 - ✅ Clear error message about network
 - ✅ Can retry authentication
@@ -96,11 +108,13 @@ Verify that wallet and Storacha connections persist correctly across various sce
 ### Scenario 6: Multiple Tabs
 
 **Steps:**
+
 1. Complete Scenario 1 in Tab A
 2. Open app in Tab B
 3. Check Connection Status in both tabs
 
 **Expected Results:**
+
 - ✅ Both tabs show connected status
 - ✅ No conflicts between tabs
 - ✅ Changes in one tab reflect in other
@@ -108,12 +122,14 @@ Verify that wallet and Storacha connections persist correctly across various sce
 ### Scenario 7: Wallet Extension Disabled
 
 **Steps:**
+
 1. Complete Scenario 1
 2. Disable wallet extension
 3. Refresh page
 4. Check Connection Status
 
 **Expected Results:**
+
 - ✅ Shows wallet disconnected
 - ✅ Clear error message
 - ✅ Storacha remains connected
@@ -122,12 +138,14 @@ Verify that wallet and Storacha connections persist correctly across various sce
 ### Scenario 8: Clear Browser Data
 
 **Steps:**
+
 1. Complete Scenario 1
 2. Clear browser data (localStorage)
 3. Refresh page
 4. Check Connection Status
 
 **Expected Results:**
+
 - ✅ Both connections cleared
 - ✅ Shows disconnected state
 - ✅ Can reconnect both services
@@ -140,12 +158,14 @@ Verify that wallet and Storacha connections persist correctly across various sce
 Open browser DevTools (F12) and watch for these logs:
 
 **Wallet Connection:**
+
 ```
 [WalletProvider] Restoring previous connection
 [WalletProvider] Successfully connected: 0x...
 ```
 
 **Storacha Connection:**
+
 ```
 Storacha: Attempting to restore space: did:...
 Storacha: Space restored successfully
@@ -158,21 +178,23 @@ Check these keys in DevTools > Application > Local Storage:
 
 ```javascript
 // Should exist after wallet connection
-localStorage.getItem('lockdrop_wallet_connection')
+localStorage.getItem("lockdrop_wallet_connection");
 // Expected: {"wasConnected":true}
 
 // Should exist after Storacha auth
-localStorage.getItem('lockdrop_storacha_auth')
+localStorage.getItem("lockdrop_storacha_auth");
 // Expected: {"isAuthenticated":true,"email":"user@example.com","spaceDid":"did:..."}
 ```
 
 ## Performance Checks
 
 ### Page Load Time
+
 - **Before fix:** ~3-5 seconds (with reconnection popups)
 - **After fix:** ~1-2 seconds (silent reconnection)
 
 ### User Actions Required
+
 - **Before fix:** 3-5 wallet approvals per session
 - **After fix:** 1 wallet approval (first time only)
 
@@ -202,9 +224,9 @@ If you find issues, report with this format:
 ```
 **Scenario:** [Which test scenario]
 **Steps to Reproduce:**
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 **Expected Behavior:**
 [What should happen]
@@ -225,6 +247,7 @@ If you find issues, report with this format:
 ## Success Criteria
 
 All scenarios should pass with:
+
 - ✅ No unnecessary reconnection prompts
 - ✅ Clear status indicators
 - ✅ Helpful error messages

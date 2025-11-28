@@ -57,11 +57,13 @@ The core principle is "Guaranteed by math, not corporations" - no plaintext medi
 **Purpose**: Manage Talisman wallet connection and authentication
 
 **Key Components**:
+
 - `WalletProvider`: React context for wallet state
 - `WalletConnectButton`: UI component for connection
 - `useWallet`: Custom hook for wallet operations
 
 **Interfaces**:
+
 ```typescript
 interface WalletState {
   isConnected: boolean;
@@ -79,6 +81,7 @@ interface WalletContextValue extends WalletState {
 ```
 
 **Key Functions**:
+
 - Detect Talisman extension presence
 - Request wallet connection
 - Persist connection state in localStorage
@@ -90,14 +93,16 @@ interface WalletContextValue extends WalletState {
 **Purpose**: Record or upload audio/video content
 
 **Key Components**:
+
 - `MediaRecorder`: Component for recording
 - `MediaUploader`: Component for file uploads
 - `MediaPreview`: Preview recorded/uploaded media
 
 **Interfaces**:
+
 ```typescript
 interface MediaConfig {
-  type: 'audio' | 'video';
+  type: "audio" | "video";
   mimeType: string;
   maxSize: number; // 100MB
 }
@@ -111,13 +116,14 @@ interface RecordingState {
 
 interface MediaFile {
   blob: Blob;
-  type: 'audio' | 'video';
+  type: "audio" | "video";
   size: number;
   mimeType: string;
 }
 ```
 
 **Key Functions**:
+
 - Request microphone/camera permissions
 - Start/stop recording with MediaRecorder API
 - Handle file uploads with validation
@@ -129,15 +135,17 @@ interface MediaFile {
 **Purpose**: Client-side encryption/decryption using Web Crypto API
 
 **Key Components**:
+
 - `CryptoService`: Core encryption service
 - `KeyManager`: AES key generation and management
 
 **Interfaces**:
+
 ```typescript
 interface EncryptedData {
   ciphertext: ArrayBuffer;
   iv: Uint8Array;
-  algorithm: 'AES-GCM';
+  algorithm: "AES-GCM";
   keyLength: 256;
 }
 
@@ -148,6 +156,7 @@ interface EncryptedKey {
 ```
 
 **Key Functions**:
+
 - Generate unique 256-bit AES keys per message
 - Encrypt media blobs using AES-256-GCM
 - Encrypt AES keys with recipient's public key (RSA-OAEP or X25519)
@@ -156,6 +165,7 @@ interface EncryptedKey {
 - Secure memory cleanup after operations
 
 **Encryption Flow**:
+
 1. Generate random AES-256 key
 2. Encrypt media blob with AES-GCM (includes IV)
 3. Obtain recipient's public key from Talisman API or on-chain
@@ -169,18 +179,20 @@ interface EncryptedKey {
 **Purpose**: Upload encrypted content to decentralized storage
 
 **Key Components**:
+
 - `StorachaService`: Storacha Network integration (recommended)
 - `IPFSService`: Legacy Web3.Storage integration (backward compatibility)
 - `MockIPFSService`: Testing without real uploads
 - `UploadProgress`: Progress tracking component
 
 **Interfaces**:
+
 ```typescript
 // Storacha Network (recommended)
 interface StorachaUploadResult {
   cid: string;
   size: number;
-  provider: 'storacha';
+  provider: "storacha";
 }
 
 interface AuthState {
@@ -193,7 +205,7 @@ interface AuthState {
 interface IPFSUploadResult {
   cid: string;
   size: number;
-  provider: 'web3.storage';
+  provider: "web3.storage";
 }
 
 interface UploadOptions {
@@ -204,6 +216,7 @@ interface UploadOptions {
 ```
 
 **Key Functions**:
+
 - **Storacha Network** (recommended):
   - Email-based authentication with UCAN delegation
   - Space creation and management
@@ -223,6 +236,7 @@ interface UploadOptions {
 > **After upload, StorachaService SHALL verify CID accessibility (attempt retrieval); on failure, retry with exponential backoff and surface the state to the user.**
 
 **Storacha Authentication Flow**:
+
 1. User enters email address
 2. Storacha sends verification email
 3. User clicks verification link
@@ -235,11 +249,13 @@ interface UploadOptions {
 **Purpose**: Interact with Polkadot testnet contract for metadata storage
 
 **Key Components**:
+
 - `ContractService`: Contract interaction layer
 - `ContractABI`: Type-safe contract interface
 - `TransactionManager`: Transaction handling
 
 **Interfaces**:
+
 ```typescript
 interface MessageMetadata {
   encryptedKeyCID: string;
@@ -254,11 +270,12 @@ interface MessageMetadata {
 interface ContractConfig {
   contractAddress: string;
   rpcEndpoint: string;
-  network: 'westend' | 'rococo';
+  network: "westend" | "rococo";
 }
 ```
 
 **Key Functions**:
+
 - Connect to Westend testnet via Polkadot.js
 - Submit message metadata transactions
 - Query sent messages by sender address
@@ -268,6 +285,7 @@ interface ContractConfig {
 - Support environment-based contract switching
 
 **Contract Methods** (ink! smart contract):
+
 ```rust
 // Simplified contract interface
 #[ink(message)]
@@ -291,6 +309,7 @@ pub fn get_received_messages(recipient: AccountId) -> Vec<MessageMetadata>;
 **Purpose**: Display sent and received messages with status
 
 **Key Components**:
+
 - `Dashboard`: Main dashboard container
 - `SentMessages`: List of sent messages
 - `ReceivedMessages`: List of received messages
@@ -298,6 +317,7 @@ pub fn get_received_messages(recipient: AccountId) -> Vec<MessageMetadata>;
 - `StatusBadge`: Visual status indicator
 
 **Interfaces**:
+
 ```typescript
 interface Message {
   id: string;
@@ -311,7 +331,7 @@ interface Message {
   createdAt: number;
 }
 
-type MessageStatus = 'Locked' | 'Unlockable' | 'Unlocked';
+type MessageStatus = "Locked" | "Unlockable" | "Unlocked";
 
 interface DashboardFilters {
   status?: MessageStatus;
@@ -320,6 +340,7 @@ interface DashboardFilters {
 ```
 
 **Key Functions**:
+
 - Query blockchain for user's messages
 - Calculate and display status based on current time
 - Real-time status updates as timestamps pass
@@ -331,11 +352,13 @@ interface DashboardFilters {
 **Purpose**: Decrypt and play unlocked messages
 
 **Key Components**:
+
 - `UnlockFlow`: Timestamp verification and decryption
 - `MediaPlayer`: Secure media playback
 - `PlaybackControls`: Standard media controls
 
 **Interfaces**:
+
 ```typescript
 interface UnlockRequest {
   messageId: string;
@@ -354,6 +377,7 @@ interface PlaybackState {
 ```
 
 **Key Functions**:
+
 - Verify current time >= unlock timestamp
 - Download encrypted AES key from IPFS
 - Decrypt AES key using Talisman wallet
@@ -370,10 +394,12 @@ interface PlaybackState {
 **Purpose**: Handle messages for recipients without wallets
 
 **Key Components**:
+
 - `RedeemPackageGenerator`: Create claim packages
 - `ClaimInterface`: Recipient claim flow
 
 **Interfaces**:
+
 ```typescript
 interface RedeemPackage {
   encryptedKeyCID: string;
@@ -392,6 +418,7 @@ interface ClaimLink {
 ```
 
 **Key Functions**:
+
 - Generate temporary public/private key pair
 - Encrypt AES key with temporary public key
 - Create redeem package with instructions
@@ -407,6 +434,7 @@ interface ClaimLink {
 ## Data Models
 
 ### Message Entity
+
 ```typescript
 interface Message {
   id: string;
@@ -429,26 +457,28 @@ interface Message {
 > **messageHash SHALL be the SHA-256 of the encrypted media blob; clients SHALL verify SHA-256 matches before attempting decryption.**
 
 ### User Session
+
 ```typescript
 interface UserSession {
   walletAddress: string;
   connectedAt: number;
   lastActivity: number;
   preferences: {
-    defaultRecordingMode: 'audio' | 'video';
+    defaultRecordingMode: "audio" | "video";
     autoConnect: boolean;
   };
 }
 ```
 
 ### Encryption Metadata
+
 ```typescript
 interface EncryptionMetadata {
-  algorithm: 'AES-GCM';
+  algorithm: "AES-GCM";
   keyLength: 256;
   ivLength: 12;
   tagLength: 16;
-  publicKeyAlgorithm: 'RSA-OAEP' | 'X25519';
+  publicKeyAlgorithm: "RSA-OAEP" | "X25519";
 }
 ```
 
@@ -506,6 +536,7 @@ interface EncryptionMetadata {
 ## Testing Strategy
 
 ### Unit Tests
+
 - Encryption/decryption functions
 - Key generation and management
 - IPFS upload/download logic
@@ -514,6 +545,7 @@ interface EncryptionMetadata {
 - Status calculation logic
 
 ### Integration Tests
+
 - Wallet connection flow
 - End-to-end message creation
 - Message retrieval and decryption
@@ -521,6 +553,7 @@ interface EncryptionMetadata {
 - Unlock flow with timestamp verification
 
 ### E2E Tests (Playwright/Cypress)
+
 - Complete user journey: connect → record → encrypt → send
 - Recipient journey: connect → view → unlock → play
 - Error scenarios and recovery
@@ -528,6 +561,7 @@ interface EncryptionMetadata {
 - Responsive design on mobile/desktop
 
 ### Security Tests
+
 - Verify no plaintext leakage
 - Confirm key cleanup after operations
 - Test encryption strength
@@ -535,6 +569,7 @@ interface EncryptionMetadata {
 - Check object URL revocation
 
 ### Manual Testing Checklist
+
 - Talisman wallet integration
 - Media recording on different browsers
 - File upload with various formats
@@ -547,6 +582,7 @@ interface EncryptionMetadata {
 ## Security Considerations
 
 ### Client-Side Security
+
 - All encryption/decryption happens in browser memory
 - AES keys never transmitted in plaintext
 - Immediate memory cleanup after operations
@@ -555,6 +591,7 @@ interface EncryptionMetadata {
 - Content Security Policy headers
 
 ### Blockchain Security
+
 - Timestamp enforcement via smart contract
 - Immutable metadata on-chain
 - Recipient verification before decryption
@@ -562,12 +599,14 @@ interface EncryptionMetadata {
 - No private keys handled by application
 
 ### Storage Security
+
 - Only encrypted data uploaded to IPFS
 - CIDs are content-addressed (tamper-proof)
 - Encrypted AES keys separate from encrypted media
 - No centralized key storage
 
 ### Key Management
+
 - Unique AES key per message
 - Keys encrypted with recipient's public key
 - Private keys remain in Talisman wallet
@@ -576,6 +615,7 @@ interface EncryptionMetadata {
 ## Performance Considerations
 
 ### Optimization Strategies
+
 - Lazy load dashboard messages (pagination)
 - Stream large file uploads (chunking)
 - Cache IPFS gateway responses
@@ -584,6 +624,7 @@ interface EncryptionMetadata {
 - Use Web Workers for encryption (if needed)
 
 ### Resource Limits
+
 - 100MB max file size
 - Chunked upload for files >50MB
 - Memory cleanup after operations
@@ -593,6 +634,7 @@ interface EncryptionMetadata {
 ## Deployment Architecture
 
 ### Vercel Deployment
+
 - Static site generation where possible
 - Edge functions for API routes (if needed)
 - Environment variables for contract addresses
@@ -600,6 +642,7 @@ interface EncryptionMetadata {
 - Preview deployments for PRs
 
 ### Environment Configuration
+
 ```
 NEXT_PUBLIC_CONTRACT_ADDRESS=<contract_address>
 NEXT_PUBLIC_RPC_ENDPOINT=wss://westend-rpc.polkadot.io
@@ -612,6 +655,7 @@ NEXT_PUBLIC_STORACHA_GATEWAY=storacha.link  # Optional, defaults to storacha.lin
 ```
 
 ### CI/CD Pipeline
+
 1. GitHub Actions on push/PR
 2. Run linting and type checking
 3. Run unit and integration tests
@@ -671,6 +715,7 @@ For hackathon presentations and testing:
 ## Documentation Requirements
 
 ### README.md
+
 - Project overview and tagline
 - Architecture diagram
 - Setup instructions
@@ -685,6 +730,7 @@ For hackathon presentations and testing:
 - Export procedure for encrypted CIDs
 
 ### Developer Documentation
+
 - API reference for modules
 - Contract ABI documentation
 - Encryption flow diagrams
@@ -693,6 +739,7 @@ For hackathon presentations and testing:
 - Troubleshooting common issues
 
 ### User Documentation
+
 - How to connect Talisman wallet
 - How to create time-locked messages
 - How to unlock and view messages

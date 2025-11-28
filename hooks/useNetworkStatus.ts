@@ -1,14 +1,14 @@
 /**
  * useNetworkStatus Hook
- * 
+ *
  * Monitors network connectivity and provides status information
- * 
+ *
  * Requirements: 12.2 - Test with network disconnection
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export interface NetworkStatus {
   isOnline: boolean;
@@ -18,7 +18,7 @@ export interface NetworkStatus {
 
 export function useNetworkStatus() {
   const [status, setStatus] = useState<NetworkStatus>({
-    isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
+    isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
     isConnecting: false,
     lastChecked: null,
   });
@@ -41,8 +41,8 @@ export function useNetworkStatus() {
     };
 
     // Listen for online/offline events
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     // Periodic connectivity check
     const checkConnectivity = async () => {
@@ -50,9 +50,9 @@ export function useNetworkStatus() {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 5000);
 
-        await fetch('https://www.google.com/favicon.ico', {
-          method: 'HEAD',
-          mode: 'no-cors',
+        await fetch("https://www.google.com/favicon.ico", {
+          method: "HEAD",
+          mode: "no-cors",
           signal: controller.signal,
         });
 
@@ -83,8 +83,8 @@ export function useNetworkStatus() {
     checkConnectivity();
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
       clearInterval(interval);
     };
   }, [status.isOnline]);

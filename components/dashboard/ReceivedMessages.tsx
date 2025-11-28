@@ -9,7 +9,10 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Message, MessageStatus } from "@/types/contract";
-import { ContractService, MessageMetadata } from "@/lib/contract/ContractService";
+import {
+  ContractService,
+  MessageMetadata,
+} from "@/lib/contract/ContractService";
 import { MessageList } from "./MessageList";
 import { MessageFilters } from "./MessageFilters";
 import { Pagination } from "./Pagination";
@@ -25,7 +28,9 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<MessageStatus | "All">("All");
+  const [statusFilter, setStatusFilter] = useState<MessageStatus | "All">(
+    "All"
+  );
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
@@ -34,33 +39,33 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
    * Convert MessageMetadata to Message with calculated status
    *
    * Requirements: 8.3 - Calculate status (Locked/Unlockable/Unlocked)
-   * 
+   *
    * Note: Status is "Locked" before unlock time, "Unlockable" after unlock time,
    * and only becomes "Unlocked" after the user actually views it.
    */
-  const convertToMessage = useCallback(
-    (metadata: MessageMetadata): Message => {
-      // Check if user has viewed this message (stored in localStorage)
-      const viewedKey = `message_viewed_${metadata.id}`;
-      const hasBeenViewed = localStorage.getItem(viewedKey) === 'true';
-      
-      // Calculate status: only mark as "Unlocked" if actually viewed
-      const status = calculateMessageStatus(metadata.unlockTimestamp, hasBeenViewed);
+  const convertToMessage = useCallback((metadata: MessageMetadata): Message => {
+    // Check if user has viewed this message (stored in localStorage)
+    const viewedKey = `message_viewed_${metadata.id}`;
+    const hasBeenViewed = localStorage.getItem(viewedKey) === "true";
 
-      return {
-        id: metadata.id,
-        encryptedKeyCID: metadata.encryptedKeyCID,
-        encryptedMessageCID: metadata.encryptedMessageCID,
-        messageHash: metadata.messageHash,
-        unlockTimestamp: metadata.unlockTimestamp,
-        sender: metadata.sender,
-        recipient: metadata.recipient,
-        status,
-        createdAt: metadata.createdAt,
-      };
-    },
-    []
-  );
+    // Calculate status: only mark as "Unlocked" if actually viewed
+    const status = calculateMessageStatus(
+      metadata.unlockTimestamp,
+      hasBeenViewed
+    );
+
+    return {
+      id: metadata.id,
+      encryptedKeyCID: metadata.encryptedKeyCID,
+      encryptedMessageCID: metadata.encryptedMessageCID,
+      messageHash: metadata.messageHash,
+      unlockTimestamp: metadata.unlockTimestamp,
+      sender: metadata.sender,
+      recipient: metadata.recipient,
+      status,
+      createdAt: metadata.createdAt,
+    };
+  }, []);
 
   /**
    * Load received messages from blockchain
@@ -96,11 +101,14 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
       prevMessages.map((message) => {
         // Check if user has viewed this message
         const viewedKey = `message_viewed_${message.id}`;
-        const hasBeenViewed = localStorage.getItem(viewedKey) === 'true';
-        
+        const hasBeenViewed = localStorage.getItem(viewedKey) === "true";
+
         return {
           ...message,
-          status: calculateMessageStatus(message.unlockTimestamp, hasBeenViewed),
+          status: calculateMessageStatus(
+            message.unlockTimestamp,
+            hasBeenViewed
+          ),
         };
       })
     );
@@ -172,7 +180,9 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
     return filteredAndSortedMessages.slice(startIndex, endIndex);
   }, [filteredAndSortedMessages, currentPage]);
 
-  const totalPages = Math.ceil(filteredAndSortedMessages.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(
+    filteredAndSortedMessages.length / ITEMS_PER_PAGE
+  );
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -181,8 +191,8 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center py-12">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
         <span className="ml-3 text-gray-600">Loading received messages...</span>
       </div>
     );
@@ -190,10 +200,10 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6">
         <div className="flex items-start">
           <svg
-            className="w-6 h-6 text-red-600 mt-0.5"
+            className="mt-0.5 h-6 w-6 text-red-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -224,12 +234,12 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
 
   return (
     <div>
-      <div className="mb-6 flex justify-between items-center">
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">
             Received Messages
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="mt-1 text-sm text-gray-500">
             {filteredAndSortedMessages.length} message
             {filteredAndSortedMessages.length !== 1 ? "s" : ""}
             {statusFilter !== "All" && ` (${statusFilter})`}
@@ -237,7 +247,7 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
         </div>
         <button
           onClick={loadMessages}
-          className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          className="text-sm font-medium text-blue-600 hover:text-blue-700"
         >
           Refresh
         </button>
@@ -250,7 +260,11 @@ export function ReceivedMessages({ address }: ReceivedMessagesProps) {
         onSortOrderChange={setSortOrder}
       />
 
-      <MessageList messages={paginatedMessages} type="received" onUnlock={handleUnlock} />
+      <MessageList
+        messages={paginatedMessages}
+        type="received"
+        onUnlock={handleUnlock}
+      />
 
       {filteredAndSortedMessages.length > 0 && (
         <div className="mt-6">

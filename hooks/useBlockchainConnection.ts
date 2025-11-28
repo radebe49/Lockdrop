@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { ContractService } from '@/lib/contract/ContractService';
+import { useState, useEffect } from "react";
+import { ContractService } from "@/lib/contract/ContractService";
 
 /**
  * React hook for monitoring blockchain connection status
- * 
+ *
  * @returns Object with connection state and reconnect function
- * 
+ *
  * @example
  * ```tsx
  * function MyComponent() {
  *   const { isConnected, reconnect } = useBlockchainConnection();
- *   
+ *
  *   if (!isConnected) {
  *     return (
  *       <div>
@@ -21,7 +21,7 @@ import { ContractService } from '@/lib/contract/ContractService';
  *       </div>
  *     );
  *   }
- *   
+ *
  *   return <div>Connected!</div>;
  * }
  * ```
@@ -38,7 +38,7 @@ export function useBlockchainConnection() {
         setIsReconnecting(false);
       }
     };
-    
+
     ContractService.addConnectionListener(listener);
 
     // Cleanup subscription on unmount
@@ -53,7 +53,7 @@ export function useBlockchainConnection() {
       await ContractService.disconnect();
       await ContractService.getProvider();
     } catch (error) {
-      console.error('Manual reconnection failed:', error);
+      console.error("Manual reconnection failed:", error);
       setIsReconnecting(false);
     }
   };

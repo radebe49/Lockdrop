@@ -18,6 +18,7 @@
 ### Verification
 
 Check contract bytecode:
+
 ```bash
 cast code 0xeD0fDD2be363590800F86ec8562Dde951654668F --rpc-url https://testnet-passet-hub-eth-rpc.polkadot.io
 ```
@@ -32,9 +33,11 @@ cast code 0xeD0fDD2be363590800F86ec8562Dde951654668F --rpc-url https://testnet-p
 ### Contract Methods
 
 #### Write Methods
+
 - `store_message(encrypted_key_cid, encrypted_message_cid, message_hash, unlock_timestamp, recipient)`
 
 #### Read Methods
+
 - `get_message(message_id)`
 - `get_sent_messages(sender)`
 - `get_received_messages(recipient)`
@@ -43,6 +46,7 @@ cast code 0xeD0fDD2be363590800F86ec8562Dde951654668F --rpc-url https://testnet-p
 ### Frontend Configuration
 
 Update `.env.local`:
+
 ```
 NEXT_PUBLIC_CONTRACT_ADDRESS=0xeD0fDD2be363590800F86ec8562Dde951654668F
 NEXT_PUBLIC_RPC_ENDPOINT=https://testnet-passet-hub-eth-rpc.polkadot.io
@@ -60,6 +64,7 @@ NEXT_PUBLIC_NETWORK=passet-hub
 ### How Contract Address Was Found
 
 Since the transaction hash was not saved, the contract address was recovered using:
+
 ```bash
 # Get deployer's transaction count
 cast nonce 0x0A58494CD644f38219c388c032B5BfF62CC5Ea30 --rpc-url https://testnet-passet-hub-eth-rpc.polkadot.io
@@ -79,4 +84,4 @@ cast compute-address 0x0A58494CD644f38219c388c032B5BfF62CC5Ea30 --nonce 0
 
 ---
 
-*Last Updated: November 15, 2025*
+_Last Updated: November 15, 2025_

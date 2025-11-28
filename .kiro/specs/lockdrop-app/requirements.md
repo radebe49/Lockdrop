@@ -5,7 +5,6 @@
 Lockdrop is a decentralized time-capsule application that enables users to record or upload audio/video messages, encrypt them locally in the browser, store them on IPFS via Web3.Storage, and anchor unlock metadata on the Polkadot testnet (Westend). The application guarantees privacy through client-side encryption and timestamp-enforced unlocking, ensuring no plaintext media or encryption keys leave the user's browser or rely on centralized servers.
 Note: The design anticipates future cross-chain expansion to other Polkadot parachains via XCM (Cross-Consensus Messaging). This ensures Lockdrop can evolve to support multiple networks while maintaining full interoperability and decentralization.
 
-
 ## Glossary
 
 - **Lockdrop_App**: The Next.js web application that provides the user interface and orchestrates all client-side operations
@@ -70,7 +69,6 @@ Note: The design anticipates future cross-chain expansion to other Polkadot para
 4. THE Lockdrop_App SHALL ensure that no plaintext Message data is transmitted outside the browser
 5. THE Lockdrop_App SHALL store the AES_Key only in browser memory until encryption completes, and then immediately encrypt the key with the recipient’s public key before anchoring it on-chain.
 
-
 ### Requirement 5
 
 **User Story:** As a user, I want encrypted messages uploaded to Storacha Network (IPFS), so that my content is stored on decentralized infrastructure without relying on centralized servers
@@ -93,8 +91,7 @@ Note: The design anticipates future cross-chain expansion to other Polkadot para
 2. THE Lockdrop_App SHALL request the user to sign the transaction using their Palisman_Wallet
 3. WHEN the transaction is confirmed on the blockchain, THE Lockdrop_App SHALL display a success confirmation to the user
 4. IF the transaction fails, THEN THE Lockdrop_App SHALL display an error message with the failure reason
-6. IF the recipient does not have a wallet address, THE Lockdrop_App SHALL generate a temporary public key and view-only link, allowing recipients to claim and decrypt later after wallet setup
-
+5. IF the recipient does not have a wallet address, THE Lockdrop_App SHALL generate a temporary public key and view-only link, allowing recipients to claim and decrypt later after wallet setup
 
 ### Requirement 7
 
@@ -145,7 +142,6 @@ Note: The design anticipates future cross-chain expansion to other Polkadot para
 5. WHEN the user closes the playback interface, THE Lockdrop_App SHALL clear the decrypted content from memory.
 6. THE Lockdrop_App SHALL automatically revoke decrypted media URLs when playback ends, preventing reuse or download from browser cache.
 
-
 ### Requirement 11
 
 **User Story:** As a user, I want the application to have a clean, modern UI with clear branding, so that I trust the application and understand its privacy guarantees
@@ -181,7 +177,6 @@ Note: The design anticipates future cross-chain expansion to other Polkadot para
 3. THE Lockdrop_App SHALL provide identical functionality whether using a newly deployed or existing contract
 4. THE repository documentation SHALL explain the fallback approach and how to verify the contract code
 5. THE Lockdrop_App SHALL configure the contract address through environment variables for easy switching between contracts
-
 
 ## Non-Functional Requirements
 

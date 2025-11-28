@@ -60,6 +60,7 @@ forge build --use solc:0.8.20
 ```
 
 This generates:
+
 - `out/FutureProof.sol/FutureProof.json` - Compiled contract with ABI
 - Contract bytecode ready for deployment
 
@@ -79,6 +80,7 @@ forge create --resolc \
 ### Deployment Output
 
 The command will output:
+
 ```
 Deployer: 0x0A58494CD644f38219c388c032B5BfF62CC5Ea30
 Deployed to: 0xeD0fDD2be363590800F86ec8562Dde951654668F
@@ -137,6 +139,7 @@ cast call 0xeD0fDD2be363590800F86ec8562Dde951654668F \
 ### Using the Application
 
 1. Start your Next.js application:
+
 ```bash
 npm run dev
 ```
@@ -150,26 +153,31 @@ npm run dev
 ### Build Errors
 
 **Error: `forge` not found**
+
 ```bash
 curl -L https://foundry.paradigm.xyz | bash
 foundryup
 ```
 
 **Error: Solidity version mismatch**
+
 - Ensure you're using Solidity 0.8.20
 - Check `foundry.toml` configuration
 
 ### Deployment Errors
 
 **Error: Insufficient balance**
+
 - Get more PAS tokens from https://faucet.polkadot.io/paseo
 - Ensure you have at least 1 PAS for deployment
 
 **Error: Invalid RPC endpoint**
+
 - Use `https://testnet-passet-hub-eth-rpc.polkadot.io` (HTTP/HTTPS)
 - Do NOT use `wss://testnet-passet-hub.polkadot.io` (WebSocket - Substrate RPC)
 
 **Error: Transaction failed**
+
 - Check network connectivity
 - Verify you're using an Ethereum address (0x...)
 - Try again after a few blocks

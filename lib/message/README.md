@@ -16,13 +16,13 @@ The `MessageCreationService` handles the complete flow of creating a time-locked
 ## Usage
 
 ```typescript
-import { MessageCreationService } from '@/lib/message';
+import { MessageCreationService } from "@/lib/message";
 
 // Create a time-locked message
 const result = await MessageCreationService.createMessage(
   {
     mediaFile: mediaFile,
-    recipientAddress: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
+    recipientAddress: "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
     unlockTimestamp: Date.now() + 86400000, // 24 hours from now
     senderAccount: selectedAccount,
   },
@@ -32,9 +32,9 @@ const result = await MessageCreationService.createMessage(
 );
 
 if (result.success) {
-  console.log('Message created:', result.messageId);
+  console.log("Message created:", result.messageId);
 } else {
-  console.error('Error:', result.error);
+  console.error("Error:", result.error);
 }
 ```
 

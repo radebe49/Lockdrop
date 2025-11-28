@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useWallet } from '@/lib/wallet/WalletProvider';
-import { Tooltip } from '@/components/ui';
+import React, { useState } from "react";
+import { useWallet } from "@/lib/wallet/WalletProvider";
+import { Tooltip } from "@/components/ui";
+import { WalletIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export function WalletConnectButton() {
   const { isConnected, address, disconnect, connect } = useWallet();
@@ -20,13 +21,14 @@ export function WalletConnectButton() {
     try {
       await connect();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to connect wallet';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to connect wallet";
       setError(errorMessage);
-      
-      // Show installation instructions if extension not found
-      if (errorMessage.toLowerCase().includes('not found') || 
-          errorMessage.toLowerCase().includes('install') ||
-          errorMessage.toLowerCase().includes('not authorized')) {
+      if (
+        errorMessage.toLowerCase().includes("not found") ||
+        errorMessage.toLowerCase().includes("install") ||
+        errorMessage.toLowerCase().includes("not authorized")
+      ) {
         setShowInstallInstructions(true);
       }
     } finally {
@@ -40,27 +42,25 @@ export function WalletConnectButton() {
     setShowInstallInstructions(false);
   };
 
-  const formatAddress = (addr: string) => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-  };
+  const formatAddress = (addr: string) =>
+    `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 
   if (isConnected && address) {
     return (
       <div className="flex items-center gap-2">
         <Tooltip content={`Connected: ${address}`} position="bottom">
-          <div className="px-2 md:px-4 py-2 bg-green-100 rounded-lg">
-            <span className="text-xs md:text-sm font-mono text-green-800">
+          <div className="rounded-lg border border-brand-500/30 bg-brand-500/10 px-3 py-2">
+            <span className="font-mono text-xs text-brand-400 sm:text-sm">
               {formatAddress(address)}
             </span>
           </div>
         </Tooltip>
         <button
           onClick={handleDisconnect}
-          className="px-2 md:px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-xs md:text-sm"
+          className="rounded-lg p-2 text-dark-400 transition-colors hover:bg-red-500/10 hover:text-red-400"
           aria-label="Disconnect wallet"
         >
-          <span className="hidden md:inline">Disconnect</span>
-          <span className="md:hidden">✕</span>
+          <XMarkIcon className="h-5 w-5" />
         </button>
       </div>
     );
@@ -68,55 +68,59 @@ export function WalletConnectButton() {
 
   return (
     <div className="relative">
-      <Tooltip content="Connect your wallet (Talisman recommended, MetaMask supported)" position="bottom">
+      <Tooltip
+        content="Connect your wallet (Talisman recommended)"
+        position="bottom"
+      >
         <button
           onClick={handleConnect}
           disabled={isConnecting}
-          className="px-3 md:px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors text-xs md:text-sm touch-target"
+          className="btn-primary flex items-center gap-2 px-4 py-2 text-sm disabled:opacity-50"
           aria-label="Connect wallet"
         >
-          <span className="hidden md:inline">{isConnecting ? 'Connecting...' : 'Connect Wallet'}</span>
-          <span className="md:hidden">{isConnecting ? '...' : 'Connect'}</span>
+          <WalletIcon className="h-4 w-4" />
+          <span className="hidden sm:inline">
+            {isConnecting ? "Connecting..." : "Connect"}
+          </span>
         </button>
       </Tooltip>
 
-      {/* Error and install instructions in a dropdown/modal style */}
       {(error || showInstallInstructions) && hasAttemptedConnection && (
-        <div className="absolute top-full right-0 mt-2 w-80 z-50">
+        <div className="absolute right-0 top-full z-50 mt-2 w-80 animate-fade-in">
           {error && (
-            <div className="p-3 bg-red-100 border border-red-300 rounded-lg shadow-lg mb-2">
-              <p className="text-sm text-red-800">{error}</p>
+            <div className="mb-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3">
+              <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
 
           {showInstallInstructions && (
-            <div className="p-4 bg-blue-50 border border-blue-300 rounded-lg shadow-lg">
-              <h3 className="font-semibold text-blue-900 mb-2">
+            <div className="card-glass p-4">
+              <h3 className="mb-2 font-semibold text-dark-100">
                 Install a Wallet
               </h3>
-              <p className="text-sm text-blue-800 mb-3">
-                Lockdrop works best with Talisman wallet. MetaMask is also supported as an alternative.
+              <p className="mb-3 text-sm text-dark-400">
+                Lockdrop works best with Talisman wallet.
               </p>
               <div className="space-y-2">
                 <a
                   href="https://www.talisman.xyz/download"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors text-center font-medium"
+                  className="btn-primary block text-center text-sm"
                 >
-                  Download Talisman (Recommended) →
+                  Download Talisman →
                 </a>
                 <a
                   href="https://metamask.io/download/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm transition-colors text-center"
+                  className="btn-secondary block text-center text-sm"
                 >
-                  Download MetaMask (Alternative) →
+                  Download MetaMask →
                 </a>
               </div>
-              <p className="text-xs text-blue-700 mt-3">
-                ⚠️ Important: Use an Ethereum account (0x...), not a Polkadot account (5...)
+              <p className="mt-3 text-xs text-dark-500">
+                ⚠️ Use an Ethereum account (0x...), not Polkadot (5...)
               </p>
             </div>
           )}

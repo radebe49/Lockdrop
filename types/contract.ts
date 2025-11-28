@@ -5,7 +5,7 @@
 /**
  * Status of a time-locked message
  */
-export type MessageStatus = 'Locked' | 'Unlockable' | 'Unlocked';
+export type MessageStatus = "Locked" | "Unlockable" | "Unlocked";
 
 /**
  * Complete message entity with metadata

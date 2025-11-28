@@ -9,6 +9,7 @@ Passet Hub testnet provides two types of RPC endpoints for different use cases. 
 **Endpoint:** `https://testnet-passet-hub-eth-rpc.polkadot.io`
 
 ### Use Cases
+
 - Deploying Solidity contracts via Foundry (forge, cast)
 - Interacting with contracts using ethers.js or web3.js
 - MetaMask wallet connections
@@ -16,6 +17,7 @@ Passet Hub testnet provides two types of RPC endpoints for different use cases. 
 - Frontend contract interactions
 
 ### Supported Methods
+
 - `eth_blockNumber`
 - `eth_getTransactionCount`
 - `eth_call`
@@ -27,6 +29,7 @@ Passet Hub testnet provides two types of RPC endpoints for different use cases. 
 ### Example Usage
 
 #### Foundry (forge/cast)
+
 ```bash
 # Deploy contract
 forge create --resolc \
@@ -44,17 +47,19 @@ cast code 0xContractAddress \
 ```
 
 #### ethers.js
+
 ```typescript
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 
 const provider = new ethers.JsonRpcProvider(
-  'https://testnet-passet-hub-eth-rpc.polkadot.io'
+  "https://testnet-passet-hub-eth-rpc.polkadot.io"
 );
 
 const contract = new ethers.Contract(address, abi, provider);
 ```
 
 #### Environment Configuration
+
 ```env
 NEXT_PUBLIC_RPC_ENDPOINT=https://testnet-passet-hub-eth-rpc.polkadot.io
 ```
@@ -64,6 +69,7 @@ NEXT_PUBLIC_RPC_ENDPOINT=https://testnet-passet-hub-eth-rpc.polkadot.io
 **Endpoint:** `wss://testnet-passet-hub.polkadot.io`
 
 ### Use Cases
+
 - Polkadot.js API interactions
 - Substrate pallet queries
 - Chain state queries
@@ -71,6 +77,7 @@ NEXT_PUBLIC_RPC_ENDPOINT=https://testnet-passet-hub-eth-rpc.polkadot.io
 - Advanced blockchain operations
 
 ### NOT Suitable For
+
 - ❌ Solidity contract deployment
 - ❌ Ethereum JSON-RPC calls
 - ❌ MetaMask connections
@@ -79,26 +86,27 @@ NEXT_PUBLIC_RPC_ENDPOINT=https://testnet-passet-hub-eth-rpc.polkadot.io
 ### Example Usage
 
 #### Polkadot.js
-```typescript
-import { ApiPromise, WsProvider } from '@polkadot/api';
 
-const provider = new WsProvider('wss://testnet-passet-hub.polkadot.io');
+```typescript
+import { ApiPromise, WsProvider } from "@polkadot/api";
+
+const provider = new WsProvider("wss://testnet-passet-hub.polkadot.io");
 const api = await ApiPromise.create({ provider });
 ```
 
 ## Quick Reference Table
 
-| Feature | Ethereum RPC | Substrate RPC |
-|---------|-------------|---------------|
-| **URL** | `https://testnet-passet-hub-eth-rpc.polkadot.io` | `wss://testnet-passet-hub.polkadot.io` |
-| **Protocol** | HTTPS | WebSocket |
-| **Address Format** | 0x... (Ethereum) | 5... (SS58) or 0x... |
-| **Solidity Contracts** | ✅ Yes | ❌ No |
-| **Foundry (forge/cast)** | ✅ Yes | ❌ No |
-| **ethers.js/web3.js** | ✅ Yes | ❌ No |
-| **MetaMask** | ✅ Yes | ❌ No |
-| **Polkadot.js** | ❌ No | ✅ Yes |
-| **Substrate Pallets** | ❌ No | ✅ Yes |
+| Feature                  | Ethereum RPC                                     | Substrate RPC                          |
+| ------------------------ | ------------------------------------------------ | -------------------------------------- |
+| **URL**                  | `https://testnet-passet-hub-eth-rpc.polkadot.io` | `wss://testnet-passet-hub.polkadot.io` |
+| **Protocol**             | HTTPS                                            | WebSocket                              |
+| **Address Format**       | 0x... (Ethereum)                                 | 5... (SS58) or 0x...                   |
+| **Solidity Contracts**   | ✅ Yes                                           | ❌ No                                  |
+| **Foundry (forge/cast)** | ✅ Yes                                           | ❌ No                                  |
+| **ethers.js/web3.js**    | ✅ Yes                                           | ❌ No                                  |
+| **MetaMask**             | ✅ Yes                                           | ❌ No                                  |
+| **Polkadot.js**          | ❌ No                                            | ✅ Yes                                 |
+| **Substrate Pallets**    | ❌ No                                            | ✅ Yes                                 |
 
 ## Common Errors and Solutions
 
@@ -107,6 +115,7 @@ const api = await ApiPromise.create({ provider });
 **Cause:** Using Substrate RPC endpoint for Ethereum JSON-RPC calls
 
 **Solution:** Switch to Ethereum RPC endpoint
+
 ```bash
 # Wrong
 --rpc-url wss://testnet-passet-hub.polkadot.io
@@ -120,6 +129,7 @@ const api = await ApiPromise.create({ provider });
 **Cause:** Using Substrate address (5...) with Ethereum RPC
 
 **Solution:** Use Ethereum address format (0x...)
+
 ```bash
 # Wrong
 5E2jTHsQfRCq8wBPeHgwKQAeCMwSsxYCCZfB4dG2SWhp4ZTv
@@ -133,6 +143,7 @@ const api = await ApiPromise.create({ provider });
 **Cause:** Using wrong protocol (HTTP vs WebSocket)
 
 **Solution:** Match protocol to endpoint type
+
 ```bash
 # Ethereum RPC uses HTTPS
 https://testnet-passet-hub-eth-rpc.polkadot.io

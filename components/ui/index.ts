@@ -11,4 +11,5 @@ export { InfoIcon } from "./InfoIcon";
 export { HelpText } from "./HelpText";
 export { SkipToContent } from "./SkipToContent";
 export { ErrorRecovery } from "./ErrorRecovery";
+export { AuroraBackground } from "./AuroraBackground";
 export type { ToastType } from "./Toast";

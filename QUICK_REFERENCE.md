@@ -3,11 +3,13 @@
 ## What Changed?
 
 ### ❌ Removed
+
 - `lib/contract/MessageCache.ts` - Entire file deleted
 - All localStorage caching for messages
 - All localStorage tracking for unlock status
 
 ### ✅ Now Using
+
 - Direct blockchain queries via `ContractService`
 - Timestamp-based unlock status calculation
 - Blockchain as single source of truth
@@ -38,11 +40,13 @@ const isUnlockable = Date.now() >= unlockTimestamp;
 ## Component Updates
 
 ### ReceivedMessages.tsx
+
 - Removed `getUnlockedMessageIds()` function
 - Removed `markMessageAsUnlocked()` function
 - Status now calculated from timestamp only
 
 ### UnlockService.ts
+
 - Removed `markAsUnlocked()`
 - Removed `getUnlockedMessages()`
 - Removed `clearUnlockedMessages()`
@@ -50,6 +54,7 @@ const isUnlockable = Date.now() >= unlockTimestamp;
 - Added `isMessageUnlockable(timestamp)` - simple comparison
 
 ### ContractService.ts
+
 - Removed `MessageCache` import
 - All queries go directly to blockchain
 
@@ -67,7 +72,7 @@ const isUnlockable = Date.now() >= unlockTimestamp;
 
 ```javascript
 // 1. Clear localStorage
-localStorage.clear()
+localStorage.clear();
 
 // 2. Connect wallet and create message
 // 3. Refresh page - messages should still load

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 /**
  * Root error boundary for the entire application
@@ -15,17 +15,17 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     // Log error to monitoring service in production
-    console.error('Global application error:', error);
+    console.error("Global application error:", error);
   }, [error]);
 
   return (
     <html lang="en">
       <body className="antialiased">
-        <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full p-8">
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-red-50 to-orange-50 p-4">
+          <div className="w-full max-w-lg rounded-lg bg-white p-8 shadow-xl">
             {/* Error Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="bg-red-100 rounded-full p-4">
+            <div className="mb-6 flex justify-center">
+              <div className="rounded-full bg-red-100 p-4">
                 <svg
                   className="h-16 w-16 text-red-600"
                   fill="none"
@@ -43,29 +43,29 @@ export default function GlobalError({
             </div>
 
             {/* Error Title */}
-            <h1 className="text-3xl font-bold text-gray-900 text-center mb-3">
+            <h1 className="mb-3 text-center text-3xl font-bold text-gray-900">
               Application Error
             </h1>
 
             {/* Error Description */}
-            <p className="text-gray-600 text-center mb-6">
+            <p className="mb-6 text-center text-gray-600">
               Lockdrop encountered an unexpected error. This may be due to a
               browser compatibility issue or a temporary problem.
             </p>
 
             {/* Error Details */}
-            <details className="mb-6 bg-gray-50 rounded-lg p-4">
+            <details className="mb-6 rounded-lg bg-gray-50 p-4">
               <summary className="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
                 Error Details
               </summary>
-              <div className="mt-3 text-sm text-gray-600 font-mono bg-white p-3 rounded border border-gray-200 overflow-auto max-h-40">
+              <div className="mt-3 max-h-40 overflow-auto rounded border border-gray-200 bg-white p-3 font-mono text-sm text-gray-600">
                 {error.message}
               </div>
             </details>
 
             {/* Suggestions */}
-            <div className="mb-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
-              <h3 className="text-sm font-semibold text-blue-900 mb-2">
+            <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <h3 className="mb-2 text-sm font-semibold text-blue-900">
                 What you can try:
               </h3>
               <ul className="space-y-1 text-sm text-blue-800">
@@ -79,7 +79,9 @@ export default function GlobalError({
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>Try using a different browser (Chrome, Firefox, or Edge)</span>
+                  <span>
+                    Try using a different browser (Chrome, Firefox, or Edge)
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
@@ -92,30 +94,30 @@ export default function GlobalError({
             <div className="flex flex-col gap-3">
               <button
                 onClick={reset}
-                className="w-full bg-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                className="w-full rounded-lg bg-purple-600 px-6 py-3 font-medium text-white transition-colors hover:bg-purple-700"
               >
                 Try Again
               </button>
               <a
                 href="/"
-                className="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors text-center"
+                className="w-full rounded-lg bg-gray-200 px-6 py-3 text-center font-medium text-gray-700 transition-colors hover:bg-gray-300"
               >
                 Return to Home
               </a>
             </div>
 
             {/* Help Section */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <p className="text-sm text-gray-600 text-center mb-2">
+            <div className="mt-6 border-t border-gray-200 pt-6">
+              <p className="mb-2 text-center text-sm text-gray-600">
                 <strong>Lockdrop</strong> - Guaranteed by math, not corporations
               </p>
-              <p className="text-xs text-gray-500 text-center">
-                If this problem persists, please{' '}
+              <p className="text-center text-xs text-gray-500">
+                If this problem persists, please{" "}
                 <a
                   href="https://github.com/your-repo/issues"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-purple-600 hover:text-purple-700 underline"
+                  className="text-purple-600 underline hover:text-purple-700"
                 >
                   report the issue
                 </a>

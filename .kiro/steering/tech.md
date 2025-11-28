@@ -14,6 +14,7 @@
 ## Key Dependencies
 
 ### Frontend
+
 ```json
 {
   "@polkadot/api": "^16.4.9",
@@ -26,6 +27,7 @@
 ```
 
 ### Smart Contract
+
 ```json
 {
   "hardhat": "^2.19.0",
@@ -36,6 +38,7 @@
 ## Common Commands
 
 ### Development
+
 ```bash
 npm run dev          # Start development server on localhost:3000
 npm run build        # Create production build
@@ -43,6 +46,7 @@ npm start            # Start production server
 ```
 
 ### Code Quality
+
 ```bash
 npm run lint         # Run ESLint
 npm run format       # Format code with Prettier
@@ -64,6 +68,7 @@ npm run format       # Format code with Prettier
 ## Environment Variables
 
 Required in `.env.local`:
+
 - `NEXT_PUBLIC_CONTRACT_ADDRESS` - Solidity smart contract address (Ethereum format, 0x...)
 - `NEXT_PUBLIC_RPC_ENDPOINT` - Ethereum-compatible RPC endpoint (https://testnet-passet-hub-eth-rpc.polkadot.io)
 - `NEXT_PUBLIC_NETWORK` - Network name (passet-hub)
@@ -74,6 +79,7 @@ Note: Storacha uses email-based authentication with UCAN delegation. No API toke
 ## RPC Endpoints
 
 Passet Hub has two RPC endpoints:
+
 - **Ethereum RPC** (for Solidity contracts): `https://testnet-passet-hub-eth-rpc.polkadot.io`
 - **Substrate RPC** (for Substrate pallets): `wss://testnet-passet-hub.polkadot.io`
 
@@ -89,6 +95,7 @@ Always use the Ethereum RPC endpoint for this project.
 ## Storacha Network
 
 Storacha (formerly Web3.Storage) is a decentralized hot storage network built on IPFS and Filecoin:
+
 - **Email-based authentication** - No API keys needed
 - **Space-based organization** - Content namespaced by DIDs
 - **UCAN delegation** - User-controlled authorization

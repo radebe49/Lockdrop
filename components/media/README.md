@@ -9,6 +9,7 @@ This directory contains components for media capture, upload, and preview functi
 Records audio or video directly in the browser using the MediaRecorder API.
 
 **Features:**
+
 - Audio-only or video+audio recording modes
 - Real-time recording duration display
 - Active device indicators (microphone/camera)
@@ -16,8 +17,9 @@ Records audio or video directly in the browser using the MediaRecorder API.
 - Permission handling with clear error messages
 
 **Usage:**
+
 ```tsx
-import { MediaRecorder } from '@/components/media';
+import { MediaRecorder } from "@/components/media";
 
 <MediaRecorder
   onRecordingComplete={(blob, type) => {
@@ -26,10 +28,11 @@ import { MediaRecorder } from '@/components/media';
   onError={(error) => {
     // Handle errors
   }}
-/>
+/>;
 ```
 
 **Requirements Implemented:**
+
 - 2.1: Request microphone and camera permissions
 - 2.2: Display recording duration and active device indicators
 - 2.3: Save recorded media as Blob in memory
@@ -43,6 +46,7 @@ import { MediaRecorder } from '@/components/media';
 Upload existing media files with drag-and-drop support.
 
 **Features:**
+
 - Drag-and-drop file upload
 - File type validation (MP3, WAV, OGG, MP4, WEBM, MOV)
 - File size validation with warnings for files >100MB
@@ -50,8 +54,9 @@ Upload existing media files with drag-and-drop support.
 - Preview before confirmation
 
 **Usage:**
+
 ```tsx
-import { MediaUploader } from '@/components/media';
+import { MediaUploader } from "@/components/media";
 
 <MediaUploader
   onFileSelect={(mediaFile) => {
@@ -60,10 +65,11 @@ import { MediaUploader } from '@/components/media';
   onError={(error) => {
     // Handle errors
   }}
-/>
+/>;
 ```
 
 **Requirements Implemented:**
+
 - 3.1: Validate file types
 - 3.2: Warn if file exceeds 100MB
 - 3.3: Load uploaded files as Blob in memory
@@ -77,6 +83,7 @@ import { MediaUploader } from '@/components/media';
 Preview and play media files with basic controls.
 
 **Features:**
+
 - Audio and video playback
 - Play/pause/seek controls
 - Volume control
@@ -84,18 +91,20 @@ Preview and play media files with basic controls.
 - Media metadata display (size, type, duration)
 
 **Usage:**
+
 ```tsx
-import { MediaPreview } from '@/components/media';
+import { MediaPreview } from "@/components/media";
 
 <MediaPreview
   mediaFile={mediaFile}
   onClose={() => {
     // Handle close
   }}
-/>
+/>;
 ```
 
 **Requirements Implemented:**
+
 - 3.3: Display media metadata and basic playback controls
 
 ---
@@ -103,6 +112,7 @@ import { MediaPreview } from '@/components/media';
 ## Types
 
 See `types/media.ts` for TypeScript type definitions:
+
 - `MediaType`: 'audio' | 'video'
 - `MediaFile`: Complete media file information
 - `RecordingState`: Recording state management
@@ -111,6 +121,7 @@ See `types/media.ts` for TypeScript type definitions:
 ## Utilities
 
 See `utils/mediaValidation.ts` for validation and formatting utilities:
+
 - `validateFileType()`: Validate file MIME type and extension
 - `validateFileSize()`: Check file size and generate warnings
 - `getMediaDuration()`: Extract media duration

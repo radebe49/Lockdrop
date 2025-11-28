@@ -9,6 +9,7 @@ This directory contains components for unlocking and playing time-locked message
 Modal component that displays message metadata and handles the unlock process.
 
 **Features:**
+
 - Displays message metadata (sender, timestamp, file info)
 - Shows countdown timer for locked messages
 - Verifies unlock timestamp before allowing decryption
@@ -23,6 +24,7 @@ Modal component that displays message metadata and handles the unlock process.
 Secure media player for decrypted content with full playback controls.
 
 **Features:**
+
 - Supports both audio and video playback
 - Standard playback controls (play, pause, seek, volume)
 - Displays playback progress and duration
@@ -37,6 +39,7 @@ Secure media player for decrypted content with full playback controls.
 Prominent warning banner displayed when demo mode is active.
 
 **Features:**
+
 - Bright yellow banner with warning icons
 - Clear messaging about bypassed timestamp verification
 - Displayed at top of application when `NEXT_PUBLIC_DEMO_MODE=true`
@@ -61,7 +64,7 @@ function MyComponent() {
         console.log(`${stage}: ${progress}%`);
       },
     });
-    
+
     UnlockService.markAsUnlocked(message.id);
     setUnlockResult(result);
   };
@@ -75,7 +78,7 @@ function MyComponent() {
           onClose={() => router.back()}
         />
       )}
-      
+
       {unlockResult && (
         <MediaPlayer
           unlockResult={unlockResult}
@@ -98,6 +101,7 @@ NEXT_PUBLIC_DEMO_MODE=true
 ```
 
 When enabled:
+
 - Timestamp verification is bypassed
 - All messages appear as "Unlockable"
 - Prominent warning banner is displayed

@@ -1,16 +1,16 @@
 /**
  * ErrorRecovery Component
- * 
+ *
  * Provides user-friendly error display with recovery suggestions
  * and retry functionality.
- * 
+ *
  * Requirements: 12.1 - Display user-friendly error messages
  */
 
-'use client';
+"use client";
 
-import { classifyError, ErrorInfo } from '@/utils/errorHandling';
-import { useState } from 'react';
+import { classifyError, ErrorInfo } from "@/utils/errorHandling";
+import { useState } from "react";
 
 interface ErrorRecoveryProps {
   error: Error | string;
@@ -39,7 +39,7 @@ export function ErrorRecovery({
     try {
       await onRetry();
     } catch (retryError) {
-      console.error('Retry failed:', retryError);
+      console.error("Retry failed:", retryError);
     } finally {
       setIsRetrying(false);
     }
@@ -47,15 +47,15 @@ export function ErrorRecovery({
 
   const getSeverityColor = () => {
     switch (errorInfo.severity) {
-      case 'critical':
-      case 'error':
-        return 'red';
-      case 'warning':
-        return 'yellow';
-      case 'info':
-        return 'blue';
+      case "critical":
+      case "error":
+        return "red";
+      case "warning":
+        return "yellow";
+      case "info":
+        return "blue";
       default:
-        return 'gray';
+        return "gray";
     }
   };
 
@@ -63,12 +63,12 @@ export function ErrorRecovery({
 
   return (
     <div
-      className={`bg-${color}-50 border border-${color}-200 rounded-lg p-4 mb-4`}
+      className={`bg-${color}-50 border border-${color}-200 mb-4 rounded-lg p-4`}
       role="alert"
     >
       {/* Error Icon and Title */}
-      <div className="flex items-start mb-3">
-        <div className={`flex-shrink-0 bg-${color}-100 rounded-full p-2 mr-3`}>
+      <div className="mb-3 flex items-start">
+        <div className={`flex-shrink-0 bg-${color}-100 mr-3 rounded-full p-2`}>
           <svg
             className={`h-5 w-5 text-${color}-600`}
             fill="none"
@@ -138,7 +138,9 @@ export function ErrorRecovery({
         <details
           className="mb-3"
           open={showDetails}
-          onToggle={(e) => setShowDetails((e.target as HTMLDetailsElement).open)}
+          onToggle={(e) =>
+            setShowDetails((e.target as HTMLDetailsElement).open)
+          }
         >
           <summary
             className={`cursor-pointer text-xs font-medium text-${color}-800 hover:text-${color}-900`}
@@ -146,7 +148,7 @@ export function ErrorRecovery({
             Technical Details
           </summary>
           <div
-            className={`mt-2 text-xs text-${color}-700 font-mono bg-white p-2 rounded border border-${color}-200 overflow-auto max-h-32`}
+            className={`mt-2 text-xs text-${color}-700 rounded border bg-white p-2 font-mono border-${color}-200 max-h-32 overflow-auto`}
           >
             {errorInfo.technicalMessage}
           </div>
@@ -159,15 +161,15 @@ export function ErrorRecovery({
           <button
             onClick={handleRetry}
             disabled={isRetrying}
-            className={`px-3 py-1.5 text-xs font-medium text-white bg-${color}-600 hover:bg-${color}-700 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`px-3 py-1.5 text-xs font-medium text-white bg-${color}-600 hover:bg-${color}-700 rounded transition-colors disabled:cursor-not-allowed disabled:opacity-50`}
           >
-            {isRetrying ? 'Retrying...' : 'Try Again'}
+            {isRetrying ? "Retrying..." : "Try Again"}
           </button>
         )}
         {onDismiss && (
           <button
             onClick={onDismiss}
-            className={`px-3 py-1.5 text-xs font-medium text-${color}-700 bg-white border border-${color}-300 hover:bg-${color}-50 rounded transition-colors`}
+            className={`px-3 py-1.5 text-xs font-medium text-${color}-700 border bg-white border-${color}-300 hover:bg-${color}-50 rounded transition-colors`}
           >
             Dismiss
           </button>

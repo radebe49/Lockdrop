@@ -5,25 +5,28 @@
 ### Wallet Connection
 
 **Check if connected:**
+
 ```typescript
-import { useWallet } from '@/lib/wallet/WalletProvider';
+import { useWallet } from "@/lib/wallet/WalletProvider";
 
 const { isConnected, address } = useWallet();
 ```
 
 **Connect wallet:**
+
 ```typescript
 const { connect } = useWallet();
 await connect();
 ```
 
 **Listen for connection changes:**
+
 ```typescript
 const { onConnectionChange } = useWallet();
 
 useEffect(() => {
   const unsubscribe = onConnectionChange((connected) => {
-    console.log('Wallet connected:', connected);
+    console.log("Wallet connected:", connected);
   });
   return unsubscribe;
 }, [onConnectionChange]);
@@ -32,26 +35,29 @@ useEffect(() => {
 ### Storacha Connection
 
 **Check if ready:**
+
 ```typescript
-import { useStoracha } from '@/hooks/useStoracha';
+import { useStoracha } from "@/hooks/useStoracha";
 
 const { isReady, authState } = useStoracha();
 ```
 
 **Authenticate:**
+
 ```typescript
 const { login, createSpace } = useStoracha();
 
 // Step 1: Email authentication
-await login('user@example.com');
+await login("user@example.com");
 
 // Step 2: Create space
-await createSpace('my-space');
+await createSpace("my-space");
 ```
 
 **Check connection status:**
+
 ```typescript
-import { storachaService } from '@/lib/storage';
+import { storachaService } from "@/lib/storage";
 
 const status = await storachaService.checkConnection();
 // Returns: { canRestore, needsSpace, needsAuth }
@@ -60,6 +66,7 @@ const status = await storachaService.checkConnection();
 ### Connection Status Component
 
 **Display unified status:**
+
 ```typescript
 import { ConnectionStatus } from '@/components/storage';
 
@@ -69,20 +76,23 @@ import { ConnectionStatus } from '@/components/storage';
 ### localStorage Keys
 
 **Wallet:**
+
 ```typescript
-const WALLET_KEY = 'lockdrop_wallet_connection';
+const WALLET_KEY = "lockdrop_wallet_connection";
 // Stores: { wasConnected: boolean }
 ```
 
 **Storacha:**
+
 ```typescript
-const STORACHA_KEY = 'lockdrop_storacha_auth';
+const STORACHA_KEY = "lockdrop_storacha_auth";
 // Stores: { isAuthenticated: boolean, email?: string, spaceDid?: string }
 ```
 
 ### Common Patterns
 
 **Require both connections:**
+
 ```typescript
 const { isConnected: walletConnected } = useWallet();
 const { isReady: storageReady } = useStoracha();
@@ -99,13 +109,14 @@ if (!storageReady) {
 ```
 
 **Handle connection errors:**
+
 ```typescript
 try {
   await connect();
 } catch (error) {
-  if (error.message.includes('User rejected')) {
+  if (error.message.includes("User rejected")) {
     // User cancelled
-  } else if (error.message.includes('timeout')) {
+  } else if (error.message.includes("timeout")) {
     // Connection timed out
   } else {
     // Other error
@@ -114,6 +125,7 @@ try {
 ```
 
 **Silent reconnection:**
+
 ```typescript
 // Wallet reconnects automatically on mount
 // No action needed in components
@@ -125,29 +137,36 @@ try {
 ### Testing Helpers
 
 **Clear connection state:**
+
 ```typescript
 // For testing only
-localStorage.removeItem('lockdrop_wallet_connection');
-localStorage.removeItem('lockdrop_storacha_auth');
+localStorage.removeItem("lockdrop_wallet_connection");
+localStorage.removeItem("lockdrop_storacha_auth");
 ```
 
 **Mock connection state:**
+
 ```typescript
 // For testing only
-localStorage.setItem('lockdrop_wallet_connection', 
-  JSON.stringify({ wasConnected: true }));
+localStorage.setItem(
+  "lockdrop_wallet_connection",
+  JSON.stringify({ wasConnected: true })
+);
 
-localStorage.setItem('lockdrop_storacha_auth',
-  JSON.stringify({ 
-    isAuthenticated: true, 
-    email: 'test@example.com',
-    spaceDid: 'did:key:test123'
-  }));
+localStorage.setItem(
+  "lockdrop_storacha_auth",
+  JSON.stringify({
+    isAuthenticated: true,
+    email: "test@example.com",
+    spaceDid: "did:key:test123",
+  })
+);
 ```
 
 ### Debugging
 
 **Enable verbose logging:**
+
 ```typescript
 // Check browser console for these logs:
 // [WalletProvider] ...
@@ -155,22 +174,25 @@ localStorage.setItem('lockdrop_storacha_auth',
 ```
 
 **Inspect connection state:**
+
 ```typescript
 // In browser console:
-console.log('Wallet:', localStorage.getItem('lockdrop_wallet_connection'));
-console.log('Storacha:', localStorage.getItem('lockdrop_storacha_auth'));
+console.log("Wallet:", localStorage.getItem("lockdrop_wallet_connection"));
+console.log("Storacha:", localStorage.getItem("lockdrop_storacha_auth"));
 ```
 
 ### Best Practices
 
 1. **Always check connection before operations:**
+
    ```typescript
    if (!isConnected) {
-     throw new Error('Wallet not connected');
+     throw new Error("Wallet not connected");
    }
    ```
 
 2. **Provide clear error messages:**
+
    ```typescript
    catch (error) {
      setError('Failed to connect. Please try again.');
@@ -178,11 +200,13 @@ console.log('Storacha:', localStorage.getItem('lockdrop_storacha_auth'));
    ```
 
 3. **Show connection status:**
+
    ```typescript
    <ConnectionStatus />
    ```
 
 4. **Handle partial states:**
+
    ```typescript
    if (authState.isAuthenticated && !authState.spaceDid) {
      // Show space creation UI
@@ -198,6 +222,7 @@ console.log('Storacha:', localStorage.getItem('lockdrop_storacha_auth'));
 ### Migration Guide
 
 **From old code:**
+
 ```typescript
 // Old: Connection lost on refresh
 useEffect(() => {
@@ -207,6 +232,7 @@ useEffect(() => {
 ```
 
 **To new code:**
+
 ```typescript
 // New: Connection persists automatically
 // No useEffect needed!
@@ -216,6 +242,7 @@ useEffect(() => {
 ### API Reference
 
 **WalletProvider:**
+
 - `isConnected: boolean` - Connection status
 - `address: string | null` - Current address
 - `connect(): Promise<void>` - Connect wallet
@@ -223,6 +250,7 @@ useEffect(() => {
 - `onConnectionChange(callback): () => void` - Listen for changes
 
 **useStoracha:**
+
 - `isReady: boolean` - Ready for uploads
 - `authState: AuthState` - Current auth state
 - `login(email): Promise<boolean>` - Authenticate
@@ -230,6 +258,7 @@ useEffect(() => {
 - `uploadFile(blob, filename): Promise<result | null>` - Upload file
 
 **StorachaService:**
+
 - `getAuthState(): AuthState` - Get current state
 - `isReady(): boolean` - Check if ready
 - `checkConnection(): Promise<status>` - Verify connection
@@ -238,18 +267,21 @@ useEffect(() => {
 ### Troubleshooting
 
 **Wallet won't connect:**
+
 1. Check extension is installed and unlocked
 2. Check browser console for errors
 3. Try disconnect/reconnect
 4. Clear localStorage and try again
 
 **Storacha won't authenticate:**
+
 1. Check email was verified
 2. Check browser console for errors
 3. Try logout and re-authenticate
 4. Check network connection
 
 **State not persisting:**
+
 1. Check localStorage is enabled
 2. Check not in private/incognito mode
 3. Check browser isn't clearing data
@@ -258,6 +290,7 @@ useEffect(() => {
 ### Performance Tips
 
 1. **Lazy load connections:**
+
    ```typescript
    // Only connect when needed
    const handleAction = async () => {
@@ -267,6 +300,7 @@ useEffect(() => {
    ```
 
 2. **Batch operations:**
+
    ```typescript
    // Don't reconnect for each operation
    if (isConnected) {

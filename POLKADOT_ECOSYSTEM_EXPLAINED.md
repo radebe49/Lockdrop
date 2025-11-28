@@ -23,6 +23,7 @@ Polkadot Relay Chain (Paseo Testnet)
 ```
 
 **Key Points:**
+
 1. ✅ Your contract IS on Polkadot (Passet Hub parachain)
 2. ✅ Your contract IS secured by Polkadot validators
 3. ✅ Your contract IS using Polkadot's consensus
@@ -39,6 +40,7 @@ Smart Contract on Polkadot Parachain
 ```
 
 **pallet-revive** is Polkadot's way of supporting Solidity contracts. It:
+
 - Compiles Solidity → PolkaVM bytecode (NOT EVM!)
 - Runs on Substrate (Polkadot's framework)
 - Secured by Polkadot validators
@@ -61,6 +63,7 @@ Your Contract (Polkadot infrastructure)
 ```
 
 The Ethereum RPC endpoint is just a **translation layer** (like a language interpreter):
+
 - **Input**: Ethereum-style JSON-RPC calls
 - **Translation**: Converts to Substrate extrinsics
 - **Execution**: Runs on Polkadot infrastructure
@@ -93,16 +96,16 @@ The Ethereum RPC endpoint is just a **translation layer** (like a language inter
 
 ## Comparison: Different Ways to Build on Polkadot
 
-| Approach | Your Project | ink! Contract | Substrate Pallet |
-|----------|-------------|---------------|------------------|
-| **Language** | Solidity | Rust (ink!) | Rust |
-| **VM** | PolkaVM | PolkaVM | Native |
-| **API** | Ethereum RPC | Substrate RPC | Substrate RPC |
-| **Address Format** | 0x... | 5... (SS58) | 5... (SS58) |
-| **Frontend Library** | ethers.js | Polkadot.js | Polkadot.js |
-| **On Polkadot?** | ✅ YES | ✅ YES | ✅ YES |
-| **Polkadot Security?** | ✅ YES | ✅ YES | ✅ YES |
-| **Developer Experience** | Ethereum-like | Polkadot-native | Polkadot-native |
+| Approach                 | Your Project  | ink! Contract   | Substrate Pallet |
+| ------------------------ | ------------- | --------------- | ---------------- |
+| **Language**             | Solidity      | Rust (ink!)     | Rust             |
+| **VM**                   | PolkaVM       | PolkaVM         | Native           |
+| **API**                  | Ethereum RPC  | Substrate RPC   | Substrate RPC    |
+| **Address Format**       | 0x...         | 5... (SS58)     | 5... (SS58)      |
+| **Frontend Library**     | ethers.js     | Polkadot.js     | Polkadot.js      |
+| **On Polkadot?**         | ✅ YES        | ✅ YES          | ✅ YES           |
+| **Polkadot Security?**   | ✅ YES        | ✅ YES          | ✅ YES           |
+| **Developer Experience** | Ethereum-like | Polkadot-native | Polkadot-native  |
 
 **All three approaches are equally "Polkadot"!** They just use different developer interfaces.
 
@@ -137,21 +140,27 @@ Substrate Developers → Use Rust pallets → Deploy to Polkadot
 ## What You Get from Polkadot (Even Using ethers.js)
 
 ### 1. Shared Security
+
 Your contract is secured by Polkadot's 1000+ validators, not a separate validator set.
 
 ### 2. Cross-Chain Messaging (XCM)
+
 Your contract can potentially interact with other Polkadot parachains.
 
 ### 3. Low Fees
+
 Polkadot's efficient consensus means lower transaction costs.
 
 ### 4. Fast Finality
+
 ~6 second block times with deterministic finality.
 
 ### 5. Governance
+
 Subject to Polkadot's on-chain governance for upgrades.
 
 ### 6. Forkless Upgrades
+
 Network can upgrade without hard forks.
 
 ---
@@ -162,10 +171,10 @@ Network can upgrade without hard forks.
 
 ```typescript
 // Your current setup
-import { web3Enable, web3Accounts } from '@polkadot/extension-dapp';
+import { web3Enable, web3Accounts } from "@polkadot/extension-dapp";
 
 // This connects to Talisman (Polkadot wallet)
-const extensions = await web3Enable('Lockdrop');
+const extensions = await web3Enable("Lockdrop");
 const accounts = await web3Accounts();
 
 // Even though you use ethers.js for contracts,
@@ -193,11 +202,13 @@ const accounts = await web3Accounts();
 ## Block Explorers: Both Worlds
 
 ### Ethereum-Style Explorer (BlockScout)
+
 https://blockscout-passet-hub.parity-testnet.parity.io/address/0xeD0fDD2be363590800F86ec8562Dde951654668F
 
 Shows your contract in Ethereum format (0x addresses, gas, etc.)
 
 ### Polkadot-Style Explorer (Polkadot.js Apps)
+
 https://polkadot.js.org/apps/?rpc=wss://testnet-passet-hub.polkadot.io
 
 Shows the same contract in Substrate format (extrinsics, events, etc.)
@@ -209,6 +220,7 @@ Shows the same contract in Substrate format (extrinsics, events, etc.)
 ## The Truth About "Leaving Polkadot"
 
 ### ❌ You're NOT Leaving Polkadot If You:
+
 - Use ethers.js instead of Polkadot.js
 - Use Ethereum RPC endpoint
 - Use 0x... addresses
@@ -216,6 +228,7 @@ Shows the same contract in Substrate format (extrinsics, events, etc.)
 - Use Foundry instead of cargo-contract
 
 ### ✅ You WOULD Leave Polkadot If You:
+
 - Deployed to Ethereum mainnet
 - Deployed to Polygon
 - Deployed to Arbitrum
@@ -237,10 +250,12 @@ Polkadot Relay Chain = The Mall Building
 ```
 
 Your store (Passet Hub) accepts:
+
 - **Ethereum-style orders** (ethers.js, 0x addresses)
 - **Polkadot-style orders** (Polkadot.js, SS58 addresses)
 
 But it's still **inside the Polkadot mall**, using:
+
 - Polkadot's security guards (validators)
 - Polkadot's infrastructure (Substrate)
 - Polkadot's payment system (PAS tokens)
@@ -279,22 +294,27 @@ But it's still **inside the Polkadot mall**, using:
 ## Benefits You Get (That Ethereum Doesn't Have)
 
 ### 1. Shared Security
+
 - Ethereum: Each L2 has separate security
 - **Polkadot**: All parachains share relay chain security
 
 ### 2. Native Interoperability (XCM)
+
 - Ethereum: Bridges required (risky)
 - **Polkadot**: Native cross-chain messaging
 
 ### 3. Forkless Upgrades
+
 - Ethereum: Hard forks required
 - **Polkadot**: On-chain governance upgrades
 
 ### 4. Predictable Fees
+
 - Ethereum: Gas wars, unpredictable costs
 - **Polkadot**: More stable fee structure
 
 ### 5. Faster Finality
+
 - Ethereum: ~15 minutes for finality
 - **Polkadot**: ~6 seconds deterministic finality
 
@@ -303,15 +323,19 @@ But it's still **inside the Polkadot mall**, using:
 ## Common Misconceptions
 
 ### ❌ Myth: "ethers.js = Ethereum only"
+
 **✅ Reality**: ethers.js works with any Ethereum-compatible RPC, including Polkadot's adapter
 
 ### ❌ Myth: "Solidity contracts can't be on Polkadot"
+
 **✅ Reality**: pallet-revive enables Solidity on Polkadot (your contract proves this!)
 
 ### ❌ Myth: "Using Ethereum tools means leaving Polkadot"
+
 **✅ Reality**: Polkadot provides Ethereum compatibility as a developer convenience
 
 ### ❌ Myth: "Real Polkadot projects use ink! only"
+
 **✅ Reality**: Polkadot supports multiple languages (Solidity, ink!, Rust pallets)
 
 ---
@@ -319,6 +343,7 @@ But it's still **inside the Polkadot mall**, using:
 ## What Your Users See
 
 ### User Perspective
+
 ```
 1. Opens Lockdrop app
 2. Connects Talisman wallet (Polkadot wallet)
@@ -357,16 +382,16 @@ But it's still **inside the Polkadot mall**, using:
 
 ### Your Integration Status
 
-| Aspect | Status | Notes |
-|--------|--------|-------|
-| **Network** | ✅ Polkadot | Passet Hub parachain |
-| **Security** | ✅ Polkadot | Relay chain validators |
-| **Consensus** | ✅ Polkadot | Shared security model |
-| **Token** | ✅ Polkadot | PAS (Paseo testnet) |
-| **Infrastructure** | ✅ Polkadot | Substrate + PolkaVM |
-| **Developer Tools** | 🔄 Ethereum-style | ethers.js, Foundry |
-| **Address Format** | 🔄 Ethereum-style | 0x... addresses |
-| **Overall** | ✅ **100% Polkadot** | Using Ethereum-compatible interface |
+| Aspect              | Status               | Notes                               |
+| ------------------- | -------------------- | ----------------------------------- |
+| **Network**         | ✅ Polkadot          | Passet Hub parachain                |
+| **Security**        | ✅ Polkadot          | Relay chain validators              |
+| **Consensus**       | ✅ Polkadot          | Shared security model               |
+| **Token**           | ✅ Polkadot          | PAS (Paseo testnet)                 |
+| **Infrastructure**  | ✅ Polkadot          | Substrate + PolkaVM                 |
+| **Developer Tools** | 🔄 Ethereum-style    | ethers.js, Foundry                  |
+| **Address Format**  | 🔄 Ethereum-style    | 0x... addresses                     |
+| **Overall**         | ✅ **100% Polkadot** | Using Ethereum-compatible interface |
 
 ### Final Answer
 
@@ -383,6 +408,7 @@ The Ethereum RPC endpoint is just a **developer convenience layer** that transla
 ## Recommendation: Use ethers.js with Confidence! ⭐
 
 You're not "leaving Polkadot" by using ethers.js. You're using Polkadot's Ethereum-compatibility feature, which is:
+
 - ✅ Officially supported by Polkadot
 - ✅ Part of Polkadot's multi-language strategy
 - ✅ Fully integrated with Polkadot security

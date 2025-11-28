@@ -35,7 +35,7 @@ export function MediaPlayer({
   // Determine if media is audio or video
   const isVideo = unlockResult.mimeType.startsWith("video/");
   const isAudio = unlockResult.mimeType.startsWith("audio/");
-  
+
   console.log("[MediaPlayer] MIME type:", unlockResult.mimeType);
   console.log("[MediaPlayer] isVideo:", isVideo, "isAudio:", isAudio);
 
@@ -81,15 +81,18 @@ export function MediaPlayer({
   }, []);
 
   // Cleanup on unmount - revoke object URL and clear decrypted data
+  // Requirements: 10.5, 10.6 - Clear decrypted content from memory on close
   useEffect(() => {
-    // Mark that we should NOT cleanup on hot reload
-    shouldCleanup.current = false;
+    // Store the current URL for cleanup
+    const currentUrl = objectUrlRef.current;
     
     return () => {
-      // Only cleanup if this is a real unmount (not hot reload)
-      if (shouldCleanup.current && objectUrlRef.current) {
-        URL.revokeObjectURL(objectUrlRef.current);
-        console.log("[MediaPlayer] Object URL revoked and decrypted data cleared from memory");
+      // Always cleanup on unmount - revoke object URL to prevent reuse
+      if (currentUrl) {
+        URL.revokeObjectURL(currentUrl);
+        console.log(
+          "[MediaPlayer] Object URL revoked and decrypted data cleared from memory"
+        );
       }
     };
   }, []);
@@ -140,7 +143,7 @@ export function MediaPlayer({
   const handleClose = () => {
     // Mark that cleanup should happen
     shouldCleanup.current = true;
-    
+
     // Pause playback before closing
     const media = mediaRef.current;
     if (media && isPlaying) {
@@ -171,22 +174,22 @@ export function MediaPlayer({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 rounded-lg shadow-2xl max-w-4xl w-full">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4">
+      <div className="w-full max-w-4xl rounded-lg bg-gray-900 shadow-2xl">
         {/* Header */}
-        <div className="border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center justify-between border-b border-gray-700 px-6 py-4">
           <div>
             <h2 className="text-xl font-bold text-white">Unlocked Message</h2>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="mt-1 text-sm text-gray-400">
               From: {formatAddress(sender)}
             </p>
           </div>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 transition-colors hover:text-white"
           >
             <svg
-              className="w-6 h-6"
+              className="h-6 w-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -203,16 +206,16 @@ export function MediaPlayer({
 
         {/* Media Display */}
         <div className="p-6">
-          <div className="bg-black rounded-lg overflow-hidden mb-4">
+          <div className="mb-4 overflow-hidden rounded-lg bg-black">
             {isVideo ? (
               <video
                 ref={mediaRef as React.RefObject<HTMLVideoElement>}
                 src={unlockResult.objectUrl}
-                className="w-full max-h-[60vh] object-contain"
+                className="max-h-[60vh] w-full object-contain"
                 controls={false}
               />
             ) : isAudio ? (
-              <div className="flex items-center justify-center h-64 bg-gradient-to-br from-blue-900 to-purple-900">
+              <div className="flex h-64 items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900">
                 <audio
                   ref={mediaRef as React.RefObject<HTMLAudioElement>}
                   src={unlockResult.objectUrl}
@@ -220,7 +223,7 @@ export function MediaPlayer({
                 />
                 <div className="text-center">
                   <svg
-                    className="w-24 h-24 text-white mx-auto mb-4"
+                    className="mx-auto mb-4 h-24 w-24 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -232,17 +235,23 @@ export function MediaPlayer({
                       d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
                     />
                   </svg>
-                  <p className="text-white text-lg font-medium">Audio Message</p>
+                  <p className="text-lg font-medium text-white">
+                    Audio Message
+                  </p>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-64 bg-gray-800 p-6">
-                <p className="text-gray-400 mb-4">Unsupported media type: {unlockResult.mimeType}</p>
-                <p className="text-gray-500 text-sm mb-4">Trying generic video player...</p>
+              <div className="flex h-64 flex-col items-center justify-center bg-gray-800 p-6">
+                <p className="mb-4 text-gray-400">
+                  Unsupported media type: {unlockResult.mimeType}
+                </p>
+                <p className="mb-4 text-sm text-gray-500">
+                  Trying generic video player...
+                </p>
                 <video
                   ref={mediaRef as React.RefObject<HTMLVideoElement>}
                   src={unlockResult.objectUrl}
-                  className="w-full max-h-[50vh] object-contain"
+                  className="max-h-[50vh] w-full object-contain"
                   controls={false}
                 />
               </div>
@@ -253,7 +262,7 @@ export function MediaPlayer({
           <div className="space-y-4">
             {/* Progress Bar */}
             <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-400 w-12 text-right">
+              <span className="w-12 text-right text-sm text-gray-400">
                 {formatTime(currentTime)}
               </span>
               <input
@@ -262,12 +271,12 @@ export function MediaPlayer({
                 max={duration || 0}
                 value={currentTime}
                 onChange={handleSeek}
-                className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                className="slider h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-gray-700"
                 style={{
                   background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(currentTime / duration) * 100}%, #374151 ${(currentTime / duration) * 100}%, #374151 100%)`,
                 }}
               />
-              <span className="text-sm text-gray-400 w-12">
+              <span className="w-12 text-sm text-gray-400">
                 {formatTime(duration)}
               </span>
             </div>
@@ -278,11 +287,11 @@ export function MediaPlayer({
                 {/* Play/Pause Button */}
                 <button
                   onClick={handlePlayPause}
-                  className="w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 transition-colors hover:bg-blue-700"
                 >
                   {isPlaying ? (
                     <svg
-                      className="w-6 h-6 text-white"
+                      className="h-6 w-6 text-white"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -290,7 +299,7 @@ export function MediaPlayer({
                     </svg>
                   ) : (
                     <svg
-                      className="w-6 h-6 text-white ml-1"
+                      className="ml-1 h-6 w-6 text-white"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -303,11 +312,11 @@ export function MediaPlayer({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleMuteToggle}
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-400 transition-colors hover:text-white"
                   >
                     {isMuted || volume === 0 ? (
                       <svg
-                        className="w-6 h-6"
+                        className="h-6 w-6"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -327,7 +336,7 @@ export function MediaPlayer({
                       </svg>
                     ) : (
                       <svg
-                        className="w-6 h-6"
+                        className="h-6 w-6"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -348,7 +357,7 @@ export function MediaPlayer({
                     step="0.01"
                     value={isMuted ? 0 : volume}
                     onChange={handleVolumeChange}
-                    className="w-24 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    className="h-2 w-24 cursor-pointer appearance-none rounded-lg bg-gray-700"
                   />
                 </div>
               </div>
@@ -356,7 +365,7 @@ export function MediaPlayer({
               {/* Close Button */}
               <button
                 onClick={handleClose}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors font-medium"
+                className="rounded-lg bg-gray-700 px-4 py-2 font-medium text-white transition-colors hover:bg-gray-600"
               >
                 Close
               </button>
@@ -364,10 +373,10 @@ export function MediaPlayer({
           </div>
 
           {/* Security Notice */}
-          <div className="mt-4 bg-gray-800 border border-gray-700 rounded-lg p-3">
+          <div className="mt-4 rounded-lg border border-gray-700 bg-gray-800 p-3">
             <div className="flex items-start gap-2">
               <svg
-                className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0"
+                className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

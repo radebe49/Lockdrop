@@ -37,7 +37,7 @@ export function HelpText({ children, type = "info" }: HelpTextProps) {
 
   return (
     <div
-      className={`${style.bg} ${style.border} ${style.text} border rounded-lg p-3 text-sm flex items-start gap-2`}
+      className={`${style.bg} ${style.border} ${style.text} flex items-start gap-2 rounded-lg border p-3 text-sm`}
       role="note"
     >
       <span className="flex-shrink-0 font-bold">{style.icon}</span>

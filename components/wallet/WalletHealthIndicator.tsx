@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useWallet } from '@/lib/wallet/WalletProvider';
+import React from "react";
+import { useWallet } from "@/lib/wallet/WalletProvider";
 
 /**
  * Component that displays wallet health status and provides reconnection option
@@ -26,18 +26,18 @@ export function WalletHealthIndicator() {
     try {
       await reconnect();
     } catch (error) {
-      console.error('Reconnection failed:', error);
+      console.error("Reconnection failed:", error);
     } finally {
       setIsReconnecting(false);
     }
   };
 
   return (
-    <div className="fixed top-16 left-0 right-0 z-40 bg-orange-500 text-white px-4 py-3 shadow-lg">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <div className="fixed left-0 right-0 top-16 z-40 bg-orange-500 px-4 py-3 text-white shadow-lg">
+      <div className="mx-auto flex max-w-7xl items-center justify-between">
         <div className="flex items-center gap-3">
           <svg
-            className="w-5 h-5 animate-pulse"
+            className="h-5 w-5 animate-pulse"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -60,9 +60,9 @@ export function WalletHealthIndicator() {
         <button
           onClick={handleReconnect}
           disabled={isReconnecting}
-          className="px-4 py-2 bg-white text-orange-600 rounded-lg font-medium hover:bg-orange-50 transition-colors disabled:opacity-50"
+          className="rounded-lg bg-white px-4 py-2 font-medium text-orange-600 transition-colors hover:bg-orange-50 disabled:opacity-50"
         >
-          {isReconnecting ? 'Reconnecting...' : 'Reconnect'}
+          {isReconnecting ? "Reconnecting..." : "Reconnect"}
         </button>
       </div>
     </div>

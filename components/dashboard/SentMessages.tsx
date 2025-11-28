@@ -8,7 +8,10 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { Message, MessageStatus } from "@/types/contract";
-import { ContractService, MessageMetadata } from "@/lib/contract/ContractService";
+import {
+  ContractService,
+  MessageMetadata,
+} from "@/lib/contract/ContractService";
 import { MessageList } from "./MessageList";
 import { MessageFilters } from "./MessageFilters";
 import { Pagination } from "./Pagination";
@@ -24,7 +27,9 @@ export function SentMessages({ address }: SentMessagesProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<MessageStatus | "All">("All");
+  const [statusFilter, setStatusFilter] = useState<MessageStatus | "All">(
+    "All"
+  );
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -62,7 +67,8 @@ export function SentMessages({ address }: SentMessagesProps) {
 
       setMessages(messagesWithStatus);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to load messages";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to load messages";
       setError(errorMessage);
       console.error("Error loading sent messages:", err);
     } finally {
@@ -137,7 +143,9 @@ export function SentMessages({ address }: SentMessagesProps) {
     return filteredAndSortedMessages.slice(startIndex, endIndex);
   }, [filteredAndSortedMessages, currentPage]);
 
-  const totalPages = Math.ceil(filteredAndSortedMessages.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(
+    filteredAndSortedMessages.length / ITEMS_PER_PAGE
+  );
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -146,8 +154,8 @@ export function SentMessages({ address }: SentMessagesProps) {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center py-12">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
         <span className="ml-3 text-gray-300">Loading sent messages...</span>
       </div>
     );
@@ -155,10 +163,10 @@ export function SentMessages({ address }: SentMessagesProps) {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6">
         <div className="flex items-start">
           <svg
-            className="w-6 h-6 text-red-600 mt-0.5"
+            className="mt-0.5 h-6 w-6 text-red-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -189,12 +197,10 @@ export function SentMessages({ address }: SentMessagesProps) {
 
   return (
     <div>
-      <div className="mb-6 flex justify-between items-center">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-100">
-            Sent Messages
-          </h2>
-          <p className="text-sm text-gray-400 mt-1">
+          <h2 className="text-xl font-semibold text-gray-100">Sent Messages</h2>
+          <p className="mt-1 text-sm text-gray-400">
             {filteredAndSortedMessages.length} message
             {filteredAndSortedMessages.length !== 1 ? "s" : ""}
             {statusFilter !== "All" && ` (${statusFilter})`}
@@ -202,7 +208,7 @@ export function SentMessages({ address }: SentMessagesProps) {
         </div>
         <button
           onClick={loadMessages}
-          className="text-sm text-blue-400 hover:text-blue-300 font-medium"
+          className="text-sm font-medium text-blue-400 hover:text-blue-300"
         >
           Refresh
         </button>

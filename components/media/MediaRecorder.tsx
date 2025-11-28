@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useMediaRecorder } from '@/hooks/useMediaRecorder';
-import type { MediaType } from '@/types/media';
+import { useState, useEffect } from "react";
+import { useMediaRecorder } from "@/hooks/useMediaRecorder";
+import type { MediaType } from "@/types/media";
 
 interface MediaRecorderProps {
   onRecordingComplete: (blob: Blob, type: MediaType) => void;
@@ -13,8 +13,11 @@ interface MediaRecorderProps {
  * MediaRecorder component for recording audio/video
  * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5
  */
-export function MediaRecorder({ onRecordingComplete, onError }: MediaRecorderProps) {
-  const [mediaType, setMediaType] = useState<MediaType>('audio');
+export function MediaRecorder({
+  onRecordingComplete,
+  onError,
+}: MediaRecorderProps) {
+  const [mediaType, setMediaType] = useState<MediaType>("audio");
   const [error, setError] = useState<string | null>(null);
   const [isIOSSafari, setIsIOSSafari] = useState(false);
 
@@ -37,7 +40,8 @@ export function MediaRecorder({ onRecordingComplete, onError }: MediaRecorderPro
       setError(null);
       await startRecording();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to start recording';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to start recording";
       setError(errorMessage);
       if (onError) {
         onError(err instanceof Error ? err : new Error(errorMessage));
@@ -64,7 +68,7 @@ export function MediaRecorder({ onRecordingComplete, onError }: MediaRecorderPro
   const formatDuration = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   // Show upload-only fallback for iOS Safari
@@ -90,8 +94,8 @@ export function MediaRecorder({ onRecordingComplete, onError }: MediaRecorderPro
               Recording not supported on iOS Safari
             </h3>
             <p className="mt-2 text-sm text-yellow-300">
-              Media recording is not fully supported on iOS Safari. Please use the file
-              upload option instead, or try using a different browser.
+              Media recording is not fully supported on iOS Safari. Please use
+              the file upload option instead, or try using a different browser.
             </p>
           </div>
         </div>
@@ -105,21 +109,21 @@ export function MediaRecorder({ onRecordingComplete, onError }: MediaRecorderPro
       {!recordingState.isRecording && !recordingState.blob && (
         <div className="flex gap-2">
           <button
-            onClick={() => setMediaType('audio')}
+            onClick={() => setMediaType("audio")}
             className={`flex-1 rounded-lg px-4 py-2 font-medium transition-colors ${
-              mediaType === 'audio'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              mediaType === "audio"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
             }`}
           >
             Audio Only
           </button>
           <button
-            onClick={() => setMediaType('video')}
+            onClick={() => setMediaType("video")}
             className={`flex-1 rounded-lg px-4 py-2 font-medium transition-colors ${
-              mediaType === 'video'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              mediaType === "video"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
             }`}
           >
             Video + Audio
@@ -142,9 +146,11 @@ export function MediaRecorder({ onRecordingComplete, onError }: MediaRecorderPro
               {/* Recording Indicator */}
               <div className="flex items-center space-x-2">
                 <div className="h-3 w-3 animate-pulse rounded-full bg-red-600"></div>
-                <span className="text-sm font-medium text-gray-300">Recording</span>
+                <span className="text-sm font-medium text-gray-300">
+                  Recording
+                </span>
               </div>
-              
+
               {/* Duration Display - Requirement 2.2 */}
               <div className="rounded-lg bg-gray-800 px-3 py-1">
                 <span className="font-mono text-lg font-semibold text-gray-100">
@@ -173,7 +179,7 @@ export function MediaRecorder({ onRecordingComplete, onError }: MediaRecorderPro
                 </svg>
                 <span>Microphone</span>
               </div>
-              {mediaType === 'video' && (
+              {mediaType === "video" && (
                 <div className="flex items-center space-x-1">
                   <svg
                     className="h-4 w-4"
@@ -196,11 +202,15 @@ export function MediaRecorder({ onRecordingComplete, onError }: MediaRecorderPro
 
           {/* Record/Stop Button */}
           <button
-            onClick={recordingState.isRecording ? handleStopRecording : handleStartRecording}
+            onClick={
+              recordingState.isRecording
+                ? handleStopRecording
+                : handleStartRecording
+            }
             className={`rounded-full p-6 transition-all ${
               recordingState.isRecording
-                ? 'bg-red-600 hover:bg-red-700'
-                : 'bg-blue-600 hover:bg-blue-700'
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
             {recordingState.isRecording ? (
@@ -224,12 +234,11 @@ export function MediaRecorder({ onRecordingComplete, onError }: MediaRecorderPro
 
           <p className="text-sm text-gray-400">
             {recordingState.isRecording
-              ? 'Click to stop recording'
+              ? "Click to stop recording"
               : `Click to start ${mediaType} recording`}
           </p>
         </div>
       )}
-
     </div>
   );
 }

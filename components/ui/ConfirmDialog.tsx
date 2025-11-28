@@ -51,11 +51,11 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
       onClick={onCancel}
     >
       <div
-        className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200"
+        className="animate-in fade-in zoom-in w-full max-w-md rounded-xl bg-white p-6 shadow-2xl duration-200"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-labelledby="dialog-title"
@@ -63,14 +63,14 @@ export function ConfirmDialog({
       >
         <div className="flex items-start gap-4">
           <div
-            className={`${style.iconBg} w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-2xl`}
+            className={`${style.iconBg} flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-2xl`}
           >
             {style.icon}
           </div>
           <div className="flex-1">
             <h3
               id="dialog-title"
-              className="text-lg font-semibold text-gray-900 mb-2"
+              className="mb-2 text-lg font-semibold text-gray-900"
             >
               {title}
             </h3>
@@ -80,16 +80,16 @@ export function ConfirmDialog({
           </div>
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div className="mt-6 flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+            className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
-            className={`flex-1 px-4 py-2 ${style.button} text-white rounded-lg transition-colors font-medium`}
+            className={`flex-1 px-4 py-2 ${style.button} rounded-lg font-medium text-white transition-colors`}
           >
             {confirmText}
           </button>

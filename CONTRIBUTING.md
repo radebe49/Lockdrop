@@ -58,6 +58,7 @@ npm run dev
 #### Development Workflow
 
 1. **Create a branch** from `main`:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -69,23 +70,25 @@ npm run dev
    - Update documentation if needed
 
 3. **Test your changes**:
+
    ```bash
    # Run linter
    npm run lint
-   
+
    # Run type checking
    npm run build
-   
+
    # Test manually in browser
    npm run dev
    ```
 
 4. **Commit your changes**:
+
    ```bash
    git add .
    git commit -m "feat: add your feature description"
    ```
-   
+
    Follow [Conventional Commits](https://www.conventionalcommits.org/) format:
    - `feat:` for new features
    - `fix:` for bug fixes
@@ -95,6 +98,7 @@ npm run dev
    - `chore:` for maintenance tasks
 
 5. **Push to your fork**:
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -110,7 +114,7 @@ npm run dev
 
 - **TypeScript**: Use strict typing, avoid `any` when possible
 - **React**: Use functional components with hooks
-- **Naming**: 
+- **Naming**:
   - Components: PascalCase (`WalletConnectButton`)
   - Functions: camelCase (`connectWallet`)
   - Constants: UPPER_SNAKE_CASE (`MAX_FILE_SIZE`)
@@ -187,6 +191,7 @@ Lockdrop prioritizes privacy and security. When contributing:
 ## Recognition
 
 Contributors will be recognized in:
+
 - GitHub contributors list
 - Release notes (for significant contributions)
 - README acknowledgments section

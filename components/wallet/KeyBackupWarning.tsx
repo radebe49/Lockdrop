@@ -1,77 +1,53 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import {
+  ExclamationTriangleIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 
-const WARNING_STORAGE_KEY = 'lockdrop_key_backup_warning_shown';
+const STORAGE_KEY = "lockdrop_backup_warning_dismissed";
 
 export function KeyBackupWarning() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(true); // Start hidden to prevent flash
 
   useEffect(() => {
-    // Check if warning has been shown before
-    const hasShown = localStorage.getItem(WARNING_STORAGE_KEY);
-    if (!hasShown) {
-      setIsOpen(true);
-    }
+    const dismissed = localStorage.getItem(STORAGE_KEY);
+    setIsDismissed(dismissed === "true");
   }, []);
 
-  const handleClose = () => {
-    setIsOpen(false);
-    localStorage.setItem(WARNING_STORAGE_KEY, 'true');
+  const handleDismiss = () => {
+    localStorage.setItem(STORAGE_KEY, "true");
+    setIsDismissed(true);
   };
 
-  if (!isOpen) {
-    return null;
-  }
+  if (isDismissed) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <div className="flex items-start gap-3 mb-4">
-          <div className="flex-shrink-0 w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-            <svg
-              className="w-6 h-6 text-yellow-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-          </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Important: Back Up Your Keys
-            </h3>
-            <div className="text-sm text-gray-700 space-y-2">
-              <p>
-                <strong>Your wallet keys are the ONLY way to decrypt your messages.</strong>
-              </p>
-              <p>
-                If you lose access to your Talisman wallet or forget your password, your Lockdrop messages will be permanently inaccessible.
-              </p>
-              <p className="font-semibold text-yellow-700">
-                Please ensure you have backed up your wallet recovery phrase in a secure location.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gray-50 rounded-lg p-3 mb-4">
-          <p className="text-xs text-gray-600">
-            💡 Tip: Store your recovery phrase offline in multiple secure locations. Never share it with anyone.
+    <div className="card-glass mt-6 border-yellow-500/30 bg-yellow-500/5 p-4">
+      <div className="flex gap-3">
+        <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-400" />
+        <div className="flex-1">
+          <h3 className="mb-1 font-medium text-yellow-400">
+            Back Up Your Wallet
+          </h3>
+          <p className="mb-2 text-sm text-dark-300">
+            If you lose access to your wallet, you cannot decrypt received
+            messages. Back up your seed phrase securely offline.
           </p>
+          <button
+            onClick={handleDismiss}
+            className="text-xs text-dark-400 transition-colors hover:text-dark-200"
+          >
+            I understand, don&apos;t show again
+          </button>
         </div>
-
         <button
-          onClick={handleClose}
-          className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+          onClick={handleDismiss}
+          className="text-dark-500 transition-colors hover:text-dark-300"
+          aria-label="Dismiss warning"
         >
-          I Understand
+          <XMarkIcon className="h-5 w-5" />
         </button>
       </div>
     </div>

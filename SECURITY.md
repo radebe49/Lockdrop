@@ -17,6 +17,7 @@ If you discover a security vulnerability in Lockdrop, please report it by emaili
 ### Development Dependencies
 
 #### glob CLI Command Injection (GHSA-5j98-mcp5-4vw2)
+
 - **Severity**: High (in theory), Low (in practice)
 - **Status**: Acknowledged, monitoring for fix
 - **Impact**: Dev dependency only (eslint-config-next → glob)
@@ -25,7 +26,7 @@ If you discover a security vulnerability in Lockdrop, please report it by emaili
   - Not used directly in our codebase
   - Requires attacker control of CLI flags
   - Only present during development, not in production
-- **Mitigation**: 
+- **Mitigation**:
   - Vulnerability is in dev dependencies only
   - Production build does not include affected code
   - Waiting for Next.js team to update eslint-config-next
@@ -70,17 +71,20 @@ If you discover a security vulnerability in Lockdrop, please report it by emaili
 ## Security Features
 
 ### Client-Side Encryption
+
 - AES-256-GCM encryption
 - Unique IV per message
 - 128-bit authentication tags
 - Secure memory cleanup
 
 ### Blockchain Security
+
 - Time-locks enforced by consensus
 - Immutable message metadata
 - Transparent on-chain verification
 
 ### Storage Security
+
 - Encrypted blobs on IPFS
 - Content addressing (CIDs)
 - Decentralized redundancy
@@ -93,6 +97,7 @@ If you discover a security vulnerability in Lockdrop, please report it by emaili
 ## Contact
 
 For security concerns, contact:
+
 - GitHub: [@radebe49](https://github.com/radebe49)
 - Repository: [Lockdrop](https://github.com/radebe49/Lockdrop)
 

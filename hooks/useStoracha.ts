@@ -27,11 +27,11 @@ export function useStoracha() {
   useEffect(() => {
     const checkAndRefresh = async () => {
       refreshAuthState();
-      
+
       // Verify the connection is actually working
       try {
         const status = await storachaService.checkConnection();
-        
+
         if (status.canRestore) {
           console.log("Storacha: Connection restored successfully");
         } else if (status.needsSpace) {
@@ -43,7 +43,7 @@ export function useStoracha() {
         console.warn("Storacha: Connection check failed:", error);
       }
     };
-    
+
     checkAndRefresh();
   }, [refreshAuthState]);
 

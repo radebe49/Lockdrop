@@ -5,6 +5,7 @@ This module provides the interface for interacting with the Polkadot smart contr
 ## Overview
 
 The `ContractService` class handles:
+
 - Connection to Polkadot RPC endpoints
 - Submitting message metadata transactions
 - Querying sent and received messages
@@ -26,24 +27,24 @@ NEXT_PUBLIC_NETWORK=westend
 ### Storing a Message
 
 ```typescript
-import { ContractService } from '@/lib/contract';
-import { useWallet } from '@/lib/wallet/WalletProvider';
+import { ContractService } from "@/lib/contract";
+import { useWallet } from "@/lib/wallet/WalletProvider";
 
 const { selectedAccount } = useWallet();
 
 const result = await ContractService.storeMessage(
   {
-    encryptedKeyCID: 'Qm...',
-    encryptedMessageCID: 'Qm...',
-    messageHash: '0x...',
+    encryptedKeyCID: "Qm...",
+    encryptedMessageCID: "Qm...",
+    messageHash: "0x...",
     unlockTimestamp: 1735689600000,
-    recipient: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
+    recipient: "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
   },
   selectedAccount
 );
 
 if (result.success) {
-  console.log('Message stored with ID:', result.messageId);
+  console.log("Message stored with ID:", result.messageId);
 }
 ```
 
@@ -83,6 +84,7 @@ The service provides helpful error messages for common issues:
 **Note**: The current implementation uses `system.remark` extrinsics as a placeholder until the ink! smart contract is deployed. This allows the application to function while the contract is being developed.
 
 Once the contract is deployed:
+
 1. Update `NEXT_PUBLIC_CONTRACT_ADDRESS` with the deployed contract address
 2. Add the contract ABI to the project
 3. Replace the placeholder transaction/query logic with actual contract calls
@@ -111,12 +113,14 @@ pub fn get_received_messages(recipient: AccountId) -> Vec<MessageMetadata>;
 ## Faucet Links
 
 Get free Westend testnet tokens:
+
 - https://faucet.polkadot.io/westend
 - https://matrix.to/#/#westend_faucet:matrix.org
 
 ## Requirements
 
 This module implements requirements:
+
 - 6.2: Store message metadata on blockchain
 - 6.3: Request transaction signing via Talisman
 - 6.4: Handle transaction confirmation

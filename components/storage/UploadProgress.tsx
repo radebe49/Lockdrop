@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
 /**
  * UploadProgress Component
- * 
+ *
  * Displays upload progress, status, and provider information for IPFS uploads.
  * Handles upload errors with retry options.
- * 
+ *
  * Requirement 5.4: Display upload progress and status
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export interface UploadProgressProps {
   /** Current upload progress (0-100) */
   progress: number;
   /** Upload status */
-  status: 'idle' | 'uploading' | 'success' | 'error';
+  status: "idle" | "uploading" | "success" | "error";
   /** Provider being used for upload */
-  provider?: 'storacha';
+  provider?: "storacha";
   /** Error message if upload failed */
   error?: string;
   /** Callback for retry action */
@@ -54,44 +54,46 @@ export function UploadProgress({
 
   const getStatusColor = () => {
     switch (status) {
-      case 'uploading':
-        return 'bg-blue-500';
-      case 'success':
-        return 'bg-green-500';
-      case 'error':
-        return 'bg-red-500';
+      case "uploading":
+        return "bg-blue-500";
+      case "success":
+        return "bg-green-500";
+      case "error":
+        return "bg-red-500";
       default:
-        return 'bg-gray-300';
+        return "bg-gray-300";
     }
   };
 
   const getStatusText = () => {
     switch (status) {
-      case 'uploading':
-        return 'Uploading...';
-      case 'success':
-        return 'Upload complete!';
-      case 'error':
-        return 'Upload failed';
+      case "uploading":
+        return "Uploading...";
+      case "success":
+        return "Upload complete!";
+      case "error":
+        return "Upload failed";
       default:
-        return 'Ready to upload';
+        return "Ready to upload";
     }
   };
 
   const getProviderBadge = () => {
     if (!provider) return null;
 
-    const providerName = 'Storacha';
-    const providerColor = 'bg-purple-100 text-purple-800';
+    const providerName = "Storacha";
+    const providerColor = "bg-purple-100 text-purple-800";
 
     return (
-      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${providerColor}`}>
+      <span
+        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${providerColor}`}
+      >
         {providerName}
       </span>
     );
   };
 
-  if (status === 'idle') {
+  if (status === "idle") {
     return null;
   }
 
@@ -105,8 +107,8 @@ export function UploadProgress({
           </span>
           {getProviderBadge()}
         </div>
-        
-        {status === 'uploading' && (
+
+        {status === "uploading" && (
           <span className="text-sm font-semibold text-gray-900">
             {displayProgress}%
           </span>
@@ -122,7 +124,7 @@ export function UploadProgress({
       </div>
 
       {/* Status Icons and Messages */}
-      {status === 'success' && (
+      {status === "success" && (
         <div className="flex items-center gap-2 text-sm text-green-600">
           <svg
             className="h-5 w-5"
@@ -141,7 +143,7 @@ export function UploadProgress({
         </div>
       )}
 
-      {status === 'error' && (
+      {status === "error" && (
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm text-red-600">
             <svg
@@ -157,7 +159,7 @@ export function UploadProgress({
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-            <span>{error || 'An error occurred during upload'}</span>
+            <span>{error || "An error occurred during upload"}</span>
           </div>
 
           {/* Action Buttons */}
@@ -183,9 +185,9 @@ export function UploadProgress({
       )}
 
       {/* Upload Info */}
-      {status === 'uploading' && provider && (
+      {status === "uploading" && provider && (
         <p className="text-xs text-gray-500">
-          Uploading to {provider === 'storacha' ? 'Storacha Network' : 'IPFS'}
+          Uploading to {provider === "storacha" ? "Storacha Network" : "IPFS"}
         </p>
       )}
     </div>
