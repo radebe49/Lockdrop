@@ -28,7 +28,7 @@ export function Footer() {
             </a>
             <span className="hidden sm:inline">•</span>
             <a
-              href="https://github.com/radebe49/Lockdrop/blob/main/SECURITY.md"
+              href="https://github.com/radebe49/Lockdrop/blob/main/docs/SECURITY_AUDIT.md"
               target="_blank"
               rel="noopener noreferrer"
               className="transition-colors hover:text-dark-300"

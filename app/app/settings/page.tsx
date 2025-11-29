@@ -104,23 +104,6 @@ export default function SettingsPage() {
             </div>
 
             <div className="border-t border-dark-700 pt-4">
-              <h3 className="mb-3 text-sm font-medium">Features</h3>
-              <ul className="space-y-2 text-sm text-dark-300">
-                {[
-                  "Client-side encryption (AES-256-GCM)",
-                  "Decentralized IPFS storage",
-                  "Filecoin backup storage",
-                  "99.9% availability guarantee",
-                ].map((feature) => (
-                  <li key={feature} className="flex items-center gap-2">
-                    <CheckCircleIcon className="h-4 w-4 text-brand-400" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="border-t border-dark-700 pt-4">
               <button
                 onClick={handleResetConnection}
                 className="flex items-center gap-2 text-sm text-red-400 transition-colors hover:text-red-300"
