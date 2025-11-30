@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export type ToastType = "success" | "error" | "warning" | "info";
 
@@ -17,15 +17,25 @@ interface ToastProps {
 
 export function Toast({ message, type, duration = 5000, onClose }: ToastProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const [isClosing, setIsClosing] = useState(false);
+
+  // Handle transition end to call onClose after animation completes
+  const handleTransitionEnd = useCallback(() => {
+    if (isClosing) {
+      onClose();
+    }
+  }, [isClosing, onClose]);
+
+  // Start close animation
+  const startClose = useCallback(() => {
+    setIsVisible(false);
+    setIsClosing(true);
+  }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      setTimeout(onClose, 300); // Wait for fade out animation
-    }, duration);
-
+    const timer = setTimeout(startClose, duration);
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [duration, startClose]);
 
   const typeStyles = {
     success: {
@@ -62,6 +72,7 @@ export function Toast({ message, type, duration = 5000, onClose }: ToastProps) {
         isVisible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
       }`}
       role="alert"
+      onTransitionEnd={handleTransitionEnd}
     >
       <div
         className={`${style.iconBg} flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white`}
@@ -72,10 +83,7 @@ export function Toast({ message, type, duration = 5000, onClose }: ToastProps) {
         <p className="text-sm font-medium">{message}</p>
       </div>
       <button
-        onClick={() => {
-          setIsVisible(false);
-          setTimeout(onClose, 300);
-        }}
+        onClick={startClose}
         className="text-gray-400 transition-colors hover:text-gray-600"
         aria-label="Close notification"
       >

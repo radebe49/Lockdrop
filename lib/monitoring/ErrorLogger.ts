@@ -3,6 +3,13 @@
  *
  * Provides structured error logging with context, categorization,
  * and integration points for monitoring services.
+ *
+ * Features:
+ * - Multiple log levels (debug, info, warn, error)
+ * - Log level filtering based on environment
+ * - Structured log entries with context
+ * - In-memory log storage with size limits
+ * - Statistics and export capabilities
  */
 
 import {
@@ -12,10 +19,21 @@ import {
 } from "@/utils/errorHandling";
 
 /**
+ * Log levels for filtering
+ */
+export enum LogLevel {
+  DEBUG = 0,
+  INFO = 1,
+  WARN = 2,
+  ERROR = 3,
+}
+
+/**
  * Error log entry
  */
 export interface ErrorLogEntry {
   timestamp: number;
+  level: LogLevel;
   category: ErrorCategory;
   severity: ErrorSeverity;
   message: string;
@@ -27,14 +45,130 @@ export interface ErrorLogEntry {
 }
 
 /**
- * ErrorLogger provides centralized error logging with context
+ * Simple log entry for info/debug messages
+ */
+export interface SimpleLogEntry {
+  timestamp: number;
+  level: LogLevel;
+  context: string;
+  message: string;
+  data?: Record<string, unknown>;
+}
+
+/**
+ * ErrorLogger provides centralized logging with context and filtering
  */
 export class ErrorLogger {
-  private static logs: ErrorLogEntry[] = [];
-  private static maxLogs = 100; // Keep last 100 errors in memory
+  private static errorLogs: ErrorLogEntry[] = [];
+  private static simpleLogs: SimpleLogEntry[] = [];
+  private static maxLogs = 100; // Keep last 100 entries per type
 
   /**
-   * Log an error with context
+   * Current log level - only logs at or above this level are output
+   * In production, defaults to WARN; in development, defaults to DEBUG
+   */
+  private static currentLevel: LogLevel =
+    process.env.NODE_ENV === "production" ? LogLevel.WARN : LogLevel.DEBUG;
+
+  /**
+   * Set the minimum log level
+   */
+  static setLogLevel(level: LogLevel): void {
+    this.currentLevel = level;
+  }
+
+  /**
+   * Get the current log level
+   */
+  static getLogLevel(): LogLevel {
+    return this.currentLevel;
+  }
+
+  /**
+   * Check if a log level should be output
+   */
+  private static shouldLog(level: LogLevel): boolean {
+    return level >= this.currentLevel;
+  }
+
+  /**
+   * Log a debug message (development only by default)
+   */
+  static debug(
+    context: string,
+    message: string,
+    data?: Record<string, unknown>
+  ): void {
+    if (!this.shouldLog(LogLevel.DEBUG)) return;
+
+    const entry: SimpleLogEntry = {
+      timestamp: Date.now(),
+      level: LogLevel.DEBUG,
+      context,
+      message,
+      data,
+    };
+
+    this.addSimpleLog(entry);
+    console.debug(`[${context}]`, message, data ?? "");
+  }
+
+  /**
+   * Log an info message
+   */
+  static info(
+    context: string,
+    message: string,
+    data?: Record<string, unknown>
+  ): void {
+    if (!this.shouldLog(LogLevel.INFO)) return;
+
+    const entry: SimpleLogEntry = {
+      timestamp: Date.now(),
+      level: LogLevel.INFO,
+      context,
+      message,
+      data,
+    };
+
+    this.addSimpleLog(entry);
+    console.info(`[${context}]`, message, data ?? "");
+  }
+
+  /**
+   * Log a warning message
+   */
+  static warn(
+    context: string,
+    message: string,
+    data?: Record<string, unknown>
+  ): void {
+    if (!this.shouldLog(LogLevel.WARN)) return;
+
+    const entry: SimpleLogEntry = {
+      timestamp: Date.now(),
+      level: LogLevel.WARN,
+      context,
+      message,
+      data,
+    };
+
+    this.addSimpleLog(entry);
+    console.warn(`[${context}]`, message, data ?? "");
+  }
+
+  /**
+   * Add a simple log entry with size management
+   */
+  private static addSimpleLog(entry: SimpleLogEntry): void {
+    this.simpleLogs.push(entry);
+    if (this.simpleLogs.length > this.maxLogs) {
+      this.simpleLogs = this.simpleLogs.slice(-this.maxLogs);
+    }
+  }
+
+  /**
+   * Log an error with context (always logged regardless of level)
    *
    * @param error The error to log
    * @param context Context where the error occurred
@@ -45,11 +179,27 @@ export class ErrorLogger {
     context: string,
     additionalData?: Record<string, unknown>
   ): void {
+    this.error(error, context, additionalData);
+  }
+
+  /**
+   * Log an error with context
+   *
+   * @param error The error to log
+   * @param context Context where the error occurred
+   * @param additionalData Additional data to include
+   */
+  static error(
+    error: Error | string,
+    context: string,
+    additionalData?: Record<string, unknown>
+  ): void {
     const errorInfo = classifyError(error);
     const errorObj = typeof error === "string" ? new Error(error) : error;
 
     const entry: ErrorLogEntry = {
       timestamp: Date.now(),
+      level: LogLevel.ERROR,
       category: errorInfo.category,
       severity: errorInfo.severity,
       message: errorInfo.message,
@@ -60,11 +210,11 @@ export class ErrorLogger {
     };
 
     // Add to in-memory log
-    this.logs.push(entry);
+    this.errorLogs.push(entry);
 
     // Keep only last maxLogs entries
-    if (this.logs.length > this.maxLogs) {
-      this.logs = this.logs.slice(-this.maxLogs);
+    if (this.errorLogs.length > this.maxLogs) {
+      this.errorLogs = this.errorLogs.slice(-this.maxLogs);
     }
 
     // Console logging based on severity
@@ -72,7 +222,7 @@ export class ErrorLogger {
     logMethod(
       `[${context}] ${errorInfo.category.toUpperCase()}:`,
       errorInfo.message,
-      additionalData
+      additionalData ?? ""
     );
 
     // In production, send to monitoring service
@@ -115,35 +265,74 @@ export class ErrorLogger {
    * Get recent error logs
    */
   static getRecentLogs(count: number = 10): ErrorLogEntry[] {
-    return this.logs.slice(-count);
+    return this.errorLogs.slice(-count);
+  }
+
+  /**
+   * Get recent simple logs (info/debug/warn)
+   */
+  static getRecentSimpleLogs(count: number = 10): SimpleLogEntry[] {
+    return this.simpleLogs.slice(-count);
+  }
+
+  /**
+   * Get all recent logs combined and sorted by timestamp
+   */
+  static getAllRecentLogs(
+    count: number = 20
+  ): (ErrorLogEntry | SimpleLogEntry)[] {
+    const combined = [
+      ...this.errorLogs.map((e) => ({ ...e, _type: "error" as const })),
+      ...this.simpleLogs.map((s) => ({ ...s, _type: "simple" as const })),
+    ];
+    return combined
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, count)
+      .map(({ _type, ...rest }) => rest as ErrorLogEntry | SimpleLogEntry);
   }
 
   /**
    * Get logs by category
    */
   static getLogsByCategory(category: ErrorCategory): ErrorLogEntry[] {
-    return this.logs.filter((_log) => _log.category === category);
+    return this.errorLogs.filter((log) => log.category === category);
   }
 
   /**
    * Get logs by severity
    */
   static getLogsBySeverity(severity: ErrorSeverity): ErrorLogEntry[] {
-    return this.logs.filter((_log) => _log.severity === severity);
+    return this.errorLogs.filter((log) => log.severity === severity);
+  }
+
+  /**
+   * Get logs by level
+   */
+  static getLogsByLevel(level: LogLevel): SimpleLogEntry[] {
+    return this.simpleLogs.filter((log) => log.level === level);
   }
 
   /**
    * Clear all logs
    */
   static clearLogs(): void {
-    this.logs = [];
+    this.errorLogs = [];
+    this.simpleLogs = [];
   }
 
   /**
    * Export logs as JSON
    */
   static exportLogs(): string {
-    return JSON.stringify(this.logs, null, 2);
+    return JSON.stringify(
+      {
+        errors: this.errorLogs,
+        logs: this.simpleLogs,
+        exportedAt: new Date().toISOString(),
+      },
+      null,
+      2
+    );
   }
 
   /**
@@ -151,11 +340,19 @@ export class ErrorLogger {
    */
   static getStatistics(): {
     total: number;
+    errors: number;
+    warnings: number;
+    info: number;
+    debug: number;
     byCategory: Record<ErrorCategory, number>;
     bySeverity: Record<ErrorSeverity, number>;
   } {
     const stats = {
-      total: this.logs.length,
+      total: this.errorLogs.length + this.simpleLogs.length,
+      errors: this.errorLogs.length,
+      warnings: this.simpleLogs.filter((l) => l.level === LogLevel.WARN).length,
+      info: this.simpleLogs.filter((l) => l.level === LogLevel.INFO).length,
+      debug: this.simpleLogs.filter((l) => l.level === LogLevel.DEBUG).length,
       byCategory: {} as Record<ErrorCategory, number>,
       bySeverity: {} as Record<ErrorSeverity, number>,
     };
@@ -169,7 +366,7 @@ export class ErrorLogger {
     });
 
     // Count occurrences
-    this.logs.forEach((log) => {
+    this.errorLogs.forEach((log) => {
       stats.byCategory[log.category]++;
       stats.bySeverity[log.severity]++;
     });

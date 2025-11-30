@@ -6,7 +6,7 @@ Lockdrop supports multiple IPFS storage providers with a unified interface. The 
 
 ## Available Services
 
-### 1. Storacha Network (Recommended)
+### Storacha Network (Primary)
 
 **Modern IPFS storage with email-based authentication**
 
@@ -17,42 +17,19 @@ Lockdrop supports multiple IPFS storage providers with a unified interface. The 
 - 99.9% availability - Redundant storage with cryptographic proofs
 - Browser-native - Fully compatible with client-side JavaScript
 - Free tier - 5GB storage + egress per month
+- Centralized logging via ErrorLogger
+- Retry logic with exponential backoff via `withRetry()`
 
 **When to use:**
 
-- New implementations (recommended)
+- All implementations (recommended)
 - Production deployments
 - When you need reliable, fast IPFS storage
 - When you want email-based user authentication
 
-### 2. Legacy Web3.Storage
+### Backward Compatibility
 
-**Backward compatibility with older Web3.Storage API**
-
-- Deprecated - Use Storacha for new code
-- Backward compatible - All existing CIDs work
-
-**When to use:**
-
-- Maintaining existing code
-- Gradual migration to Storacha
-- Testing legacy functionality
-
-### 3. Mock IPFS Service
-
-**Testing without real uploads**
-
-- Development mode - No external dependencies
-- Fast - Instant uploads (simulated delays)
-- In-memory storage - No real IPFS network
-- Realistic CIDs - Generated using SHA-256
-
-**When to use:**
-
-- Local development
-- Unit/integration testing
-- CI/CD pipelines
-- When IPFS authentication isn't set up yet
+The `ipfsService` and `IPFSService` exports are aliases to `storachaService` for backward compatibility. All existing code using these exports will continue to work without changes.
 
 ## Service Selection
 

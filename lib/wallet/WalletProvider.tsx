@@ -17,11 +17,13 @@ import React, {
 } from "react";
 import { WalletState, WalletContextValue } from "@/types/wallet";
 import { withTimeout, TIMEOUTS, TimeoutError } from "@/utils/timeout";
+import { ErrorLogger } from "@/lib/monitoring/ErrorLogger";
 
 const WalletContext = createContext<WalletContextValue | undefined>(undefined);
 
 const STORAGE_KEY = "lockdrop_wallet_connection";
-// const APP_NAME = "Lockdrop"; // Reserved for future use
+const LOG_CONTEXT = "WalletProvider";
+const HEALTH_CHECK_INTERVAL = 30000; // 30 seconds
 
 interface WalletProviderProps {
   children: React.ReactNode;
@@ -81,7 +83,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
         })) as string[];
 
         if (accounts && accounts.length > 0) {
-          console.log("[WalletProvider] Restoring previous connection");
+          ErrorLogger.info(LOG_CONTEXT, "Restoring previous connection");
 
           const walletName = window.ethereum.isTalisman
             ? "Talisman"
@@ -118,7 +120,9 @@ export function WalletProvider({ children }: WalletProviderProps) {
           setIsHealthy(true);
         }
       } catch (error) {
-        console.log("[WalletProvider] Could not restore connection:", error);
+        ErrorLogger.debug(LOG_CONTEXT, "Could not restore connection", {
+          error: error instanceof Error ? error.message : String(error),
+        });
         // Clear invalid stored state
         localStorage.removeItem(STORAGE_KEY);
       }
@@ -133,7 +137,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
 
     const handleAccountsChanged = (accounts: unknown) => {
       const accountsArray = accounts as string[];
-      console.log("[WalletProvider] Accounts changed:", accountsArray);
+      ErrorLogger.info(LOG_CONTEXT, "Accounts changed", { count: accountsArray.length });
 
       if (accountsArray.length === 0) {
         // User disconnected wallet
@@ -157,7 +161,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
     };
 
     const handleChainChanged = () => {
-      console.log("[WalletProvider] Chain changed, reloading...");
+      ErrorLogger.info(LOG_CONTEXT, "Chain changed, reloading...");
       window.location.reload();
     };
 
@@ -194,15 +198,15 @@ export function WalletProvider({ children }: WalletProviderProps) {
       let walletName = "Ethereum Wallet";
       if (isTalisman) {
         walletName = "Talisman";
-        console.log("[WalletProvider] Talisman wallet detected (recommended)");
+        ErrorLogger.info(LOG_CONTEXT, "Talisman wallet detected (recommended)");
       } else if (isMetaMask) {
         walletName = "MetaMask";
-        console.log("[WalletProvider] MetaMask wallet detected (alternative)");
+        ErrorLogger.info(LOG_CONTEXT, "MetaMask wallet detected (alternative)");
       } else {
-        console.log("[WalletProvider] Generic Ethereum wallet detected");
+        ErrorLogger.info(LOG_CONTEXT, "Generic Ethereum wallet detected");
       }
 
-      console.log("[WalletProvider] Requesting Ethereum accounts...");
+      ErrorLogger.debug(LOG_CONTEXT, "Requesting Ethereum accounts...");
 
       // Request accounts (triggers wallet popup)
       const accounts = await withTimeout(
@@ -213,9 +217,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
         "Request Ethereum accounts"
       );
 
-      console.log(
-        `[WalletProvider] Found ${accounts.length} Ethereum account(s)`
-      );
+      ErrorLogger.info(LOG_CONTEXT, `Found ${accounts.length} Ethereum account(s)`);
 
       if (!accounts || accounts.length === 0) {
         throw new Error(
@@ -248,7 +250,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
         type: "ethereum" as const,
       }));
 
-      console.log("[WalletProvider] Successfully connected:", selectedAddress);
+      ErrorLogger.info(LOG_CONTEXT, "Successfully connected", { address: selectedAddress });
 
       setState({
         isConnected: true,
@@ -262,7 +264,11 @@ export function WalletProvider({ children }: WalletProviderProps) {
 
       setIsHealthy(true);
     } catch (error) {
-      console.error("[WalletProvider] Connection error:", error);
+      ErrorLogger.error(
+        error instanceof Error ? error : new Error(String(error)),
+        LOG_CONTEXT,
+        { operation: "connect" }
+      );
 
       if (error instanceof TimeoutError) {
         throw new Error(
@@ -284,7 +290,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
       }
 
       // Handle RPC error codes
-      const rpcError = error as any;
+      const rpcError = error as { code?: number };
       if (rpcError?.code === -32002) {
         throw new Error(
           "A wallet connection request is already pending. Please check for a hidden popup window, or refresh the page and try again."
@@ -296,7 +302,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
   }, []);
 
   const disconnect = useCallback(() => {
-    console.log("[WalletProvider] Disconnecting wallet");
+    ErrorLogger.info(LOG_CONTEXT, "Disconnecting wallet");
     setState({
       isConnected: false,
       address: null,
@@ -331,7 +337,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
       }
 
       try {
-        console.log("[WalletProvider] Requesting message signature...");
+        ErrorLogger.debug(LOG_CONTEXT, "Requesting message signature...");
 
         // Convert message to hex
         const messageHex = "0x" + Buffer.from(message, "utf8").toString("hex");
@@ -346,10 +352,14 @@ export function WalletProvider({ children }: WalletProviderProps) {
           "Sign message"
         );
 
-        console.log("[WalletProvider] Message signed successfully");
+        ErrorLogger.debug(LOG_CONTEXT, "Message signed successfully");
         return signature;
       } catch (error) {
-        console.error("[WalletProvider] Signing error:", error);
+        ErrorLogger.error(
+          error instanceof Error ? error : new Error(String(error)),
+          LOG_CONTEXT,
+          { operation: "signMessage" }
+        );
 
         if (error instanceof TimeoutError) {
           throw new Error(
@@ -379,9 +389,10 @@ export function WalletProvider({ children }: WalletProviderProps) {
   }, []);
 
   const reconnect = useCallback(async () => {
-    console.log("[WalletProvider] Manual reconnection triggered");
+    ErrorLogger.info(LOG_CONTEXT, "Manual reconnection triggered");
     const previousAddress = state.address;
     disconnect();
+    // Brief delay to ensure clean disconnect before reconnecting
     await new Promise((resolve) => setTimeout(resolve, 500));
     await connect(previousAddress || undefined);
   }, [connect, disconnect, state.address]);
@@ -406,28 +417,49 @@ export function WalletProvider({ children }: WalletProviderProps) {
     });
   }, [state.isConnected]);
 
-  // Periodic health check
+  // Periodic health check with visibility API optimization
   useEffect(() => {
     if (!state.isConnected) {
       setIsHealthy(true);
       return;
     }
 
+    let intervalId: NodeJS.Timeout | null = null;
+    let isPageVisible = !document.hidden;
+
     const performHealthCheck = async () => {
+      // Skip health checks when page is not visible
+      if (!isPageVisible) return;
+
       const healthy = await checkHealth();
       setIsHealthy(healthy);
 
       if (!healthy) {
-        console.warn(
-          "[WalletProvider] Health check failed - wallet may be unavailable"
-        );
+        ErrorLogger.warn(LOG_CONTEXT, "Health check failed - wallet may be unavailable");
       }
     };
 
-    performHealthCheck();
-    const interval = setInterval(performHealthCheck, 30000);
+    const handleVisibilityChange = () => {
+      isPageVisible = !document.hidden;
+      if (isPageVisible) {
+        // Perform immediate health check when page becomes visible
+        performHealthCheck();
+      }
+    };
 
-    return () => clearInterval(interval);
+    // Listen for visibility changes to pause/resume health checks
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Initial health check
+    performHealthCheck();
+    
+    // Set up interval for periodic checks
+    intervalId = setInterval(performHealthCheck, HEALTH_CHECK_INTERVAL);
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [state.isConnected, checkHealth]);
 
   const value: WalletContextValue = {

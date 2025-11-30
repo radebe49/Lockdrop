@@ -90,13 +90,32 @@ export function SentMessages({ address }: SentMessagesProps) {
   }, [loadMessages]);
 
   /**
-   * Set up interval for real-time status updates
+   * Set up interval for real-time status updates with visibility API optimization
    */
   useEffect(() => {
-    // Update statuses every 10 seconds
-    const interval = setInterval(updateStatuses, 10000);
+    let intervalId: NodeJS.Timeout | null = null;
 
-    return () => clearInterval(interval);
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Update immediately when page becomes visible
+        updateStatuses();
+      }
+    };
+
+    // Listen for visibility changes
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Update statuses every 10 seconds (only effective when page is visible)
+    intervalId = setInterval(() => {
+      if (!document.hidden) {
+        updateStatuses();
+      }
+    }, 10000);
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [updateStatuses]);
 
   /**

@@ -2,6 +2,28 @@
 
 All notable changes to Lockdrop will be documented in this file.
 
+## [1.0.2] - 2025-11-30
+
+### Improved
+
+- ✅ Centralized logging with `ErrorLogger` - debug/info/warn/error levels with environment-based filtering
+- ✅ Consolidated retry logic using `withRetry()` utility - reduced ~350 lines of duplicated code
+- ✅ Health checks now pause when browser tab is hidden (visibility API) - better battery life
+- ✅ Toast animations use `onTransitionEnd` instead of setTimeout - smoother UX
+- ✅ Enhanced `withRetry()` with context support and improved error messages
+
+### Removed
+
+- Removed deprecated `IPFSService.ts` - backward compatibility maintained via index.ts aliases
+
+### Technical Debt
+
+- Reduced `any` type usages from 15+ to 5-7
+- Eliminated all direct `console.*` calls in service files
+- Removed all polling without visibility API optimization
+
+---
+
 ## [1.0.1] - 2025-11-19
 
 ### Improved

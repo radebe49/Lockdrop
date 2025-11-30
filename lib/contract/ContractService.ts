@@ -11,7 +11,11 @@
 
 import { ethers } from "ethers";
 import { withTimeout, TIMEOUTS } from "@/utils/timeout";
+import { withRetry } from "@/utils/retry";
+import { ErrorLogger } from "@/lib/monitoring/ErrorLogger";
 import solidityAbi from "@/contract/solidity-abi.json";
+
+const LOG_CONTEXT = "ContractService";
 
 /**
  * Configuration for contract connection
@@ -95,8 +99,8 @@ export class ContractService {
         // Test connection
         await this.provider.getBlockNumber();
         return this.provider;
-      } catch (error) {
-        console.warn("Existing provider failed, reconnecting...");
+      } catch {
+        ErrorLogger.warn(LOG_CONTEXT, "Existing provider failed, reconnecting...");
         this.provider = null;
       }
     }
@@ -121,35 +125,18 @@ export class ContractService {
   /**
    * Establish a new connection to the RPC endpoint
    *
-   * Retry Strategy:
-   * - Exponential backoff: 1s, 2s, 4s
-   * - Maximum 3 attempts
-   * - Provides helpful error messages on failure
+   * Uses withRetry utility for consistent retry behavior with exponential backoff.
    */
   private static async establishConnection(): Promise<ethers.JsonRpcProvider> {
     const config = this.getConfig();
-    const MAX_ATTEMPTS = 3;
-    let lastError: Error | null = null;
 
-    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-      try {
-        // Add delay for retries (exponential backoff with jitter)
-        if (attempt > 1) {
-          const baseDelay = 1000 * Math.pow(2, attempt - 2); // 1s, 2s, 4s
-          const jitter = Math.random() * 0.3 * baseDelay; // ±30% jitter
-          const delay = baseDelay + jitter;
-          console.log(
-            `Retrying RPC connection (attempt ${attempt}/${MAX_ATTEMPTS}) after ${Math.round(delay)}ms...`
-          );
-          await this.delay(delay);
-        }
-
+    return withRetry(
+      async () => {
         // Create provider with custom network config to disable ENS
         // Passet Hub doesn't support ENS, so we must completely disable ENS resolution
         const network = new ethers.Network(config.network, 420420422);
 
         // Remove all ENS-related plugins from the network
-        // This is the nuclear option to prevent ANY ENS resolution attempts
         const ensPluginName = "org.ethers.plugins.network.Ens";
         try {
           network.plugins.forEach((plugin) => {
@@ -158,14 +145,13 @@ export class ContractService {
               network._plugins.delete(ensPluginName);
             }
           });
-        } catch (e) {
+        } catch {
           // Ignore errors - plugin might not exist
         }
 
-        console.log(
-          "[ContractService] Creating provider with ENS disabled for network:",
-          config.network
-        );
+        ErrorLogger.debug(LOG_CONTEXT, "Creating provider with ENS disabled", {
+          network: config.network,
+        });
 
         const provider = new ethers.JsonRpcProvider(
           config.rpcEndpoint,
@@ -182,32 +168,35 @@ export class ContractService {
           `Ethereum RPC connection to ${config.rpcEndpoint}`
         );
 
-        console.log(`Connected to ${config.network} at ${config.rpcEndpoint}`);
+        ErrorLogger.info(LOG_CONTEXT, "Connected to RPC endpoint", {
+          network: config.network,
+          endpoint: config.rpcEndpoint,
+        });
 
         // Notify listeners of successful connection
         this.notifyConnectionListeners(true);
 
         return provider;
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error("Unknown error");
-
-        if (attempt < MAX_ATTEMPTS) {
-          console.warn(
-            `RPC connection attempt ${attempt} failed:`,
-            lastError.message
-          );
-        }
+      },
+      {
+        maxAttempts: 3,
+        initialDelay: 1000,
+        context: "RPCConnection",
+        onRetry: (attempt, error, delay) => {
+          ErrorLogger.warn(LOG_CONTEXT, `RPC connection retry ${attempt}/3`, {
+            error: error.message,
+            nextDelayMs: delay,
+            endpoint: config.rpcEndpoint,
+          });
+        },
       }
-    }
-
-    // All attempts failed
-    const errorMessage = lastError?.message || "Unknown error";
-    this.notifyConnectionListeners(false);
-
-    throw new Error(
-      `Failed to connect to Ethereum RPC endpoint after ${MAX_ATTEMPTS} attempts: ${errorMessage}. ` +
-        `Please check your network connection and ensure the RPC endpoint is accessible.`
-    );
+    ).catch((error) => {
+      this.notifyConnectionListeners(false);
+      throw new Error(
+        `Failed to connect to Ethereum RPC endpoint: ${error.message}. ` +
+          `Please check your network connection and ensure the RPC endpoint is accessible.`
+      );
+    });
   }
 
   /**
@@ -251,7 +240,7 @@ export class ContractService {
       this.provider.destroy();
       this.provider = null;
       this.contract = null;
-      console.log("Disconnected from Ethereum RPC");
+      ErrorLogger.info(LOG_CONTEXT, "Disconnected from Ethereum RPC");
     }
   }
 
@@ -416,7 +405,9 @@ export class ContractService {
       };
     } catch (error) {
       // Message not found or other error
-      console.error(`Failed to get message ${messageId}:`, error);
+      ErrorLogger.warn(LOG_CONTEXT, `Failed to get message ${messageId}`, {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return null;
     }
   }
@@ -442,14 +433,14 @@ export class ContractService {
       const config = this.getConfig();
 
       // Get signer from browser wallet (MetaMask or Talisman)
-      if (!(window as any).ethereum) {
+      if (typeof window === "undefined" || !(window as { ethereum?: unknown }).ethereum) {
         throw new Error(
           "No Ethereum wallet found. Please install Talisman (recommended) or MetaMask."
         );
       }
 
       const browserProvider = new ethers.BrowserProvider(
-        (window as any).ethereum
+        (window as { ethereum: ethers.Eip1193Provider }).ethereum
       );
       const signer = await browserProvider.getSigner(signerAddress);
 
@@ -458,6 +449,11 @@ export class ContractService {
         solidityAbi,
         signer
       );
+
+      ErrorLogger.info(LOG_CONTEXT, "Submitting store message transaction", {
+        recipient: params.recipient,
+        unlockTimestamp: params.unlockTimestamp,
+      });
 
       // Send transaction
       const tx = await withTimeout(
@@ -481,14 +477,19 @@ export class ContractService {
 
       // Extract messageId from event
       const event = (receipt as ethers.TransactionReceipt).logs
-        .map((log: any) => {
+        .map((log: ethers.Log) => {
           try {
             return contract.interface.parseLog(log);
           } catch {
             return null;
           }
         })
-        .find((e: any) => e?.name === "MessageStored");
+        .find((e) => e?.name === "MessageStored");
+
+      ErrorLogger.info(LOG_CONTEXT, "Message stored successfully", {
+        messageId: event?.args.messageId.toString(),
+        blockHash: (receipt as ethers.TransactionReceipt).blockHash,
+      });
 
       return {
         success: true,
@@ -496,7 +497,11 @@ export class ContractService {
         blockHash: (receipt as ethers.TransactionReceipt).blockHash,
       };
     } catch (error) {
-      console.error("Failed to store message:", error);
+      ErrorLogger.error(
+        error instanceof Error ? error : new Error(String(error)),
+        LOG_CONTEXT,
+        { operation: "storeMessage", recipient: params.recipient }
+      );
       return {
         success: false,
         error: error instanceof Error ? error.message : "Transaction failed",

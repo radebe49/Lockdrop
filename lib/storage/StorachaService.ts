@@ -3,12 +3,12 @@
  *
  * Handles encrypted blob uploads to Storacha Network (formerly Web3.Storage)
  * with progress tracking, CID verification, and improved browser support.
- *
- * Requirements: 3.6, 5.1, 5.2, 5.3, 5.4, 5.6
  */
 
 import { create, type Client } from "@storacha/client";
 import { withTimeout, TIMEOUTS } from "@/utils/timeout";
+import { withRetry } from "@/utils/retry";
+import { ErrorLogger } from "@/lib/monitoring/ErrorLogger";
 
 export interface StorachaUploadResult {
   cid: string;
@@ -31,6 +31,7 @@ export interface AuthState {
 const MAX_RETRY_ATTEMPTS = 3;
 const INITIAL_RETRY_DELAY = 1000;
 const STORAGE_KEY = "lockdrop_storacha_auth";
+const LOG_CONTEXT = "StorachaService";
 
 /**
  * StorachaService provides methods for uploading encrypted blobs to IPFS
@@ -55,7 +56,9 @@ export class StorachaService {
         this.authState = parsed;
       }
     } catch (error) {
-      console.warn("Failed to load Storacha auth state:", error);
+      ErrorLogger.warn(LOG_CONTEXT, "Failed to load auth state", {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -65,7 +68,9 @@ export class StorachaService {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.authState));
     } catch (error) {
-      console.warn("Failed to save Storacha auth state:", error);
+      ErrorLogger.warn(LOG_CONTEXT, "Failed to save auth state", {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -75,7 +80,9 @@ export class StorachaService {
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-      console.warn("Failed to clear Storacha auth state:", error);
+      ErrorLogger.warn(LOG_CONTEXT, "Failed to clear auth state", {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -90,20 +97,20 @@ export class StorachaService {
       // If we have a saved space DID, try to restore it as current space
       if (this.authState.spaceDid) {
         try {
-          console.log(
-            "Storacha: Attempting to restore space:",
-            this.authState.spaceDid
-          );
+          ErrorLogger.debug(LOG_CONTEXT, "Attempting to restore space", {
+            spaceDid: this.authState.spaceDid,
+          });
           await this.client.setCurrentSpace(
             this.authState.spaceDid as `did:${string}:${string}`
           );
-          console.log("Storacha: Space restored successfully");
+          ErrorLogger.debug(LOG_CONTEXT, "Space restored successfully");
         } catch (error) {
-          console.warn("Failed to restore space from saved state:", error);
-          // Don't clear the space DID immediately - user might need to re-authenticate
-          console.log(
-            "Storacha: Space restoration failed, may need re-authentication"
-          );
+          ErrorLogger.warn(LOG_CONTEXT, "Failed to restore space from saved state", {
+            error: error instanceof Error ? error.message : String(error),
+          });
+          // Clear the invalid space DID so user knows they need to create a new one
+          this.authState.spaceDid = undefined;
+          this.saveAuthState();
         }
       }
 
@@ -122,7 +129,7 @@ export class StorachaService {
       // Type assertion for email format - Storacha expects email format
       const emailAddress = email as `${string}@${string}`;
 
-      console.log("Storacha: Sending login email to", emailAddress);
+      ErrorLogger.info(LOG_CONTEXT, "Sending login email", { email: emailAddress });
 
       // Save email immediately so we don't lose it
       this.authState = {
@@ -137,7 +144,7 @@ export class StorachaService {
         "Email verification"
       );
 
-      console.log("Storacha: Login successful");
+      ErrorLogger.info(LOG_CONTEXT, "Login successful");
 
       // Note: waitForPaymentPlan may not be available in all versions
       // Check if method exists before calling
@@ -145,8 +152,9 @@ export class StorachaService {
         "waitForPaymentPlan" in client &&
         typeof client.waitForPaymentPlan === "function"
       ) {
-        console.log("Storacha: Waiting for payment plan...");
-        await (client as any).waitForPaymentPlan();
+        ErrorLogger.debug(LOG_CONTEXT, "Waiting for payment plan...");
+        // Type assertion needed - Storacha client types incomplete
+        await (client as unknown as { waitForPaymentPlan: () => Promise<void> }).waitForPaymentPlan();
       }
 
       // Update authentication status
@@ -155,9 +163,12 @@ export class StorachaService {
         email,
       };
       this.saveAuthState();
-      console.log("Storacha: Authentication state saved");
+      ErrorLogger.debug(LOG_CONTEXT, "Authentication state saved");
     } catch (error) {
-      console.error("Storacha login error:", error);
+      ErrorLogger.error(error instanceof Error ? error : new Error(String(error)), LOG_CONTEXT, {
+        operation: "login",
+        email,
+      });
 
       // Clear partial state on error
       this.authState = { isAuthenticated: false };
@@ -178,7 +189,7 @@ export class StorachaService {
 
     try {
       const spaceName = name || "lockdrop-space";
-      console.log("Storacha: Creating space:", spaceName);
+      ErrorLogger.info(LOG_CONTEXT, "Creating space", { spaceName });
 
       // Get the accounts to use for space creation
       const accounts = client.accounts();
@@ -191,22 +202,25 @@ export class StorachaService {
       // Use the first account
       const accountDID = accountDIDs[0] as `did:mailto:${string}:${string}`;
       const account = accounts[accountDID];
-      console.log("Storacha: Using account:", accountDID);
+      ErrorLogger.debug(LOG_CONTEXT, "Using account", { accountDID });
 
       // Create space with name and account for recovery
       const space = await client.createSpace(spaceName, { account });
-      console.log("Storacha: Space created with DID:", space.did());
+      ErrorLogger.info(LOG_CONTEXT, "Space created", { spaceDid: space.did() });
 
       // Set as current space
       await client.setCurrentSpace(space.did());
-      console.log("Storacha: Space set as current and ready for uploads");
+      ErrorLogger.debug(LOG_CONTEXT, "Space set as current and ready for uploads");
 
       this.authState.spaceDid = space.did();
       this.saveAuthState();
 
       return space.did();
     } catch (error) {
-      console.error("Storacha createSpace error:", error);
+      ErrorLogger.error(error instanceof Error ? error : new Error(String(error)), LOG_CONTEXT, {
+        operation: "createSpace",
+        name,
+      });
       throw new Error(
         `Failed to create space: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -256,7 +270,9 @@ export class StorachaService {
         needsAuth: !hasAccounts,
       };
     } catch (error) {
-      console.error("Storacha: Connection check failed:", error);
+      ErrorLogger.warn(LOG_CONTEXT, "Connection check failed", {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return {
         canRestore: false,
         needsSpace: false,
@@ -265,13 +281,13 @@ export class StorachaService {
     }
   }
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
+  /**
+   * Determine if an error is retryable
+   */
   private isRetryableError(error: Error): boolean {
     const message = error.message.toLowerCase();
 
+    // Network-level errors (always retryable)
     if (
       message.includes("network") ||
       message.includes("timeout") ||
@@ -284,18 +300,18 @@ export class StorachaService {
       return true;
     }
 
+    // Retryable HTTP status codes
     if (message.includes("429") || message.includes("rate limit")) {
       return true;
     }
-
     if (message.includes("503") || message.includes("service unavailable")) {
       return true;
     }
-
     if (message.includes("504") || message.includes("gateway timeout")) {
       return true;
     }
 
+    // Non-retryable client errors
     if (
       message.includes("401") ||
       message.includes("unauthorized") ||
@@ -311,6 +327,7 @@ export class StorachaService {
       return false;
     }
 
+    // Default: retry unknown errors (conservative approach)
     return true;
   }
 
@@ -325,68 +342,50 @@ export class StorachaService {
         "Not authenticated. Please go to Settings and connect with Storacha using your email."
       );
     }
-
+    
     if (!this.authState.spaceDid) {
       throw new Error(
         "No storage space configured. Please go to Settings and create a Storacha space."
       );
     }
-
+    
     // Try to ensure space is set before upload
     try {
       const client = await this.getClient();
       const currentSpace = client.currentSpace();
-
+      
       if (!currentSpace) {
         // Try to restore the space from saved state
-        console.log(
-          "Storacha: No current space, attempting to restore from saved state..."
-        );
-        await client.setCurrentSpace(
-          this.authState.spaceDid as `did:${string}:${string}`
-        );
-        console.log("Storacha: Space restored successfully");
+        ErrorLogger.debug(LOG_CONTEXT, "No current space, attempting to restore from saved state...");
+        await client.setCurrentSpace(this.authState.spaceDid as `did:${string}:${string}`);
+        ErrorLogger.debug(LOG_CONTEXT, "Space restored successfully");
       }
     } catch (error) {
-      console.error("Storacha: Failed to set space before upload:", error);
+      ErrorLogger.error(error instanceof Error ? error : new Error(String(error)), LOG_CONTEXT, {
+        operation: "setSpaceBeforeUpload",
+      });
       throw new Error(
         "Failed to set storage space. Please go to Settings and reconnect Storacha."
       );
     }
 
-    let lastError: Error | null = null;
-
-    for (let attempt = 0; attempt < MAX_RETRY_ATTEMPTS; attempt++) {
-      try {
-        if (attempt > 0) {
-          const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
-          const jitter = Math.random() * 0.3 * baseDelay;
-          const delay = baseDelay + jitter;
-          await this.sleep(delay);
-        }
-
-        const result = await this.uploadToStoracha(blob, filename, options);
-        return result;
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error("Unknown error");
-
-        if (!this.isRetryableError(lastError)) {
-          console.error(
-            "Non-retryable error, failing fast:",
-            lastError.message
-          );
-          throw lastError;
-        }
-
-        console.warn(
-          `Storacha upload attempt ${attempt + 1}/${MAX_RETRY_ATTEMPTS} failed:`,
-          lastError.message
-        );
+    // Use withRetry utility for consistent retry behavior
+    return withRetry(
+      () => this.uploadToStoracha(blob, filename, options),
+      {
+        maxAttempts: MAX_RETRY_ATTEMPTS,
+        initialDelay: INITIAL_RETRY_DELAY,
+        shouldRetry: (error) => this.isRetryableError(error),
+        context: "StorachaUpload",
+        onRetry: (attempt, error, delay) => {
+          ErrorLogger.warn(LOG_CONTEXT, `Upload retry ${attempt}/${MAX_RETRY_ATTEMPTS}`, {
+            error: error.message,
+            nextDelayMs: delay,
+            filename,
+            blobSize: blob.size,
+          });
+        },
       }
-    }
-
-    throw new Error(
-      `Upload failed after ${MAX_RETRY_ATTEMPTS} attempts. Last error: ${lastError?.message}`
     );
   }
 
@@ -400,7 +399,7 @@ export class StorachaService {
 
     // Verify we have a current space set
     const currentSpace = client.currentSpace();
-    console.log("Storacha: Current space:", currentSpace?.did());
+    ErrorLogger.debug(LOG_CONTEXT, "Current space", { spaceDid: currentSpace?.did() });
 
     if (!currentSpace) {
       throw new Error(
@@ -410,10 +409,9 @@ export class StorachaService {
 
     const file = new File([blob], filename, { type: blob.type });
     const totalBytes = blob.size;
+    const sizeMB = (blob.size / 1024 / 1024).toFixed(2);
 
-    console.log(
-      `Storacha: Starting upload of ${filename} (${(blob.size / 1024 / 1024).toFixed(2)} MB)`
-    );
+    ErrorLogger.info(LOG_CONTEXT, `Starting upload`, { filename, sizeMB: `${sizeMB} MB` });
 
     const timeout =
       blob.size > 10_000_000
@@ -432,10 +430,10 @@ export class StorachaService {
         onShardStored: onStoredChunk,
       }),
       timeout,
-      `Storacha upload (${(blob.size / 1024 / 1024).toFixed(2)} MB)`
+      `Storacha upload (${sizeMB} MB)`
     );
 
-    console.log("Storacha: Upload complete, CID:", cid.toString());
+    ErrorLogger.info(LOG_CONTEXT, "Upload complete", { cid: cid.toString() });
 
     if (onProgress) {
       onProgress(100);
@@ -463,19 +461,10 @@ export class StorachaService {
       throw new Error(`Invalid CID format: ${cid}`);
     }
 
-    let lastError: Error | null = null;
+    const gatewayUrl = this.getGatewayUrl(cid);
 
-    for (let attempt = 0; attempt < MAX_RETRY_ATTEMPTS; attempt++) {
-      try {
-        if (attempt > 0) {
-          const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
-          const jitter = Math.random() * 0.3 * baseDelay;
-          const delay = baseDelay + jitter;
-          await this.sleep(delay);
-        }
-
-        const gatewayUrl = this.getGatewayUrl(cid);
-
+    await withRetry(
+      async () => {
         const res = await withTimeout(
           fetch(gatewayUrl, { method: "HEAD" }),
           TIMEOUTS.IPFS_VERIFICATION,
@@ -487,28 +476,20 @@ export class StorachaService {
             `CID ${cid} is not accessible (status: ${res.status})`
           );
         }
-
-        return;
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error("Unknown error");
-
-        if (!this.isRetryableError(lastError)) {
-          console.error(
-            "Non-retryable verification error, failing fast:",
-            lastError.message
-          );
-          throw new Error(`CID verification failed: ${lastError.message}`);
-        }
-
-        console.warn(
-          `CID verification attempt ${attempt + 1}/${MAX_RETRY_ATTEMPTS} failed:`,
-          lastError.message
-        );
+      },
+      {
+        maxAttempts: MAX_RETRY_ATTEMPTS,
+        initialDelay: INITIAL_RETRY_DELAY,
+        shouldRetry: (error) => this.isRetryableError(error),
+        context: "CIDVerification",
+        onRetry: (attempt, error, delay) => {
+          ErrorLogger.warn(LOG_CONTEXT, `CID verification retry ${attempt}/${MAX_RETRY_ATTEMPTS}`, {
+            cid,
+            error: error.message,
+            nextDelayMs: delay,
+          });
+        },
       }
-    }
-
-    throw new Error(
-      `CID verification failed after ${MAX_RETRY_ATTEMPTS} attempts. Last error: ${lastError?.message}`
     );
   }
 
@@ -517,19 +498,10 @@ export class StorachaService {
       throw new Error(`Invalid CID format: ${cid}`);
     }
 
-    let lastError: Error | null = null;
+    const gatewayUrl = this.getGatewayUrl(cid);
 
-    for (let attempt = 0; attempt < MAX_RETRY_ATTEMPTS; attempt++) {
-      try {
-        if (attempt > 0) {
-          const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
-          const jitter = Math.random() * 0.3 * baseDelay;
-          const delay = baseDelay + jitter;
-          await this.sleep(delay);
-        }
-
-        const gatewayUrl = this.getGatewayUrl(cid);
-
+    return withRetry(
+      async () => {
         const res = await withTimeout(
           fetch(gatewayUrl),
           TIMEOUTS.IPFS_DOWNLOAD,
@@ -542,28 +514,21 @@ export class StorachaService {
           );
         }
 
-        const blob = await res.blob();
-        return blob;
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error("Unknown error");
-
-        if (!this.isRetryableError(lastError)) {
-          console.error(
-            "Non-retryable download error, failing fast:",
-            lastError.message
-          );
-          throw lastError;
-        }
-
-        console.warn(
-          `IPFS download attempt ${attempt + 1}/${MAX_RETRY_ATTEMPTS} failed:`,
-          lastError.message
-        );
+        return res.blob();
+      },
+      {
+        maxAttempts: MAX_RETRY_ATTEMPTS,
+        initialDelay: INITIAL_RETRY_DELAY,
+        shouldRetry: (error) => this.isRetryableError(error),
+        context: "IPFSDownload",
+        onRetry: (attempt, error, delay) => {
+          ErrorLogger.warn(LOG_CONTEXT, `Download retry ${attempt}/${MAX_RETRY_ATTEMPTS}`, {
+            cid,
+            error: error.message,
+            nextDelayMs: delay,
+          });
+        },
       }
-    }
-
-    throw new Error(
-      `IPFS download failed after ${MAX_RETRY_ATTEMPTS} attempts. Last error: ${lastError?.message}`
     );
   }
 
