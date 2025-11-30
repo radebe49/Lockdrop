@@ -11,6 +11,12 @@ import { withRetry } from "@/utils/retry";
 import { ErrorLogger } from "@/lib/monitoring/ErrorLogger";
 import { AppStorage, STORAGE_KEYS } from "@/utils/storage";
 import { RETRY_CONFIG } from "@/utils/constants";
+import {
+  type SpaceDID,
+  type AccountDID,
+  type EmailAddress,
+  hasWaitForPaymentPlan,
+} from "@/types/storacha";
 
 export interface StorachaUploadResult {
   cid: string;
@@ -78,7 +84,7 @@ export class StorachaService {
             spaceDid: this.authState.spaceDid,
           });
           await this.client.setCurrentSpace(
-            this.authState.spaceDid as `did:${string}:${string}`
+            this.authState.spaceDid as SpaceDID
           );
           ErrorLogger.debug(LOG_CONTEXT, "Space restored successfully");
         } catch (error) {
@@ -104,7 +110,7 @@ export class StorachaService {
 
     try {
       // Type assertion for email format - Storacha expects email format
-      const emailAddress = email as `${string}@${string}`;
+      const emailAddress = email as EmailAddress;
 
       ErrorLogger.info(LOG_CONTEXT, "Sending login email", { email: emailAddress });
 
@@ -124,14 +130,10 @@ export class StorachaService {
       ErrorLogger.info(LOG_CONTEXT, "Login successful");
 
       // Note: waitForPaymentPlan may not be available in all versions
-      // Check if method exists before calling
-      if (
-        "waitForPaymentPlan" in client &&
-        typeof client.waitForPaymentPlan === "function"
-      ) {
+      // Use type guard to check if method exists
+      if (hasWaitForPaymentPlan(client)) {
         ErrorLogger.debug(LOG_CONTEXT, "Waiting for payment plan...");
-        // Type assertion needed - Storacha client types incomplete
-        await (client as unknown as { waitForPaymentPlan: () => Promise<void> }).waitForPaymentPlan();
+        await client.waitForPaymentPlan();
       }
 
       // Update authentication status
@@ -177,7 +179,7 @@ export class StorachaService {
       }
 
       // Use the first account
-      const accountDID = accountDIDs[0] as `did:mailto:${string}:${string}`;
+      const accountDID = accountDIDs[0] as AccountDID;
       const account = accounts[accountDID];
       ErrorLogger.debug(LOG_CONTEXT, "Using account", { accountDID });
 
@@ -334,7 +336,7 @@ export class StorachaService {
       if (!currentSpace) {
         // Try to restore the space from saved state
         ErrorLogger.debug(LOG_CONTEXT, "No current space, attempting to restore from saved state...");
-        await client.setCurrentSpace(this.authState.spaceDid as `did:${string}:${string}`);
+        await client.setCurrentSpace(this.authState.spaceDid as SpaceDID);
         ErrorLogger.debug(LOG_CONTEXT, "Space restored successfully");
       }
     } catch (error) {
