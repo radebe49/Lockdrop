@@ -147,7 +147,7 @@ event MessageStored(
 
 ```javascript
 import { ethers } from "ethers";
-import FutureProofABI from "./FutureProof.abi.json";
+import FutureProofABI from "./solidity-abi.json";
 
 // Connect to contract
 const provider = new ethers.JsonRpcProvider(

@@ -18,12 +18,12 @@ import React, {
 import { WalletState, WalletContextValue } from "@/types/wallet";
 import { withTimeout, TIMEOUTS, TimeoutError } from "@/utils/timeout";
 import { ErrorLogger } from "@/lib/monitoring/ErrorLogger";
+import { AppStorage, STORAGE_KEYS } from "@/utils/storage";
+import { INTERVALS } from "@/utils/constants";
 
 const WalletContext = createContext<WalletContextValue | undefined>(undefined);
 
-const STORAGE_KEY = "lockdrop_wallet_connection";
 const LOG_CONTEXT = "WalletProvider";
-const HEALTH_CHECK_INTERVAL = 30000; // 30 seconds
 
 interface WalletProviderProps {
   children: React.ReactNode;
@@ -68,11 +68,10 @@ export function WalletProvider({ children }: WalletProviderProps) {
     const attemptReconnect = async () => {
       try {
         // Check if wallet was previously connected
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (!stored) return;
-
-        const { wasConnected } = JSON.parse(stored);
-        if (!wasConnected) return;
+        const stored = AppStorage.get<{ wasConnected: boolean }>(
+          STORAGE_KEYS.WALLET_CONNECTION
+        );
+        if (!stored?.wasConnected) return;
 
         // Check if ethereum provider is available
         if (typeof window === "undefined" || !window.ethereum) return;
@@ -124,7 +123,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
           error: error instanceof Error ? error.message : String(error),
         });
         // Clear invalid stored state
-        localStorage.removeItem(STORAGE_KEY);
+        AppStorage.remove(STORAGE_KEYS.WALLET_CONNECTION);
       }
     };
 
@@ -260,7 +259,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
       });
 
       // Persist connection state
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ wasConnected: true }));
+      AppStorage.set(STORAGE_KEYS.WALLET_CONNECTION, { wasConnected: true });
 
       setIsHealthy(true);
     } catch (error) {
@@ -309,7 +308,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
       accounts: [],
       selectedAccount: null,
     });
-    localStorage.removeItem(STORAGE_KEY);
+    AppStorage.remove(STORAGE_KEYS.WALLET_CONNECTION);
   }, []);
 
   const selectAccount = useCallback(
@@ -452,9 +451,9 @@ export function WalletProvider({ children }: WalletProviderProps) {
 
     // Initial health check
     performHealthCheck();
-    
+
     // Set up interval for periodic checks
-    intervalId = setInterval(performHealthCheck, HEALTH_CHECK_INTERVAL);
+    intervalId = setInterval(performHealthCheck, INTERVALS.HEALTH_CHECK);
 
     return () => {
       if (intervalId) clearInterval(intervalId);

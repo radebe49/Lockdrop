@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from "vitest";
 import {
-  isValidPolkadotAddress,
+  isValidEthereumAddress,
   isValidIPFSCID,
   isValidFutureTimestamp,
   isValidMediaType,
@@ -15,15 +15,14 @@ import {
 
 describe("Edge Case Validation", () => {
   describe("Address Validation", () => {
-    it("accepts valid Ethereum addresses (via deprecated Polkadot function)", () => {
-      // Note: isValidPolkadotAddress is deprecated and now validates Ethereum addresses
+    it("accepts valid Ethereum addresses", () => {
       const validAddresses = [
         "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb2",
         "0xeD0fDD2be363590800F86ec8562Dde951654668F",
       ];
 
       validAddresses.forEach((address) => {
-        expect(isValidPolkadotAddress(address)).toBe(true);
+        expect(isValidEthereumAddress(address)).toBe(true);
       });
     });
 
@@ -36,7 +35,7 @@ describe("Edge Case Validation", () => {
       ];
 
       invalidAddresses.forEach((address) => {
-        expect(isValidPolkadotAddress(address)).toBe(false);
+        expect(isValidEthereumAddress(address)).toBe(false);
       });
     });
   });

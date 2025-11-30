@@ -344,7 +344,7 @@ The Lockdrop smart contract is written in Solidity 0.8.20 and deployed to Passet
 - **Network**: Passet Hub (Polkadot testnet)
 - **VM**: PolkaVM via pallet-revive
 - **Address Format**: Ethereum (0x...)
-- **ABI**: See `contract/abi.json`
+- **ABI**: See `contract/solidity-abi.json`
 
 ### Key Contract Methods
 

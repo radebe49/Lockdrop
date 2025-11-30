@@ -14,12 +14,12 @@ import { MessageList } from "./MessageList";
 import { MessageFilters } from "./MessageFilters";
 import { Pagination } from "./Pagination";
 import { calculateMessageStatus } from "@/utils/dateUtils";
+import { useVisibilityInterval } from "@/hooks/useVisibilityInterval";
+import { PAGINATION, INTERVALS } from "@/utils/constants";
 
 interface SentMessagesProps {
   address: string;
 }
-
-const ITEMS_PER_PAGE = 12;
 
 export function SentMessages({ address }: SentMessagesProps) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -89,34 +89,11 @@ export function SentMessages({ address }: SentMessagesProps) {
     loadMessages();
   }, [loadMessages]);
 
-  /**
-   * Set up interval for real-time status updates with visibility API optimization
-   */
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout | null = null;
-
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        // Update immediately when page becomes visible
-        updateStatuses();
-      }
-    };
-
-    // Listen for visibility changes
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    // Update statuses every 10 seconds (only effective when page is visible)
-    intervalId = setInterval(() => {
-      if (!document.hidden) {
-        updateStatuses();
-      }
-    }, 10000);
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [updateStatuses]);
+  // Real-time status updates with visibility API optimization
+  useVisibilityInterval({
+    callback: updateStatuses,
+    interval: INTERVALS.STATUS_UPDATE,
+  });
 
   /**
    * Filter and sort messages
@@ -145,13 +122,13 @@ export function SentMessages({ address }: SentMessagesProps) {
    * Paginate messages
    */
   const paginatedMessages = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const startIndex = (currentPage - 1) * PAGINATION.DEFAULT_PAGE_SIZE;
+    const endIndex = startIndex + PAGINATION.DEFAULT_PAGE_SIZE;
     return filteredAndSortedMessages.slice(startIndex, endIndex);
   }, [filteredAndSortedMessages, currentPage]);
 
   const totalPages = Math.ceil(
-    filteredAndSortedMessages.length / ITEMS_PER_PAGE
+    filteredAndSortedMessages.length / PAGINATION.DEFAULT_PAGE_SIZE
   );
 
   // Reset to page 1 when filters change
@@ -236,7 +213,7 @@ export function SentMessages({ address }: SentMessagesProps) {
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-            itemsPerPage={ITEMS_PER_PAGE}
+            itemsPerPage={PAGINATION.DEFAULT_PAGE_SIZE}
             totalItems={filteredAndSortedMessages.length}
           />
         </div>

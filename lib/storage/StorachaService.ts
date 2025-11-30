@@ -9,6 +9,8 @@ import { create, type Client } from "@storacha/client";
 import { withTimeout, TIMEOUTS } from "@/utils/timeout";
 import { withRetry } from "@/utils/retry";
 import { ErrorLogger } from "@/lib/monitoring/ErrorLogger";
+import { AppStorage, STORAGE_KEYS } from "@/utils/storage";
+import { RETRY_CONFIG } from "@/utils/constants";
 
 export interface StorachaUploadResult {
   cid: string;
@@ -28,9 +30,6 @@ export interface AuthState {
   spaceDid?: string;
 }
 
-const MAX_RETRY_ATTEMPTS = 3;
-const INITIAL_RETRY_DELAY = 1000;
-const STORAGE_KEY = "lockdrop_storacha_auth";
 const LOG_CONTEXT = "StorachaService";
 
 /**
@@ -47,43 +46,21 @@ export class StorachaService {
   }
 
   private loadAuthState(): void {
-    if (typeof window === "undefined") return;
-
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        this.authState = parsed;
-      }
-    } catch (error) {
-      ErrorLogger.warn(LOG_CONTEXT, "Failed to load auth state", {
-        error: error instanceof Error ? error.message : String(error),
-      });
+    const stored = AppStorage.get<AuthState>(STORAGE_KEYS.STORACHA_AUTH);
+    if (stored) {
+      this.authState = stored;
     }
   }
 
   private saveAuthState(): void {
-    if (typeof window === "undefined") return;
-
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.authState));
-    } catch (error) {
-      ErrorLogger.warn(LOG_CONTEXT, "Failed to save auth state", {
-        error: error instanceof Error ? error.message : String(error),
-      });
+    const success = AppStorage.set(STORAGE_KEYS.STORACHA_AUTH, this.authState);
+    if (!success) {
+      ErrorLogger.warn(LOG_CONTEXT, "Failed to save auth state");
     }
   }
 
   private clearAuthState(): void {
-    if (typeof window === "undefined") return;
-
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch (error) {
-      ErrorLogger.warn(LOG_CONTEXT, "Failed to clear auth state", {
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
+    AppStorage.remove(STORAGE_KEYS.STORACHA_AUTH);
   }
 
   private async getClient(): Promise<Client> {
@@ -373,12 +350,12 @@ export class StorachaService {
     return withRetry(
       () => this.uploadToStoracha(blob, filename, options),
       {
-        maxAttempts: MAX_RETRY_ATTEMPTS,
-        initialDelay: INITIAL_RETRY_DELAY,
+        maxAttempts: RETRY_CONFIG.MAX_ATTEMPTS,
+        initialDelay: RETRY_CONFIG.INITIAL_DELAY,
         shouldRetry: (error) => this.isRetryableError(error),
         context: "StorachaUpload",
         onRetry: (attempt, error, delay) => {
-          ErrorLogger.warn(LOG_CONTEXT, `Upload retry ${attempt}/${MAX_RETRY_ATTEMPTS}`, {
+          ErrorLogger.warn(LOG_CONTEXT, `Upload retry ${attempt}/${RETRY_CONFIG.MAX_ATTEMPTS}`, {
             error: error.message,
             nextDelayMs: delay,
             filename,
@@ -478,12 +455,12 @@ export class StorachaService {
         }
       },
       {
-        maxAttempts: MAX_RETRY_ATTEMPTS,
-        initialDelay: INITIAL_RETRY_DELAY,
+        maxAttempts: RETRY_CONFIG.MAX_ATTEMPTS,
+        initialDelay: RETRY_CONFIG.INITIAL_DELAY,
         shouldRetry: (error) => this.isRetryableError(error),
         context: "CIDVerification",
         onRetry: (attempt, error, delay) => {
-          ErrorLogger.warn(LOG_CONTEXT, `CID verification retry ${attempt}/${MAX_RETRY_ATTEMPTS}`, {
+          ErrorLogger.warn(LOG_CONTEXT, `CID verification retry ${attempt}/${RETRY_CONFIG.MAX_ATTEMPTS}`, {
             cid,
             error: error.message,
             nextDelayMs: delay,
@@ -517,12 +494,12 @@ export class StorachaService {
         return res.blob();
       },
       {
-        maxAttempts: MAX_RETRY_ATTEMPTS,
-        initialDelay: INITIAL_RETRY_DELAY,
+        maxAttempts: RETRY_CONFIG.MAX_ATTEMPTS,
+        initialDelay: RETRY_CONFIG.INITIAL_DELAY,
         shouldRetry: (error) => this.isRetryableError(error),
         context: "IPFSDownload",
         onRetry: (attempt, error, delay) => {
-          ErrorLogger.warn(LOG_CONTEXT, `Download retry ${attempt}/${MAX_RETRY_ATTEMPTS}`, {
+          ErrorLogger.warn(LOG_CONTEXT, `Download retry ${attempt}/${RETRY_CONFIG.MAX_ATTEMPTS}`, {
             cid,
             error: error.message,
             nextDelayMs: delay,

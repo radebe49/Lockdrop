@@ -117,7 +117,7 @@ forge create --resolc \
 The build process generates:
 
 - `out/FutureProof.sol/FutureProof.json` - Compiled contract with ABI
-- `abi.json` - Extracted ABI for frontend integration
+- `solidity-abi.json` - Extracted ABI for frontend integration
 
 ## Testing
 

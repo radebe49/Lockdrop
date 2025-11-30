@@ -5,19 +5,18 @@ import {
   ExclamationTriangleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-
-const STORAGE_KEY = "lockdrop_backup_warning_dismissed";
+import { AppStorage, STORAGE_KEYS } from "@/utils/storage";
 
 export function KeyBackupWarning() {
   const [isDismissed, setIsDismissed] = useState(true); // Start hidden to prevent flash
 
   useEffect(() => {
-    const dismissed = localStorage.getItem(STORAGE_KEY);
-    setIsDismissed(dismissed === "true");
+    const dismissed = AppStorage.get<boolean>(STORAGE_KEYS.KEY_BACKUP_DISMISSED);
+    setIsDismissed(dismissed === true);
   }, []);
 
   const handleDismiss = () => {
-    localStorage.setItem(STORAGE_KEY, "true");
+    AppStorage.set(STORAGE_KEYS.KEY_BACKUP_DISMISSED, true);
     setIsDismissed(true);
   };
 

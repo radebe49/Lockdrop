@@ -51,6 +51,19 @@ export interface TransactionResult {
 }
 
 /**
+ * Raw message structure returned by the smart contract
+ */
+interface ContractMessageResponse {
+  encryptedKeyCid: string;
+  encryptedMessageCid: string;
+  messageHash: string;
+  unlockTimestamp: bigint;
+  sender: string;
+  recipient: string;
+  createdAt: bigint;
+}
+
+/**
  * ContractService provides methods for interacting with the Solidity smart contract
  * that stores time-locked message metadata on Passet Hub (Polkadot).
  */
@@ -335,7 +348,7 @@ export class ContractService {
       "Get sent messages"
     );
 
-    return messages.map((msg: any, index: number) => ({
+    return (messages as ContractMessageResponse[]).map((msg, index) => ({
       id: index.toString(),
       encryptedKeyCID: msg.encryptedKeyCid,
       encryptedMessageCID: msg.encryptedMessageCid,
@@ -366,7 +379,7 @@ export class ContractService {
       "Get received messages"
     );
 
-    return messages.map((msg: any, index: number) => ({
+    return (messages as ContractMessageResponse[]).map((msg, index) => ({
       id: index.toString(),
       encryptedKeyCID: msg.encryptedKeyCid,
       encryptedMessageCID: msg.encryptedMessageCid,

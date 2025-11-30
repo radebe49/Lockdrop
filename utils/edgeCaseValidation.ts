@@ -36,16 +36,7 @@ export function isValidEthereumAddress(address: string): boolean {
   return ethereumAddressRegex.test(address.trim());
 }
 
-/**
- * @deprecated Use isValidEthereumAddress instead
- * Kept for backward compatibility
- */
-export function isValidPolkadotAddress(address: string): boolean {
-  console.warn(
-    "isValidPolkadotAddress is deprecated. Use isValidEthereumAddress instead."
-  );
-  return isValidEthereumAddress(address);
-}
+
 
 /**
  * Validate IPFS CID format
